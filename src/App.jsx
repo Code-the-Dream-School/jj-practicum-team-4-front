@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllData } from './util/index';
+import UserCard from './components/usercard/usercard';
 
 const URL = 'http://localhost:8000/api/v1/';
 
@@ -22,7 +23,13 @@ function App() {
 
   return (
     <>
-      <h1>{message}</h1>
+      <UserCard
+        username="Jane Doe"
+        title="Sunset Landscape"
+        description="A beautiful view of the mountains during sunset."
+        socialLink="@jane_art"
+        image="../../assets/images.jpeg"
+      />
     </>
   );
 
