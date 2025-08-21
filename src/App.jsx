@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAllData } from "./util/index";
-import Header from "./components/Navbar";
+import Navbar from "./components/Navbar";
 
 const URL = "http://localhost:8000/api/v1/";
 
@@ -20,9 +20,7 @@ function App() {
 
   return (
     <>
-      <header>
-        <Header />
-      </header>
+      <Navbar />
     </>
   );
 }
