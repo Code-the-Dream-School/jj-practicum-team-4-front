@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { CardContent, Typography, IconButton } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -24,6 +25,20 @@ export default function UserCard({
 
   const handleLike = () => setLiked(true); // disable after one click
   const handleClose = () => setOpen(false);
+
+  const getSocialUrl = (link) => {
+     if (!link) 
+      return null;
+      if (link.startsWith("http")) {
+    return link;
+    } else if (link.startsWith('@')) {
+    return `https://instagram.com/${link.slice(1)}`;
+  
+  } else {
+   return `https://${link}`;
+     }
+
+}
 
   if (!open) return null;
 
@@ -64,7 +79,7 @@ export default function UserCard({
             <Typography variant="body1" color="text.secondary">
               Social Media Link:{" "}
               <a
-                href={socialLink}
+                href={getSocialUrl(socialLink)}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: "#1976d2", textDecoration: "underline" }}
