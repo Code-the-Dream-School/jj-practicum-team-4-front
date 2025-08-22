@@ -20,7 +20,7 @@ export const StyledCard = styled(Card)(() => ({
 
 // Image styles
 export const StyledCardMedia = styled(CardMedia)(() => ({
-  height: 200,
+  height: 300,
   objectFit: "cover",
 }));
 

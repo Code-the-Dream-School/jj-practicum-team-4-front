@@ -12,7 +12,7 @@ function App() {
 
     (async () => {
       const myData = await getAllData(URL)
-      setMessage(myData.data);
+      setMessage(myData);
     })();
       
     return () => {

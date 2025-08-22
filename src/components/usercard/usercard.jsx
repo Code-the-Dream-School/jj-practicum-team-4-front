@@ -10,7 +10,7 @@ import {
   StyledCardMedia,
   PlaceholderBox,
   CenteredActions,
-} from "./usercardstyle";
+} from "./UserCard.styles";
 
 export default function UserCard({
   username = "User Name",
