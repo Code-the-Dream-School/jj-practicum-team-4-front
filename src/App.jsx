@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getAllData } from "./util/index";
-import Navbar from "./components/Navbar";
-import Form from "./components/Form";
+import Navbar from "./components/Navbar/Navbar";
+import Form from "./components/Form/Form";
 
 const URL = "http://localhost:8000/api/v1/";
 
@@ -21,7 +21,8 @@ function App() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
+      <Form />
     </>
   );
 }
