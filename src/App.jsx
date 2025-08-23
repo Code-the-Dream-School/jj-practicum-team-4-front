@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getAllData } from './util/index';
-import UserCard from './components/UserCard/Usercard';
+import UserCard from './components/UserCard/UserCard';
+import sampleImage from './assets/images.jpeg';
 
 const URL = 'http://localhost:8000/api/v1/';
 
 function App() {
   
   const [message, setMessage] = useState(''); 
+  const [cardOpen, setCardOpen] = useState(true);
 
   useEffect(() => {
 
@@ -23,12 +25,15 @@ function App() {
 
   return (
     <>
-      <UserCard
+    
+      <UserCard 
         username="Jane Doe"
         title="Sunset Landscape"
         description="A beautiful view of the mountains during sunset."
         socialLink="@jane_art"
-        image="../../assets/images.jpeg"
+        image={sampleImage}
+        isOpen={cardOpen}
+        onClose={() => setCardOpen(false)}
       />
     </>
   );

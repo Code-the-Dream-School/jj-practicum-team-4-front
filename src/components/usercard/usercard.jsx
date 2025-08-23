@@ -19,12 +19,13 @@ export default function UserCard({
   description = "Artwork description goes here...",
   socialLink = "",
   image = sampleImage,
+  isOpen = true,
+  onClose = () => {},
 }) {
   const [liked, setLiked] = useState(false);
-  const [open, setOpen] = useState(true);
 
   const handleLike = () => setLiked(true); // disable after one click
-  const handleClose = () => setOpen(false);
+  const handleClose = () => onClose(); // Notify parent
 
   const getSocialUrl = (link) => {
      if (!link) 
@@ -40,7 +41,7 @@ export default function UserCard({
 
 }
 
-  if (!open) return null;
+  if (!isOpen) return null;
 
   return (
     <StyledBox>
@@ -59,7 +60,7 @@ export default function UserCard({
         </IconButton>
         {/* Image or placeholder */}
         {image ? (
-          <StyledCardMedia component="img" image={sampleImage} alt={username} />
+          <StyledCardMedia component="img" image={image} alt={username} />
         ) : (
           <PlaceholderBox>Image Placeholder</PlaceholderBox>
         )}
