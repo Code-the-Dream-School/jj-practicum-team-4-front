@@ -66,7 +66,7 @@ export default function UserCard({
         )}
 
         {/* Content */}
-        <CardContent>
+        <CardContent >
           <Typography gutterBottom variant="h6">
             {username}
           </Typography>

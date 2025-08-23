@@ -16,6 +16,10 @@ export const StyledCard = styled(Card)(() => ({
   maxWidth: 400,
   borderRadius: 12,
   boxShadow: 3,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
 }));
 
 // Image styles
@@ -34,7 +38,18 @@ export const PlaceholderBox = styled(Box)(() => ({
   color: "#757575",
   fontSize: "1rem",
 }));
-
+//  Centered Card content styles
+export const CardContent = styled(Box)(() => ({
+ sx: {
+    
+  " &:MuiCardContent-root":{
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center"
+  }
+ }
+}));
 // Centered like button area
 export const CenteredActions = styled(CardActions)(() => ({
   display: "flex",
