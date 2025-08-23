@@ -14,7 +14,6 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 
 const pages = ["gallery", "best of artwork", "about"];
-// const settings = ["Logout"];
 
 function Navbar() {
   const [isAuth, setIsAuth] = React.useState(false);
@@ -40,11 +39,6 @@ function Navbar() {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
-    setIsAuth(false);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
     setIsAuth(false);
   };
 
@@ -141,7 +135,7 @@ function Navbar() {
                 horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              onClose={handleLogout}
             >
               {/* {settings.map((setting) => ( */}
               <MenuItem onClick={handleLogout}>
