@@ -31,6 +31,7 @@ const VisuallyHiddenInput = styled("input")({
 const mediaType = ["mixed media", "waterColor", "oil paint", "pencil"];
 
 function Form() {
+  // const [isSubmit, setIsSubmit] = React.useState(false);
   const [formValues, setFormValues] = React.useState({
     imageUrl: "",
     title: "",
@@ -229,6 +230,12 @@ function Form() {
             {/* Submit Button */}
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
               <Button
+                disabled={
+                  (formValues.title &&
+                    formValues.imageUrl &&
+                    formValues.mediaType &&
+                    formValues.description) == ""
+                }
                 type="submit"
                 variant="contained"
                 size="large"
