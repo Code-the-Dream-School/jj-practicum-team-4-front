@@ -20,8 +20,6 @@ function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  console.log(pages.slice(0, 3));
-
   const handleAuth = () => {
     setIsAuth(true);
     setAnchorElNav(null);
@@ -48,18 +46,6 @@ function Navbar() {
     setAnchorElNav(null);
   };
 
-  const navItems = (pages) => {
-    pages.map((page) => (
-      <Button
-        key={page}
-        onClick={handleCloseNavMenu}
-        sx={{ my: 2, color: "white", display: "block" }}
-      >
-        {page}
-      </Button>
-    ));
-  };
-  console.log(navItems(pages.slice(0, 4)));
   return (
     <AppBar>
       <Toolbar disableGutters maxWidth="xl" sx={{ mx: 3 }}>
