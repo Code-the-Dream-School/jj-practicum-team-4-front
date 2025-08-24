@@ -32,6 +32,7 @@ const mediaType = ["mixed media", "waterColor", "oil paint", "pencil"];
 
 function Form() {
   // const [isSubmit, setIsSubmit] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState(null);
   const [formValues, setFormValues] = React.useState({
     imageUrl: "",
     title: "",
@@ -47,7 +48,18 @@ function Form() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formValues);
+    if (
+      (
+        formValues.title &&
+        formValues.imageUrl &&
+        formValues.mediaType &&
+        formValues.description
+      ).trim === ""
+    ) {
+      setErrorMessage("This field is required");
+    } else {
+      console.log("submitting:", formValues);
+    }
   };
 
   return (
