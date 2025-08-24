@@ -13,12 +13,14 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 
-const pages = ["gallery", "best of artwork", "about"];
-
+const pages = ["gallery", "best of artwork", "about", "challenge prompt"];
+const settings = ["Logout"];
 function Navbar() {
   const [isAuth, setIsAuth] = React.useState(false);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  console.log(pages.slice(0, 3));
 
   const handleAuth = () => {
     setIsAuth(true);
@@ -33,15 +35,31 @@ function Navbar() {
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-    setIsAuth(false);
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const navItems = (pages) => {
+    pages.map((page) => (
+      <Button
+        key={page}
+        onClick={handleCloseNavMenu}
+        sx={{ my: 2, color: "white", display: "block" }}
+      >
+        {page}
+      </Button>
+    ));
+  };
+  console.log(navItems(pages.slice(0, 4)));
   return (
     <AppBar>
       <Toolbar disableGutters maxWidth="xl" sx={{ mx: 3 }}>
@@ -93,23 +111,39 @@ function Navbar() {
             onClose={handleCloseNavMenu}
             sx={{ display: { xs: "block", md: "none" } }}
           >
-            {pages.map((page) => (
-              <MenuItem key={page} onClick={handleCloseNavMenu}>
-                <Typography sx={{ textAlign: "center" }}>{page}</Typography>
-              </MenuItem>
-            ))}
+            {isAuth
+              ? pages.slice(0, 4).map((page) => (
+                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                    <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+                  </MenuItem>
+                ))
+              : pages.slice(0, 3).map((page) => (
+                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                    <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+                  </MenuItem>
+                ))}
           </Menu>
         </Box>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {pages.map((page) => (
-            <Button
-              key={page}
-              onClick={handleCloseNavMenu}
-              sx={{ my: 2, color: "white", display: "block" }}
-            >
-              {page}
-            </Button>
-          ))}
+          {isAuth
+            ? pages.slice(0, 4).map((page) => (
+                <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                >
+                  {page}
+                </Button>
+              ))
+            : pages.slice(0, 3).map((page) => (
+                <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                >
+                  {page}
+                </Button>
+              ))}
         </Box>
         {isAuth ? (
           <>
@@ -135,13 +169,20 @@ function Navbar() {
                 horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleLogout}
+              onClose={handleCloseUserMenu}
             >
-              {/* {settings.map((setting) => ( */}
-              <MenuItem onClick={handleLogout}>
-                <Typography sx={{ textAlign: "center" }}>Logout</Typography>
-              </MenuItem>
-              {/* ))} */}
+              {settings.map((setting) => (
+                <MenuItem
+                  key={setting}
+                  onClick={
+                    setting === "Logout" ? handleLogout : handleCloseUserMenu
+                  }
+                >
+                  <Typography sx={{ textAlign: "center" }}>
+                    {setting}
+                  </Typography>
+                </MenuItem>
+              ))}
             </Menu>
           </>
         ) : (
