@@ -28,16 +28,25 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
+const mediaType = ["mixed media", "waterColor", "oil paint", "pencil"];
+
 function Form() {
-  const [values, setValues] = React.useState("");
-  const mediaType = ["mixed media", "waterColor", "oil paint", "pencil"];
+  const [formValues, setFormValues] = React.useState({
+    imageUrl: "",
+    title: "",
+    mediaType: "",
+    description: "",
+    mediaLink: "",
+  });
 
   const handleChange = (e) => {
-    setValues(e.target.value);
+    const { name, value } = e.target;
+    setFormValues((prevVal) => ({ ...prevVal, [name]: value }));
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("form submitted");
+    console.log(formValues);
   };
 
   return (
@@ -126,7 +135,8 @@ function Form() {
                 <VisuallyHiddenInput
                   type="file"
                   required
-                  onChange={(event) => console.log(event.target.files)}
+                  name="imageUrl"
+                  onChange={handleChange}
                   multiple
                 />
               </Button>
@@ -144,7 +154,8 @@ function Form() {
                   variant="outlined"
                   required
                   fullWidth
-                  value={""}
+                  value={formValues.title}
+                  onChange={handleChange}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       height: "56px",
@@ -155,22 +166,33 @@ function Form() {
 
               {/* Media Type Field */}
               <Grid size={6}>
-                <FormControl variant="standard" sx={{ width: "90%" }} required>
+                <FormControl
+                  variant="standard"
+                  sx={{ width: "90%", textTransform: "capitalize" }}
+                  required
+                >
                   <InputLabel id="demo-simple-select-standard-label">
                     Media Type
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-standard-label"
                     id="demo-simple-select-standard"
-                    value={values}
+                    value={formValues.mediaType}
                     onChange={handleChange}
+                    name="mediaType"
                     label="Media Type"
                   >
                     <MenuItem value="">
                       <em>Media Type</em>
                     </MenuItem>
                     {mediaType.map((type) => (
-                      <MenuItem value={type}>{type}</MenuItem>
+                      <MenuItem
+                        key={type}
+                        value={type}
+                        sx={{ textTransform: "capitalize" }}
+                      >
+                        {type}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -187,6 +209,8 @@ function Form() {
               fullWidth
               multiline
               rows={4}
+              onChange={handleChange}
+              value={formValues.description}
               placeholder="Tell us about your artwork..."
               sx={{ mb: 3 }}
             />
@@ -198,6 +222,8 @@ function Form() {
               label="Social Media Link (optional)"
               variant="outlined"
               fullWidth
+              onChange={handleChange}
+              value={formValues.mediaLink}
               sx={{ mb: 2 }}
             />
             {/* Submit Button */}
