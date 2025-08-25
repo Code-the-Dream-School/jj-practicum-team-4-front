@@ -65,7 +65,7 @@ function Form() {
   const handleBlur = (e) => {
     const { name, value } = e.target;
     const fieldRules = formRules[name];
-
+    console.log(fieldRules.required);
     if (fieldRules.required && isEmpty(value)) {
       setErrors((prevErr) => ({
         ...prevErr,
@@ -150,21 +150,26 @@ function Form() {
             <Box
               sx={{
                 mb: 3,
-                p: 7,
+                p: 3,
                 textAlign: "center",
-                borderRadius: 6,
+                borderRadius: 2,
                 bgcolor: "grey.50",
+                border: "2px dashed",
+                borderColor: errors.imageUrl ? "error.main" : "grey.300",
+                transition: "border-color 0.2s ease",
               }}
             >
               <Button
+                color={!formValues.imageUrl ? "primary" : "success"}
                 component="label"
                 role={undefined}
                 variant="contained"
                 tabIndex={-1}
                 startIcon={<CloudUploadIcon />}
                 aria-required
+                onBlur={handleBlur}
               >
-                Upload files
+                {!formValues.imageUrl ? "Upload files" : "File Uploaded"}
                 <VisuallyHiddenInput
                   type="file"
                   required
@@ -173,9 +178,11 @@ function Form() {
                   multiple
                 />
               </Button>
-              <Typography sx={{ mt: 2, fontSize: 14 }} color="textSecondary">
-                File rules shows here e.g. JPG, JPEC, PNG and WEBP. Max 15MB.
-              </Typography>
+              <FormHelperText sx={{ mt: 2, textAlign: "center" }}>
+                {!formValues.imageUrl
+                  ? "File rules shows here e.g. JPG, JPEC, PNG and WEBP. Max 15MB."
+                  : formValues.imageUrl}
+              </FormHelperText>
             </Box>
             <Grid container spacing={2} sx={{ mb: 3 }}>
               {/* Title Field */}
