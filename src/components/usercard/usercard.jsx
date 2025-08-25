@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { CardContent, Typography, IconButton } from "@mui/material";
+import {Typography, IconButton } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CloseIcon from "@mui/icons-material/Close";
 import sampleImage from "../../assets/images.jpeg";
@@ -9,6 +9,7 @@ import {
   StyledBox,
   StyledCard,
   StyledCardMedia,
+  StyledCardContent,
   PlaceholderBox,
   CenteredActions,
 } from "./UserCard.styles";
@@ -66,7 +67,7 @@ export default function UserCard({
         )}
 
         {/* Content */}
-        <CardContent >
+        <StyledCardContent  >
           <Typography gutterBottom variant="h6">
             {username}
           </Typography>
@@ -89,7 +90,7 @@ export default function UserCard({
               </a>
             </Typography>
           )}
-        </CardContent>
+        </StyledCardContent>
 
         {/* Like button */}
         <CenteredActions>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllData } from './util/index';
-import UserCard from './components/UserCard/UserCard';
+import UserCard from './components/usercard/UserCard';
 import sampleImage from './assets/images.jpeg';
 
 const URL = 'http://localhost:8000/api/v1/';

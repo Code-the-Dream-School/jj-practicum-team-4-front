@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles";
-import { Box, Card, CardMedia, CardActions } from "@mui/material";
+import { Box, Card, CardMedia, CardActions, CardContent } from "@mui/material";
 
 // Outer container
 export const StyledBox = styled(Box)(() => ({
@@ -18,8 +18,7 @@ export const StyledCard = styled(Card)(() => ({
   boxShadow: 3,
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
+  
 }));
 
 // Image styles
@@ -39,16 +38,16 @@ export const PlaceholderBox = styled(Box)(() => ({
   fontSize: "1rem",
 }));
 //  Centered Card content styles
-export const CardContent = styled(Box)(() => ({
- sx: {
+export const StyledCardContent = styled(CardContent )(() => ({
+//  sx: {
     
-  " &:MuiCardContent-root":{
+
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center"
-  }
- }
+
+//  }
 }));
 // Centered like button area
 export const CenteredActions = styled(CardActions)(() => ({
