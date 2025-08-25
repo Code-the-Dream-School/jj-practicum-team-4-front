@@ -1,4 +1,8 @@
 import * as React from "react";
+// file import
+import { isEmpty } from "../../util";
+
+// MUI import
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
@@ -8,6 +12,7 @@ import {
   Button,
   Container,
   Divider,
+  FormHelperText,
   Grid,
   MenuItem,
   Paper,
@@ -31,8 +36,7 @@ const VisuallyHiddenInput = styled("input")({
 const mediaType = ["mixed media", "waterColor", "oil paint", "pencil"];
 
 function Form() {
-  // const [isSubmit, setIsSubmit] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState(null);
+  const [errors, setErrors] = React.useState({});
   const [formValues, setFormValues] = React.useState({
     imageUrl: "",
     title: "",
@@ -41,25 +45,41 @@ function Form() {
     mediaLink: "",
   });
 
+  const formRules = {
+    imageUrl: { required: true },
+    title: { required: true },
+    mediaType: { required: true },
+    description: { required: true },
+    mediaLink: { required: false },
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues((prevVal) => ({ ...prevVal, [name]: value }));
+
+    if (errors[name]) {
+      setErrors((prevErr) => ({ ...prevErr, [name]: "" }));
+    }
   };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const fieldRules = formRules[name];
+
+    if (fieldRules.required && isEmpty(value)) {
+      setErrors((prevErr) => ({
+        ...prevErr,
+        [name]: "This field is required",
+      }));
+    }
+    if (isEmpty(value)) return;
+  };
+
+  console.log(errors);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (
-      (
-        formValues.title &&
-        formValues.imageUrl &&
-        formValues.mediaType &&
-        formValues.description
-      ).trim === ""
-    ) {
-      setErrorMessage("This field is required");
-    } else {
-      console.log("submitting:", formValues);
-    }
+    console.log("submitted", formValues);
   };
 
   return (
@@ -132,7 +152,6 @@ function Form() {
                 mb: 3,
                 p: 7,
                 textAlign: "center",
-                // border: 1,
                 borderRadius: 6,
                 bgcolor: "grey.50",
               }}
@@ -143,6 +162,7 @@ function Form() {
                 variant="contained"
                 tabIndex={-1}
                 startIcon={<CloudUploadIcon />}
+                aria-required
               >
                 Upload files
                 <VisuallyHiddenInput
@@ -161,6 +181,7 @@ function Form() {
               {/* Title Field */}
               <Grid size={6}>
                 <TextField
+                  error={!!errors.title}
                   name="title"
                   id="title"
                   label="Title of Artwork"
@@ -169,11 +190,13 @@ function Form() {
                   fullWidth
                   value={formValues.title}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       height: "56px",
                     },
                   }}
+                  helperText={!formValues.title.trim() && "Required"}
                 />
               </Grid>
 
@@ -188,10 +211,12 @@ function Form() {
                     Media Type
                   </InputLabel>
                   <Select
+                    error={!!errors.mediaType}
                     labelId="demo-simple-select-standard-label"
                     id="demo-simple-select-standard"
                     value={formValues.mediaType}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     name="mediaType"
                     label="Media Type"
                   >
@@ -208,12 +233,18 @@ function Form() {
                       </MenuItem>
                     ))}
                   </Select>
+                  {!formValues.mediaType && (
+                    <FormHelperText error={!!errors.mediaType}>
+                      Required
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </Grid>
             </Grid>
 
             {/* Description Field */}
             <TextField
+              error={!!errors.description}
               name="description"
               id="description"
               label="Artwork Description"
@@ -223,9 +254,11 @@ function Form() {
               multiline
               rows={4}
               onChange={handleChange}
+              onBlur={handleBlur}
               value={formValues.description}
               placeholder="Tell us about your artwork..."
               sx={{ mb: 3 }}
+              helperText={!formValues.description.trim() && "Required"}
             />
 
             {/* Social Media Link Field */}
@@ -251,6 +284,7 @@ function Form() {
                 type="submit"
                 variant="contained"
                 size="large"
+                onSubmit={handleSubmit}
                 sx={{
                   px: 4,
                   py: 1.5,
