@@ -55,7 +55,13 @@ function Form() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues((prevVal) => ({ ...prevVal, [name]: value }));
+    if (e.target.type === "file") {
+      const file = e.target.files[0];
+
+      setFormValues((prev) => ({ ...prev, [name]: file.name }));
+    } else {
+      setFormValues((prevVal) => ({ ...prevVal, [name]: value }));
+    }
 
     if (errors[name]) {
       setErrors((prevErr) => ({ ...prevErr, [name]: "" }));
@@ -65,7 +71,6 @@ function Form() {
   const handleBlur = (e) => {
     const { name, value } = e.target;
     const fieldRules = formRules[name];
-    console.log(fieldRules.required);
     if (fieldRules.required && isEmpty(value)) {
       setErrors((prevErr) => ({
         ...prevErr,
@@ -74,8 +79,6 @@ function Form() {
     }
     if (isEmpty(value)) return;
   };
-
-  console.log(errors);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -181,7 +184,7 @@ function Form() {
               <FormHelperText sx={{ mt: 2, textAlign: "center" }}>
                 {!formValues.imageUrl
                   ? "File rules shows here e.g. JPG, JPEC, PNG and WEBP. Max 15MB."
-                  : formValues.imageUrl}
+                  : `File Name: ${formValues.imageUrl}`}
               </FormHelperText>
             </Box>
             <Grid container spacing={2} sx={{ mb: 3 }}>
