@@ -14,28 +14,17 @@ import {
   Divider,
   FormHelperText,
   Grid,
+  Input,
   MenuItem,
   Paper,
   Select,
-  styled,
   Typography,
 } from "@mui/material";
-
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
 
 const mediaType = ["mixed media", "waterColor", "oil paint", "pencil"];
 
 function Form() {
+  const [isSubmit, setIsSubmit] = React.useState(false);
   const [errors, setErrors] = React.useState({});
   const [formValues, setFormValues] = React.useState({
     imageUrl: "",
@@ -83,6 +72,7 @@ function Form() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("submitted", formValues);
+    setIsSubmit(true);
   };
 
   return (
@@ -173,7 +163,8 @@ function Form() {
                 onBlur={handleBlur}
               >
                 {!formValues.imageUrl ? "Upload files" : "File Uploaded"}
-                <VisuallyHiddenInput
+                <Input
+                  sx={{ display: "none" }}
                   type="file"
                   required
                   name="imageUrl"
@@ -289,7 +280,7 @@ function Form() {
                   (formValues.title &&
                     formValues.imageUrl &&
                     formValues.mediaType &&
-                    formValues.description) == ""
+                    formValues.description) == "" || isSubmit
                 }
                 type="submit"
                 variant="contained"
@@ -302,7 +293,7 @@ function Form() {
                   fontSize: "1.1rem",
                 }}
               >
-                Upload Artwork
+                {isSubmit ? "Submitted" : "Review"}
               </Button>
             </Box>
           </Box>
