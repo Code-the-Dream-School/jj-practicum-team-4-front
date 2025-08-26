@@ -5,20 +5,24 @@ import BestOfArtwork from './pages/BestOfArtwork';
 import About from './pages/About';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
-import Layout from "./layouts/Layout";
+import SignIn from './pages/SignIn';
+import ChallengePrompt from './pages/ChallengePrompt'; 
+import Layout from "./components/layouts/Layout";
 
 function App() {
   return (
     <Router>
+      <Layout>
       <Routes>
-        <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-    <Route path="gallery" element={<Gallery />} />
-    <Route path="best-of-artwork" element={<BestOfArtwork />} />
-    <Route path="about" element={<About />} />
-    <Route path="*" element={<NotFound />} />
-  </Route>
+          <Route path="/"  element={<Home />} />
+          <Route path="gallery" element={<Gallery />} />
+          <Route path="best-of-artwork" element={<BestOfArtwork />} />
+          <Route path="about" element={<About />} />
+          <Route path="sign-in" element={<SignIn />} />
+          <Route path="challenge-prompt" element={<ChallengePrompt />} />
+          <Route path="*" element={<NotFound />} />
       </Routes>
+      </Layout>
     </Router>
   );
 }
