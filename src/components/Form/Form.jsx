@@ -46,7 +46,6 @@ function Form() {
     const { name, value } = e.target;
     if (e.target.type === "file") {
       const file = e.target.files[0];
-
       setFormValues((prev) => ({ ...prev, [name]: file.name }));
     } else {
       setFormValues((prevVal) => ({ ...prevVal, [name]: value }));
@@ -60,7 +59,8 @@ function Form() {
   const handleBlur = (e) => {
     const { name, value } = e.target;
     const fieldRules = formRules[name];
-    if (fieldRules.required && isEmpty(value)) {
+
+    if (fieldRules && fieldRules.required && isEmpty(value)) {
       setErrors((prevErr) => ({
         ...prevErr,
         [name]: "This field is required",
@@ -148,7 +148,7 @@ function Form() {
                 borderRadius: 2,
                 bgcolor: "grey.50",
                 border: "2px dashed",
-                borderColor: errors.imageUrl ? "error.main" : "grey.300",
+                borderColor: !formValues.imageUrl ? "error.main" : "grey.300",
                 transition: "border-color 0.2s ease",
               }}
             >
@@ -164,7 +164,9 @@ function Form() {
               >
                 {!formValues.imageUrl ? "Upload files" : "File Uploaded"}
                 <Input
-                  sx={{ display: "none" }}
+                  sx={{
+                    display: "none",
+                  }}
                   type="file"
                   required
                   name="imageUrl"
