@@ -1,0 +1,108 @@
+
+import React, { useState } from "react";
+import {Typography, IconButton } from "@mui/material";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import CloseIcon from "@mui/icons-material/Close";
+import sampleImage from "../../assets/images.jpeg";
+
+import {
+  StyledBox,
+  StyledCard,
+  StyledCardMedia,
+  StyledCardContent,
+  PlaceholderBox,
+  CenteredActions,
+} from "./UserCard.styles";
+
+export default function UserCard({
+  username = "User Name",
+  title = "Artwork Title",
+  description = "Artwork description goes here...",
+  socialLink = "",
+  image = sampleImage,
+  isOpen = true,
+  onClose = () => {},
+}) {
+  const [liked, setLiked] = useState(false);
+
+  const handleLike = () => setLiked(true); // disable after one click
+  const handleClose = () => onClose(); // Notify parent
+
+  const getSocialUrl = (link) => {
+     if (!link) 
+      return null;
+      if (link.startsWith("http")) {
+    return link;
+    } else if (link.startsWith('@')) {
+    return `https://instagram.com/${link.slice(1)}`;
+  
+  } else {
+   return `https://${link}`;
+     }
+
+}
+
+  if (!isOpen) return null;
+
+  return (
+    <StyledBox>
+      <StyledCard>
+        {/* Close Button */}
+        <IconButton
+          onClick={handleClose}
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            zIndex: 1,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        {/* Image or placeholder */}
+        {image ? (
+          <StyledCardMedia component="img" image={image} alt={username} />
+        ) : (
+          <PlaceholderBox>Image Placeholder</PlaceholderBox>
+        )}
+
+        {/* Content */}
+        <StyledCardContent  >
+          <Typography gutterBottom variant="h6">
+            {username}
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            {title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {description}
+          </Typography>
+          {socialLink && (
+            <Typography variant="body1" color="text.secondary">
+              Social Media Link:{" "}
+              <a
+                href={getSocialUrl(socialLink)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#1976d2", textDecoration: "underline" }}
+              >
+                {socialLink}
+              </a>
+            </Typography>
+          )}
+        </StyledCardContent>
+
+        {/* Like button */}
+        <CenteredActions>
+          <IconButton
+            onClick={handleLike}
+            disabled={liked}
+            color={liked ? "primary" : "default"}
+          >
+            <ThumbUpIcon />
+          </IconButton>
+        </CenteredActions>
+      </StyledCard>
+    </StyledBox>
+  );
+}
