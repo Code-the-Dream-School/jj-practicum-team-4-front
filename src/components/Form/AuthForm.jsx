@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   CssBaseline,
+  Divider,
   FormControl,
   IconButton,
   InputAdornment,
@@ -10,6 +11,7 @@ import {
   OutlinedInput,
   TextField,
   Typography,
+  Avatar,
 } from "@mui/material";
 import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -30,6 +32,8 @@ function AuthForm() {
     e.preventDefault();
     console.log("submitted", userFormData);
   };
+
+  const handleGoogleLogin = () => {};
   return (
     <>
       <CssBaseline />
@@ -121,6 +125,21 @@ function AuthForm() {
               sx={{ textTransform: "capitalize", mt: 3 }}
             >
               sign in
+            </Button>
+          </Box>
+          <Divider sx={{ color: "grey" }}>or</Divider>
+          <Box sx={{ mt: 5, justifySelf: "center" }}>
+            <Button
+              variant="outlined"
+              sx={{ py: 1, px: 5, textTransform: "none", fontSize: 18 }}
+              onClick={handleGoogleLogin}
+            >
+              <Avatar
+                alt="Google Icon"
+                src="src\assets\images\googleIcon.png"
+                sx={{ width: 24, height: 24, mr: 1 }}
+              />
+              Continue with Google
             </Button>
           </Box>
         </Container>
