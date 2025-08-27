@@ -46,16 +46,16 @@ function AuthForm() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "100vh",
+          height: "90vh",
           width: "100%",
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: "600px", width: "100%" }}>
           <Box>
             <Typography
-              variant="h2"
+              variant="h4"
               component="h1"
-              sx={{ textTransform: "uppercase" }}
+              sx={{ textTransform: "uppercase", fontWeight: "bold" }}
             >
               sign in
             </Typography>
@@ -80,7 +80,8 @@ function AuthForm() {
             onSubmit={email && password && handleAuthSubmit}
             component="form"
             sx={{
-              p: 3,
+              px: 3,
+              pb: 3,
               display: "flex",
               flexDirection: "column",
             }}
