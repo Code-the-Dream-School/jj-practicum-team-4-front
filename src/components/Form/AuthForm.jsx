@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import SignIn from "../../pages/SignIn";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 function AuthForm() {
@@ -21,6 +20,16 @@ function AuthForm() {
     email: "",
     password: "",
   });
+
+  const handleAuthChange = (e) => {
+    const { value, name } = e.target;
+    setUserFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAuthSubmit = (e) => {
+    e.preventDefault();
+    console.log("submitted", userFormData);
+  };
   return (
     <>
       <CssBaseline />
@@ -60,6 +69,7 @@ function AuthForm() {
             </Box>
           </Box>
           <Box
+            onSubmit={handleAuthSubmit}
             component="form"
             sx={{
               p: 3,
@@ -68,6 +78,9 @@ function AuthForm() {
             }}
           >
             <TextField
+              onChange={handleAuthChange}
+              type="email"
+              name="email"
               id="outlined-basic"
               label="Email"
               variant="outlined"
@@ -78,7 +91,9 @@ function AuthForm() {
                 Password
               </InputLabel>
               <OutlinedInput
+                onChange={handleAuthChange}
                 id="outlined-adornment-password"
+                name="password"
                 type={showPassword ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position="end">
@@ -99,11 +114,11 @@ function AuthForm() {
               />
             </FormControl>
             <Button
+              // onSubmit={handleAuthSubmit}
               type="submit"
               variant="contained"
               size="large"
               sx={{ textTransform: "capitalize", mt: 3 }}
-              //   onSubmit={}
             >
               sign in
             </Button>
