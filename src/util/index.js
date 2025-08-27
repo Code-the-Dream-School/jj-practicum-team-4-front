@@ -14,12 +14,19 @@ const getData = async (url, params) => {
 const getAllData = async (url) => {
   try {
     let res = await axios.get(url);
-
-    return res.data;
+    let data = await res.data;
+    return data;
   } catch (error) {
     console.log(error, `error - getAllData in ${url} route`);
   }
 };
 
+const isEmpty = (value) => {
+  return (
+    value === null ||
+    value === undefined ||
+    (typeof value === "string" && value.trim() === "")
+  );
+};
 
-export { getData, getAllData };
+export { getData, getAllData, isEmpty };
