@@ -17,7 +17,10 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 function AuthForm() {
   const [showPassword, setShowPassword] = useState(false);
-
+  const [userFormData, setUserFormData] = useState({
+    email: "",
+    password: "",
+  });
   return (
     <>
       <CssBaseline />
