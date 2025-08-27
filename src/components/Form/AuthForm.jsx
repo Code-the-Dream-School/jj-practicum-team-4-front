@@ -17,20 +17,24 @@ import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 function AuthForm() {
+  const [isFormSubmit, setIsFormSubmit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [userFormData, setUserFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
-    setUserFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "email") {
+      setEmail(value);
+    } else {
+      setPassword(value);
+    }
   };
 
   const handleAuthSubmit = (e) => {
     e.preventDefault();
-    console.log("submitted", userFormData);
+    setIsFormSubmit(true);
+    console.log(`submitted - email: ${email}, password: ${password}`);
   };
 
   const handleGoogleLogin = () => {};
@@ -73,7 +77,7 @@ function AuthForm() {
             </Box>
           </Box>
           <Box
-            onSubmit={handleAuthSubmit}
+            onSubmit={email && password && handleAuthSubmit}
             component="form"
             sx={{
               p: 3,
@@ -85,12 +89,13 @@ function AuthForm() {
               onChange={handleAuthChange}
               type="email"
               name="email"
+              required={password}
               id="outlined-basic"
               label="Email"
               variant="outlined"
               sx={{ mb: 3 }}
             />
-            <FormControl variant="outlined">
+            <FormControl variant="outlined" required={email}>
               <InputLabel htmlFor="outlined-adornment-password">
                 Password
               </InputLabel>
@@ -118,7 +123,7 @@ function AuthForm() {
               />
             </FormControl>
             <Button
-              // onSubmit={handleAuthSubmit}
+              disabled={isFormSubmit}
               type="submit"
               variant="contained"
               size="large"
