@@ -80,7 +80,6 @@ function AuthForm() {
             onSubmit={handleAuthSubmit}
             component="form"
             sx={{
-              px: 3,
               pb: 3,
               display: "flex",
               flexDirection: "column",
@@ -134,10 +133,15 @@ function AuthForm() {
             </Button>
           </Box>
           <Divider sx={{ color: "grey" }}>or</Divider>
-          <Box sx={{ mt: 5, justifySelf: "center" }}>
+          <Box sx={{ mt: 5, justifySelf: "center", width: "100%" }}>
             <Button
               variant="outlined"
-              sx={{ py: 1, px: 5, textTransform: "none", fontSize: 18 }}
+              sx={{
+                py: 1.5,
+                width: "100%",
+                textTransform: "none",
+                fontSize: 18,
+              }}
               onClick={handleGoogleLogin}
             >
               <Avatar
