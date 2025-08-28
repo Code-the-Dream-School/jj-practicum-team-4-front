@@ -22,13 +22,13 @@ export default function Gallery() {
       <Typography variant="h3" align="center" gutterBottom>
         Gallery
       </Typography>
-      <Grid container spacing={4}>
+      <Grid container spacing={4} justifyContent="center">
         {artworks.map((art) => (
           <Grid item xs={12} sm={6} md={4} key={art.id}>
             <Card onClick={() => setSelected(art)}>
               <CardMedia component="img" height="200" image={art.image} alt={art.title} />
               <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box  display= 'flex' alignItems= 'center' justifyContent= 'space-between' >
                   <Typography variant="h6">{art.title}</Typography>
                   <Typography variant="body2" sx={{ ml: 2 }}>Likes: {art.likes}</Typography>
                 </Box>
@@ -37,8 +37,17 @@ export default function Gallery() {
           </Grid>
         ))}
       </Grid>
-      <Modal open={!!selected} onClose={() => setSelected(null)}>
-        <Box sx={{ position: 'center'}}>
+      <Modal
+        open={!!selected}
+        aria-labelledby="modal-artwork-detail"
+        disableRestoreFocus
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+    <Box>
           {selected && (
             <UserCard
               username={selected.user}
