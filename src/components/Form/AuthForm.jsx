@@ -77,7 +77,7 @@ function AuthForm() {
             </Box>
           </Box>
           <Box
-            onSubmit={email && password && handleAuthSubmit}
+            onSubmit={handleAuthSubmit}
             component="form"
             sx={{
               px: 3,
@@ -124,13 +124,13 @@ function AuthForm() {
               />
             </FormControl>
             <Button
-              disabled={isFormSubmit}
+              disabled={isFormSubmit || (!email && !password)}
               type="submit"
               variant="contained"
               size="large"
               sx={{ textTransform: "capitalize", mt: 3 }}
             >
-              sign in
+              {isFormSubmit ? "loading" : "sign in"}
             </Button>
           </Box>
           <Divider sx={{ color: "grey" }}>or</Divider>
@@ -142,7 +142,7 @@ function AuthForm() {
             >
               <Avatar
                 alt="Google Icon"
-                src="src\assets\images\googleIcon.png"
+                src="src/assets/images/googleIcon.png"
                 sx={{ width: 24, height: 24, mr: 1 }}
               />
               Continue with Google
