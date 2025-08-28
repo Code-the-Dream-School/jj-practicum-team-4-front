@@ -23,7 +23,7 @@ export const StyledCard = styled(Card)(() => ({
 
 // Image styles
 export const StyledCardMedia = styled(CardMedia)(() => ({
-  height: 300,
+  height: 400,
   objectFit: "cover",
 }));
 
@@ -39,15 +39,10 @@ export const PlaceholderBox = styled(Box)(() => ({
 }));
 //  Centered Card content styles
 export const StyledCardContent = styled(CardContent )(() => ({
-//  sx: {
-    
-
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center"
-
-//  }
 }));
 // Centered like button area
 export const CenteredActions = styled(CardActions)(() => ({
