@@ -5,11 +5,9 @@ import hero from "../assets/hero3.png";
 
 export default function Home() {
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }} padding-top="0">
+    <Container maxWidth="lg" sx={{ py: 7 }} padding-top="0">
       <Box
         sx={{
-          marginTop: "-64px",
-          borderRadius: 0,
           backgroundImage: `url(${hero})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -24,9 +22,6 @@ export default function Home() {
           display: "flex",
           justifyContent: "flex-end",
           alignItems: "center",
-          zIndex: 1000,
-          marginTop: 0,
-          padding: 0,
         }}
       >
         <Box
@@ -36,12 +31,7 @@ export default function Home() {
             width: "100%",
           }}
         >
-          <Typography
-            variant="h3"
-            align="center"
-            sx={{ mb: 8 }}
-            margin-bottom="10px"
-          >
+          <Typography variant="h4" align="center" sx={{ mb: 5 }}>
             Turn Art Block Into Art Magic
           </Typography>
           <Typography variant="h5" align="center" sx={{ mb: 10 }}>
@@ -71,7 +61,7 @@ export default function Home() {
       </Box>
 
       {/* Top Most Liked/Voted Artworks Section */}
-      <Box sx={{ p: 4, bgcolor: "grey.100", borderRadius: 2 }}>
+      <Box sx={{ p: 4, mt: 3, bgcolor: "grey.100", borderRadius: 2 }}>
         <Typography variant="h5" align="center" gutterBottom>
           Top Most Liked/Voted Artworks
         </Typography>
