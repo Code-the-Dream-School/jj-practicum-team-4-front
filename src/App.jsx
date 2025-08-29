@@ -1,4 +1,3 @@
-
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Gallery from "./pages/Gallery";
@@ -9,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
 import ChallengePrompt from "./pages/ChallengePrompt";
 import Layout from "./components/layouts/Layout";
+import SignUp from "./pages/SignUp";
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
           <Route path="best-of-artwork" element={<BestOfArtwork />} />
           <Route path="about" element={<About />} />
           <Route path="sign-in" element={<SignIn />} />
+          <Route path="sign-up" element={<SignUp />} />
           <Route path="challenge-prompt" element={<ChallengePrompt />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
