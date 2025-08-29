@@ -1,37 +1,53 @@
 import React from "react";
 import { Box, Container, Typography, Button, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
-import hero from "src/assets/hero.jpg";
+import hero from "../assets/hero3.png";
 
 export default function Home() {
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      {/* Hero Section */}
+    <Container maxWidth="lg" sx={{ py: 8 }} padding-top="0">
       <Box
         sx={{
-          mb: 6,
-          p: 4,
-          bgcolor: "grey.100",
-          borderRadius: 2,
+          marginTop: "-64px",
+          borderRadius: 0,
+          backgroundImage: `url(${hero})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "scroll",
+          minHeight: 300,
+          width: "100vw",
+          position: "relative",
+          left: "50%",
+          right: "50%",
+          marginLeft: "-50vw",
+          marginRight: "-50vw",
           display: "flex",
-          justifyContent: "center",
+          justifyContent: "flex-end",
           alignItems: "center",
+          zIndex: 1000,
+          marginTop: 0,
+          padding: 0,
         }}
       >
         <Box
-          component="img"
-          src={hero}
-          alt="ArtHive - Weekly Art Challenges for Creative Community"
           sx={{
-            maxWidth: "100%",
-            height: "auto",
-            borderRadius: 1,
+            textAlign: "center",
+            pb: 3,
+            width: "100%",
           }}
-        />
-      </Box>
-      {/* Weekly Challenge Section */}
-      <Box sx={{ mb: 6, p: 4, bgcolor: "grey.100", borderRadius: 2 }}>
-        <Container maxWidth="md" sx={{ textAlign: "center" }}>
+        >
+          <Typography
+            variant="h3"
+            align="center"
+            sx={{ mb: 8 }}
+            margin-bottom="10px"
+          >
+            Turn Art Block Into Art Magic
+          </Typography>
+          <Typography variant="h5" align="center" sx={{ mb: 10 }}>
+            Discover fresh prompts every week. Share your creations. Get
+            meaningful feedback. Build your artistic confidence.
+          </Typography>
           <Typography variant="h6" align="center" gutterBottom>
             WEEKLY CHALLENGE TOPIC
           </Typography>
@@ -51,8 +67,9 @@ export default function Home() {
               See weekly challenge artworks →
             </Button>
           </Stack>
-        </Container>
+        </Box>
       </Box>
+
       {/* Top Most Liked/Voted Artworks Section */}
       <Box sx={{ p: 4, bgcolor: "grey.100", borderRadius: 2 }}>
         <Typography variant="h5" align="center" gutterBottom>
