@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -13,8 +14,10 @@ import {
   Typography,
   Avatar,
 } from "@mui/material";
-import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { getData } from "../../util";
+
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 function AuthForm() {
   const [isFormSubmit, setIsFormSubmit] = useState(false);
@@ -31,10 +34,33 @@ function AuthForm() {
     }
   };
 
+  // console.log({ email, password });
+  const handleAuthenticate = async (credentials) => {
+    const options = {
+      method: "POST",
+      body: JSON.stringify(credentials),
+      headers: { "Content-Type": "application/json" },
+    };
+
+    try {
+      const res = await fetch(`${baseUrl}/auth/login`, options);
+      if (!res.ok) {
+        if (res.status === 401) {
+          console.dir(res);
+        }
+        throw new Error(res.status);
+      }
+      console.log(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleAuthSubmit = (e) => {
     e.preventDefault();
     setIsFormSubmit(true);
     console.log(`submitted - email: ${email}, password: ${password}`);
+    handleAuthenticate({ email, password });
   };
 
   const handleGoogleLogin = () => {};
@@ -123,7 +149,7 @@ function AuthForm() {
               />
             </FormControl>
             <Button
-              disabled={isFormSubmit || (!email && !password)}
+              // disabled={isFormSubmit || (!email && !password)}
               type="submit"
               variant="contained"
               size="large"

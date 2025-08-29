@@ -3,8 +3,12 @@ import axios from "axios";
 // note: not used, but could be used with GET with params
 const getData = async (url, params) => {
   try {
-    let res = await axios.get(url, params);
+    let res = await fetch(url, params);
     let data = await res.data;
+    if (!res.ok) {
+      throw new Error(res.status);
+    }
+    console.log(data);
     return data;
   } catch (error) {
     console.log(error, `error - getData in ${url} route`);
