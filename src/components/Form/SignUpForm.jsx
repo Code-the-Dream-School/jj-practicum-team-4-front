@@ -3,7 +3,6 @@ import {
   Button,
   Container,
   CssBaseline,
-  Divider,
   FormControl,
   IconButton,
   InputAdornment,
@@ -11,11 +10,10 @@ import {
   OutlinedInput,
   TextField,
   Typography,
-  Avatar,
-  Grid,
 } from "@mui/material";
 import { useState } from "react";
-import { Password, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -60,8 +58,8 @@ function SignUpForm() {
                 already have an account?
               </Typography>
               <Typography
-                component="a"
-                href="sign-in"
+                component={Link}
+                to="/sign-in"
                 color="textSecondary"
                 sx={{ fontWeight: "bold", fontSize: "14px" }}
               >
@@ -71,6 +69,7 @@ function SignUpForm() {
           </Box>
           <Box
             component="form"
+            onSubmit={(e) => e.preventDefault()}
             sx={{
               pb: 3,
               display: "flex",
