@@ -17,6 +17,8 @@ import {
   Typography,
   Box,
   Stack,
+  Button,
+  Link,
 } from "@mui/material";
 
 export default function Gallery() {
@@ -126,6 +128,14 @@ export default function Gallery() {
                 </Typography>
               </Box>
             </Stack>
+            <Button
+              variant="contained"
+              component={Link}
+              to="/sign-in"
+              sx={{ my: 2 }}
+            >
+              SIGNIN
+            </Button>
           </Box>
         </Box>
       </Container>
