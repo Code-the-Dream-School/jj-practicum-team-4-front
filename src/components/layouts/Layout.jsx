@@ -7,8 +7,8 @@ export default function Layout({ children }) {
   return (
     <>
       <Navbar />
-      <Container component="main" maxWidth="xl" sx={{ mt: 3 }}>
-        <Box sx={{ py: 4 }}>{children}</Box>
+      <Container component="main" maxWidth="xl" disableGutters sx={{ mt: 8 }}>
+        <Box>{children}</Box>
       </Container>
       {/* Footer can be added in future tickets */}
     </>
