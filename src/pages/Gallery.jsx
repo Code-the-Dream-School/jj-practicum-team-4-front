@@ -60,67 +60,48 @@ export default function Gallery() {
   return (
     <>
       <CssBaseline />
-      <Container maxWidth="xl" disableGutters>
-        <Box
-          sx={{
-            backgroundImage: `url(${hero})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            minHeight: "35em",
-            position: "relative",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-          }}
-        >
-          <Box
-            sx={{
-              textAlign: "center",
-              pb: 3,
-              width: "100%",
-              mx: 3,
-            }}
-          >
+      <Container maxWidth="lg">
+        <Card elevation={2} sx={{ mb: 4, borderRadius: 2, overflow: "hidden" }}>
+          <CardContent sx={{ padding: 4 }}>
             <Typography
-              variant="h4"
+              variant="h3"
               align="center"
-              sx={{ mb: 8 }}
-              margin-bottom="10px"
+              sx={{ mb: 3, color: "#2c3e50" }}
             >
               WEEKLY CHALLENGE TOPIC
             </Typography>
-            <Typography variant="h5" align="center" sx={{ mb: 10 }}>
-              DURATION :
+            <Typography variant="h5" align="center" sx={{ mb: 3, color: "#34495e" }}>
+              DURATION: [Your duration here]
             </Typography>
-            <Typography variant="h6" align="center" sx={{ mb: 10 }}>
-              INSTRUCTION/EXPLANATION:
+            <Typography variant="body1" align="center" sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}>
+              INSTRUCTION/EXPLANATION: [Your detailed instructions here]
             </Typography>
             <Stack
               direction="row"
               spacing={4}
               justifyContent="center"
               alignItems="center"
+              sx={{ mb: 3 }}
             >
-              <Box>
-                <AccountCircleOutlinedIcon fontSize="large" /> {/* your icon */}
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <AccountCircleOutlinedIcon fontSize="large" color="primary" sx={{ mb: 1 }} />
                 <Typography align="center">
                   Create
                   <br />
                   an account.
                 </Typography>
               </Box>
-              <ArrowRightAltOutlinedIcon fontSize="large" />
-              <Box>
-                <FileUploadOutlinedIcon fontSize="large" />
-                {/* your icon */}
+              <ArrowRightAltOutlinedIcon fontSize="large" color="action" />
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <FileUploadOutlinedIcon fontSize="large" color="primary" sx={{ mb: 1 }} />
                 <Typography align="center">
                   Upload your
                   <br /> artwork image
                 </Typography>
               </Box>
-              <ArrowRightAltOutlinedIcon fontSize="large" />
-              <Box>
-                <InsertDriveFileOutlinedIcon fontSize="large" />
+              <ArrowRightAltOutlinedIcon fontSize="large" color="action" />
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <InsertDriveFileOutlinedIcon fontSize="large" color="primary" sx={{ mb: 1 }} />
                 <Typography align="center">
                   Submit your
                   <br />
@@ -128,16 +109,18 @@ export default function Gallery() {
                 </Typography>
               </Box>
             </Stack>
-            <Button
-              variant="contained"
-              component={Link}
-              to="/sign-in"
-              sx={{ my: 2 }}
-            >
-              SIGNIN
-            </Button>
-          </Box>
-        </Box>
+            {/* <Box sx={{ textAlign: "center" }}>
+              <Button
+                variant="contained"
+                component={Link}
+                to="/sign-in"
+                sx={{ my: 2 }}
+              >
+                SIGN IN
+              </Button>
+            </Box> */}
+          </CardContent>
+        </Card>
       </Container>
 
       <Container maxWidth="lg" sx={{ py: 8 }}>
