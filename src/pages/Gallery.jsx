@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal } from "@mui/material";
+import { Button, Modal } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import UserCard from "../components/usercard/usercard.jsx";
 import {
@@ -11,9 +11,11 @@ import {
   Typography,
   Box,
 } from "@mui/material";
+import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
 
 export default function Gallery() {
   const [selected, setSelected] = useState(null);
+  const [open, setOpen] = useState(false);
   // Placeholder artwork data
   const [artworks] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
@@ -53,6 +55,26 @@ export default function Gallery() {
       <Typography variant="h3" align="center" gutterBottom>
         Gallery
       </Typography>
+      <Box>
+        <Button onClick={() => setOpen(true)}>Upload Artwork</Button>
+      </Box>
+      <Modal open={open}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 800,
+            bgcolor: "background.paper",
+            // border: "2px solid #000",
+            boxShadow: 24,
+            // p: 4,
+          }}
+        >
+          <SubmissionPreview />
+        </Box>
+      </Modal>
       <Grid container spacing={4} justifyContent="center">
         {artworks.map((art) => (
           <Grid item xs={12} sm={6} md={4} key={art.id}>
