@@ -116,14 +116,14 @@ export default function Gallery() {
                 </Typography>
               </Box>
             </Stack>
-            <Button
+            {/* <Button
               variant="contained"
               component={Link}
               to="/sign-in"
               sx={{ mt: 4 }}
             >
               SIGNIN
-            </Button>
+            </Button> */}
           </Container>
         </Box>
       </Container>
