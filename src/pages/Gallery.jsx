@@ -73,14 +73,14 @@ export default function Gallery() {
             <Typography
               variant="h3"
               align="center"
-              sx={{ mb: 3 }}
+              sx={{ mb: 3, color: "#2c3e50" }}
             >
               WEEKLY CHALLENGE TOPIC
             </Typography>
-            <Typography variant="h5" align="center" sx={{ mb: 3 }}>
+            <Typography variant="h5" align="center" sx={{ mb: 3, color: "#34495e" }}>
               DURATION: [Your duration here]
             </Typography>
-            <Typography variant="body1" align="center" sx={{ mb: 4, maxWidth: "800px", mx: "auto" }}>
+            <Typography variant="body1" align="center" sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}>
               INSTRUCTION/EXPLANATION: [Your detailed instructions here]
             </Typography>
             <Stack
@@ -89,8 +89,8 @@ export default function Gallery() {
               justifyContent="center"
               alignItems="center"
             >
-              <Box>
-                <AccountCircleOutlinedIcon fontSize="large" /> {/* your icon */}
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <AccountCircleOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
                 <Typography align="center">
                   Create
                   <br />
@@ -98,17 +98,16 @@ export default function Gallery() {
                 </Typography>
               </Box>
               <ArrowRightAltOutlinedIcon fontSize="large" />
-              <Box>
-                <FileUploadOutlinedIcon fontSize="large" />
-                {/* your icon */}
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <FileUploadOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
                 <Typography align="center">
                   Upload your
                   <br /> artwork image
                 </Typography>
               </Box>
               <ArrowRightAltOutlinedIcon fontSize="large" />
-              <Box>
-                <InsertDriveFileOutlinedIcon fontSize="large" />
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <InsertDriveFileOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
                 <Typography align="center">
                   Submit your
                   <br />
