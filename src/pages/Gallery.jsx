@@ -63,37 +63,25 @@ export default function Gallery() {
       <Container maxWidth="xl" disableGutters>
         <Box
           sx={{
-            backgroundImage: `url(${hero})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            minHeight: "35em",
-            position: "relative",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
+            backgroundColor: "#f5f5f7",
+            borderBottom: "1px solid #e0e0e0",
+            padding: "3em 2em",
+            textAlign: "center"
           }}
         >
-          <Box
-            sx={{
-              textAlign: "center",
-              pb: 3,
-              width: "100%",
-              mx: 3,
-            }}
-          >
+          <Container maxWidth="lg">
             <Typography
-              variant="h4"
+              variant="h3"
               align="center"
-              sx={{ mb: 8 }}
-              margin-bottom="10px"
+              sx={{ mb: 3 }}
             >
               WEEKLY CHALLENGE TOPIC
             </Typography>
-            <Typography variant="h5" align="center" sx={{ mb: 10 }}>
-              DURATION :
+            <Typography variant="h5" align="center" sx={{ mb: 3 }}>
+              DURATION: [Your duration here]
             </Typography>
-            <Typography variant="h6" align="center" sx={{ mb: 10 }}>
-              INSTRUCTION/EXPLANATION:
+            <Typography variant="body1" align="center" sx={{ mb: 4, maxWidth: "800px", mx: "auto" }}>
+              INSTRUCTION/EXPLANATION: [Your detailed instructions here]
             </Typography>
             <Stack
               direction="row"
@@ -132,11 +120,11 @@ export default function Gallery() {
               variant="contained"
               component={Link}
               to="/sign-in"
-              sx={{ my: 2 }}
+              sx={{ mt: 4 }}
             >
               SIGNIN
             </Button>
-          </Box>
+          </Container>
         </Box>
       </Container>
 
