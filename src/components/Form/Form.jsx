@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 
-const mediaType = ["mixed media", "waterColor", "oil paint", "pencil"];
+const mediaTypeOptions = ["mixed media", "waterColor", "oil paint", "pencil"];
 
 function Form() {
   const [step, setStep] = React.useState(1);
@@ -41,38 +41,38 @@ function Form() {
     mediaLink: { required: false },
   };
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   if (e.target.type === "file") {
-  //     const file = e.target.files[0];
-  //     setFormValues((prev) => ({ ...prev, [name]: file.name }));
-  //   } else {
-  //     setFormValues((prevVal) => ({ ...prevVal, [name]: value }));
-  //   }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (e.target.type === "file") {
+      const file = e.target.files[0];
+      setFormValues((prev) => ({ ...prev, [name]: file.name }));
+    } else {
+      setFormValues((prevVal) => ({ ...prevVal, [name]: value }));
+    }
 
-  //   if (errors[name]) {
-  //     setErrors((prevErr) => ({ ...prevErr, [name]: "" }));
-  //   }
-  // };
+    if (errors[name]) {
+      setErrors((prevErr) => ({ ...prevErr, [name]: "" }));
+    }
+  };
 
-  // const handleBlur = (e) => {
-  //   const { name, value } = e.target;
-  //   const fieldRules = formRules[name];
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const fieldRules = formRules[name];
 
-  //   if (fieldRules && fieldRules.required && isEmpty(value)) {
-  //     setErrors((prevErr) => ({
-  //       ...prevErr,
-  //       [name]: "This field is required",
-  //     }));
-  //   }
-  //   if (isEmpty(value)) return;
-  // };
+    if (fieldRules && fieldRules.required && isEmpty(value)) {
+      setErrors((prevErr) => ({
+        ...prevErr,
+        [name]: "This field is required",
+      }));
+    }
+    if (isEmpty(value)) return;
+  };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log("submitted", formValues);
-  //   setIsSubmit(true);
-  // };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("submitted", formValues);
+    setIsSubmit(true);
+  };
 
   return (
     <Box>
@@ -144,7 +144,7 @@ function Form() {
               tabIndex={-1}
               startIcon={<CloudUploadIcon />}
               aria-required
-              // onBlur={handleBlur}
+              onBlur={handleBlur}
             >
               {!formValues.imageUrl ? "Upload files" : "File Uploaded"}
               <Input
@@ -154,7 +154,7 @@ function Form() {
                 type="file"
                 required
                 name="imageUrl"
-                // onChange={handleChange}
+                onChange={handleChange}
                 multiple
               />
             </Button>
@@ -175,34 +175,35 @@ function Form() {
               required
               fullWidth
               value={formValues.title}
-              // onChange={handleChange}
-              // onBlur={handleBlur}
+              onChange={handleChange}
+              onBlur={handleBlur}
               helperText={!formValues.title.trim() && "Required"}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
             <FormControl
+              variant="standard"
               sx={{ width: "90%", textTransform: "capitalize" }}
               required
+              error={!!errors.mediaType}
             >
               <InputLabel id="demo-simple-select-standard-label">
                 Media Type
               </InputLabel>
               <Select
-                error={!!errors.mediaType}
                 labelId="demo-simple-select-standard-label"
                 id="demo-simple-select-standard"
                 value={formValues.mediaType}
-                // onChange={handleChange}
-                // onBlur={handleBlur}
+                onChange={handleChange}
+                onBlur={handleBlur}
                 name="mediaType"
                 label="Media Type"
               >
                 <MenuItem value="">
-                  <em>Media Type</em>
+                  <em>Select Media Type</em>
                 </MenuItem>
-                {mediaType.map((type) => (
+                {mediaTypeOptions.map((type) => (
                   <MenuItem
                     key={type}
                     value={type}
@@ -230,8 +231,8 @@ function Form() {
           fullWidth
           multiline
           rows={4}
-          // onChange={handleChange}
-          // onBlur={handleBlur}
+          onChange={handleChange}
+          onBlur={handleBlur}
           value={formValues.description}
           placeholder="Tell us about your artwork..."
           sx={{ mb: 3 }}
@@ -243,7 +244,7 @@ function Form() {
           id="mediaLink"
           label="Social Media Link (optional)"
           fullWidth
-          // onChange={handleChange}
+          onChange={handleChange}
           value={formValues.mediaLink}
           sx={{ mb: 2 }}
         />
