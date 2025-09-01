@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal } from "@mui/material";
+import { Button, Modal } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import UserCard from "../components/usercard/usercard.jsx";
 import {
@@ -11,8 +11,10 @@ import {
   Typography,
   Box,
 } from "@mui/material";
+import Form from "../components/Form/Form.jsx";
 
 export default function Gallery() {
+  const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   // Placeholder artwork data
   const [artworks] = useState([
@@ -53,6 +55,23 @@ export default function Gallery() {
       <Typography variant="h3" align="center" gutterBottom>
         Gallery
       </Typography>
+      <Button onClick={() => setOpen(true)}>Upload Artwork</Button>
+      <Modal open={open}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            maxWidth: 800,
+            minWidth: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+          }}
+        >
+          <Form />
+        </Box>
+      </Modal>
       <Grid container spacing={4} justifyContent="center">
         {artworks.map((art) => (
           <Grid item xs={12} sm={6} md={4} key={art.id}>
