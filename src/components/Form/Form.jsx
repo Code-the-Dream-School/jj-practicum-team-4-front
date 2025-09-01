@@ -127,7 +127,7 @@ function Form() {
           <Box
             sx={{
               mb: 3,
-              p: 3,
+              p: 8,
               textAlign: "center",
               borderRadius: 2,
               bgcolor: "grey.50",
@@ -165,7 +165,11 @@ function Form() {
             </FormHelperText>
           </Box>
         </Box>
-        <Grid container spacing={{ xs: 1, md: 2 }} sx={{ mb: 3 }}>
+        <Grid
+          container
+          spacing={{ xs: 1, md: 2 }}
+          sx={{ my: { xs: 4, md: 6 } }}
+        >
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               error={!!errors.title}
@@ -184,7 +188,8 @@ function Form() {
           <Grid size={{ xs: 12, md: 6 }}>
             <FormControl
               variant="standard"
-              sx={{ width: "90%", textTransform: "capitalize" }}
+              sx={{ textTransform: "capitalize", my: { xs: 3, md: 0 } }}
+              fullWidth
               required
               error={!!errors.mediaType}
             >
@@ -235,7 +240,7 @@ function Form() {
           onBlur={handleBlur}
           value={formValues.description}
           placeholder="Tell us about your artwork..."
-          sx={{ mb: 3 }}
+          sx={{ mb: 6 }}
           helperText={!formValues.description.trim() && "Required"}
         />
 
@@ -246,9 +251,11 @@ function Form() {
           fullWidth
           onChange={handleChange}
           value={formValues.mediaLink}
-          sx={{ mb: 2 }}
+          sx={{ mb: 6 }}
         />
-        <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+        <Box
+          sx={{ display: "flex", justifyContent: "space-around", mt: 2, mb: 4 }}
+        >
           <Button color="error" variant="outlined" sx={{ px: 4 }}>
             Cancel
           </Button>

@@ -64,7 +64,7 @@ export default function Gallery() {
             left: "50%",
             transform: "translate(-50%, -50%)",
             maxWidth: 800,
-            minWidth: 400,
+            width: "90%",
             bgcolor: "background.paper",
             boxShadow: 24,
           }}
