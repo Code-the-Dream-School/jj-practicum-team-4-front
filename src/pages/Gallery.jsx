@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Icon, Modal } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
-import hero from "../assets/hero4.png";
 import { CssBaseline } from "@mui/material";
 import UserCard from "../components/usercard/usercard.jsx";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
