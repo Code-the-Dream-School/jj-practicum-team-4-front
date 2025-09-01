@@ -187,7 +187,7 @@ function Form() {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <FormControl
-              variant="standard"
+              // variant="standard"
               sx={{ textTransform: "capitalize", my: { xs: 3, md: 0 } }}
               fullWidth
               required
