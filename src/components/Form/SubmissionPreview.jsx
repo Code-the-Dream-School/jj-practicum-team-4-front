@@ -22,12 +22,11 @@ function SubmissionPreview() {
   });
 
   return (
-    <Box>
+    <Box sx={{ maxHeight: "100vh", boxSizing: "border-box" }}>
       <Typography
-        component="h1"
-        variant="h4"
+        variant="h6"
         sx={{
-          p: 3,
+          p: { xs: 1, md: 3 },
           textTransform: "capitalize",
           fontWeight: "bold",
           bgcolor: "primary.main",
@@ -73,8 +72,9 @@ function SubmissionPreview() {
       {/* Form Section */}
       <Box sx={{ p: 3 }}>
         {/* image preview */}
-        <Box sx={{ mt: 2, mb: 4, textAlign: "center", maxWidth: "100%" }}>
+        <Box sx={{ mt: 2, mb: 4, textAlign: "center" }}>
           <Box
+            width="100%"
             component="img"
             src="src/assets/images/placeholder.png"
             alt={`Preview image of ${formValues.title}`}
@@ -83,7 +83,7 @@ function SubmissionPreview() {
             File Name: {formValues.imageUrl}
           </Typography>
         </Box>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid container spacing={2} sx={{ my: 2 }}>
           {/* Title Field */}
           <Grid size={6}>
             <TextField
@@ -91,6 +91,7 @@ function SubmissionPreview() {
               label="Title of Artwork"
               aria-readonly
               fullWidth
+              size="small"
               value={formValues.title}
               slotProps={{
                 input: {
@@ -102,7 +103,10 @@ function SubmissionPreview() {
 
           {/* Media Type Field */}
           <Grid size={6}>
-            <FormControl sx={{ width: "90%", textTransform: "capitalize" }}>
+            <FormControl
+              size="small"
+              sx={{ width: "90%", textTransform: "capitalize" }}
+            >
               <InputLabel id="demo-simple-select-standard-label">
                 Media Type
               </InputLabel>
@@ -137,6 +141,7 @@ function SubmissionPreview() {
 
         {/* Social Media Link Field */}
         <TextField
+          size="small"
           name="mediaLink"
           id="mediaLink"
           label="Social Media Link (optional)"
