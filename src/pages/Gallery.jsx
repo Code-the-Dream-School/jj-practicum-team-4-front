@@ -166,6 +166,7 @@ export default function Gallery() {
                       width: "90%",
                       bgcolor: "background.paper",
                       boxShadow: 24,
+                      overflowY: "auto",
                     }}
                   >
                     <Form />

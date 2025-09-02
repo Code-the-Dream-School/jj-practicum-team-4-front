@@ -75,12 +75,11 @@ function Form() {
   };
 
   return (
-    <Box>
+    <Box sx={{ maxHeight: "100vh", boxSizing: "border-box" }}>
       <Typography
-        component="h1"
         variant="h4"
         sx={{
-          p: 3,
+          p: { xs: 1, md: 3 },
           textTransform: "capitalize",
           fontWeight: "bold",
           bgcolor: "primary.main",
@@ -123,10 +122,16 @@ function Form() {
       <Divider />
 
       <Box component="form" sx={{ p: 3 }}>
-        <Box sx={{ mt: 2, mb: 4, textAlign: "center", maxWidth: "100%" }}>
+        <Box
+          sx={{
+            // mt: { xs: 0, md: 2 },
+            textAlign: "center",
+            maxWidth: "100%",
+          }}
+        >
           <Box
             sx={{
-              mb: 3,
+              // mb: 3,
               p: 8,
               textAlign: "center",
               borderRadius: 2,
@@ -164,12 +169,8 @@ function Form() {
             </FormHelperText>
           </Box>
         </Box>
-        <Grid
-          container
-          spacing={{ xs: 1, md: 2 }}
-          sx={{ my: { xs: 4, md: 6 } }}
-        >
-          <Grid size={{ xs: 12, md: 6 }}>
+        <Grid container spacing={2} sx={{ my: 2 }}>
+          <Grid size={6}>
             <TextField
               error={!!errors.title}
               name="title"
@@ -177,6 +178,7 @@ function Form() {
               label="Title of Artwork"
               required
               fullWidth
+              size="small"
               value={formValues.title}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -184,9 +186,13 @@ function Form() {
             />
           </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={6}>
             <FormControl
-              sx={{ textTransform: "capitalize", my: { xs: 3, md: 0 } }}
+              size="small"
+              sx={{
+                textTransform: "capitalize",
+                // my: { xs: 3, md: 0 }
+              }}
               fullWidth
               required
               error={!!errors.mediaType}
@@ -238,18 +244,19 @@ function Form() {
           onBlur={handleBlur}
           value={formValues.description}
           placeholder="Tell us about your artwork..."
-          sx={{ mb: 6 }}
+          sx={{ mb: 2 }}
           helperText={!formValues.description.trim() && "Required"}
         />
 
         <TextField
           name="mediaLink"
+          size="small"
           id="mediaLink"
           label="Social Media Link (optional)"
           fullWidth
           onChange={handleChange}
           value={formValues.mediaLink}
-          sx={{ mb: 6 }}
+          sx={{ mb: 2 }}
         />
         <Box
           sx={{ display: "flex", justifyContent: "space-around", mt: 2, mb: 4 }}
