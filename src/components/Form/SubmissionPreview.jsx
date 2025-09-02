@@ -45,7 +45,7 @@ function SubmissionPreview({ setOpen }) {
             textShadow: "0 2px 4px rgba(0,0,0,0.3)",
           }}
         >
-          Upload Your Artwork
+          Review Upload Your Artwork
         </Typography>
         <IconButton aria-label="close" onClick={() => setOpen(false)}>
           <CloseIcon />
