@@ -19,11 +19,13 @@ import {
   Button,
   Link,
 } from "@mui/material";
+import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
 
 export default function Gallery() {
+  const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   // TODO: Replace with actual authentication logic
-  const isLoggedIn = false; // Set to true to simulate logged-in user
+  const isLoggedIn = true; // Set to true to simulate logged-in user
   // Placeholder artwork data
   const [artworks] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
@@ -143,14 +145,34 @@ export default function Gallery() {
               </Box>
             </Stack>
             {isLoggedIn && (
-              <Button
-                variant="contained"
-                component={Link}
-                to="/upload-artwork"
-                sx={{ mt: 4, backgroundColor: "#C86D6D" }}
-              >
-                UPLOAD YOUR ARTWORK
-              </Button>
+              <>
+                <Button
+                  variant="contained"
+                  component={Link}
+                  to="/upload-artwork"
+                  sx={{ mt: 4, backgroundColor: "#C86D6D" }}
+                  onClick={() => setOpen(true)}
+                >
+                  UPLOAD YOUR ARTWORK
+                </Button>
+                <Modal open={open}>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: 800,
+                      width: "90%",
+                      bgcolor: "background.paper",
+                      boxShadow: 24,
+                      overflowY: "auto",
+                    }}
+                  >
+                    <SubmissionPreview setOpen={setOpen} />
+                  </Box>
+                </Modal>
+              </>
             )}
           </Container>
         </Box>
