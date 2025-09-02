@@ -1,4 +1,5 @@
 import React from "react";
+import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
@@ -7,10 +8,12 @@ import {
   Button,
   Divider,
   Grid,
+  IconButton,
   MenuItem,
   Select,
   Typography,
 } from "@mui/material";
+
 function SubmissionPreview() {
   const [formValues, setFormValues] = React.useState({
     imageUrl: "images.jpeg",
@@ -23,21 +26,34 @@ function SubmissionPreview() {
 
   return (
     <Box sx={{ maxHeight: "100vh", boxSizing: "border-box" }}>
-      <Typography
-        variant="h6"
+      <Box
         sx={{
-          p: { xs: 1, md: 3 },
-          textTransform: "capitalize",
-          fontWeight: "bold",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           bgcolor: "primary.main",
-          color: "white",
-          textAlign: "center",
-          textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+          p: { xs: 1, md: 3 },
         }}
       >
-        Upload Your Artwork
-      </Typography>
-
+        <Typography
+          variant="h6"
+          sx={{
+            textTransform: "capitalize",
+            fontWeight: "bold",
+            color: "white",
+            textAlign: "center",
+            textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+          }}
+        >
+          Upload Your Artwork
+        </Typography>
+        <IconButton
+          aria-label="close"
+          // onClick={handleClose}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Box>
       {/* Challenge Info Section */}
       <Box sx={{ p: 3, textAlign: "center", bgcolor: "grey.50" }}>
         <Typography
