@@ -1,5 +1,6 @@
 import React from "react";
 import CloseIcon from "@mui/icons-material/Close";
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
@@ -92,9 +93,16 @@ function SubmissionPreview({ setOpen }) {
             src="src/assets/images/placeholder.png"
             alt={`Preview image of ${formValues.title}`}
           />
-          <Typography color="text.secondary">
-            File Name: {formValues.imageUrl}
-          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography color="text.secondary">
+              File Name: {formValues.imageUrl}
+            </Typography>
+            <IconButton
+            // onClick={}
+            >
+              <DriveFileRenameOutlineIcon />
+            </IconButton>
+          </Box>
         </Box>
         <Grid container spacing={2} sx={{ my: 2 }}>
           {/* Title Field */}
