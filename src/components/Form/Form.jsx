@@ -21,8 +21,7 @@ import {
 
 const mediaTypeOptions = ["mixed media", "waterColor", "oil paint", "pencil"];
 
-function Form() {
-  const [step, setStep] = React.useState(1);
+function Form({ setOpen }) {
   const [isSubmit, setIsSubmit] = React.useState(false);
   const [errors, setErrors] = React.useState({});
   const [formValues, setFormValues] = React.useState({
@@ -261,7 +260,12 @@ function Form() {
         <Box
           sx={{ display: "flex", justifyContent: "space-around", mt: 2, mb: 4 }}
         >
-          <Button color="error" variant="outlined" sx={{ px: 4 }}>
+          <Button
+            color="error"
+            variant="outlined"
+            sx={{ px: 4 }}
+            onClick={() => setOpen(false)}
+          >
             Cancel
           </Button>
           <Button

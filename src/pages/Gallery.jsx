@@ -169,7 +169,7 @@ export default function Gallery() {
                       overflowY: "auto",
                     }}
                   >
-                    <Form />
+                    <Form setOpen={setOpen} />
                   </Box>
                 </Modal>
               </>
