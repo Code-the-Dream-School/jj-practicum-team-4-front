@@ -169,7 +169,7 @@ export default function Gallery() {
                       overflowY: "auto",
                     }}
                   >
-                    <SubmissionPreview />
+                    <SubmissionPreview setOpen={setOpen} />
                   </Box>
                 </Modal>
               </>

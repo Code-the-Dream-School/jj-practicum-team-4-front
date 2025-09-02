@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 
-function SubmissionPreview() {
+function SubmissionPreview({ setOpen }) {
   const [formValues, setFormValues] = React.useState({
     imageUrl: "images.jpeg",
     title: "Arthive",
@@ -47,10 +47,7 @@ function SubmissionPreview() {
         >
           Upload Your Artwork
         </Typography>
-        <IconButton
-          aria-label="close"
-          // onClick={handleClose}
-        >
+        <IconButton aria-label="close" onClick={() => setOpen(false)}>
           <CloseIcon />
         </IconButton>
       </Box>
