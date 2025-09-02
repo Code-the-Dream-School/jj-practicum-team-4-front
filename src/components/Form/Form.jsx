@@ -155,7 +155,6 @@ function Form() {
                 required
                 name="imageUrl"
                 onChange={handleChange}
-                multiple
               />
             </Button>
             <FormHelperText sx={{ mt: 2, textAlign: "center" }}>
@@ -187,7 +186,6 @@ function Form() {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <FormControl
-              // variant="standard"
               sx={{ textTransform: "capitalize", my: { xs: 3, md: 0 } }}
               fullWidth
               required
