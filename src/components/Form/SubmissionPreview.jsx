@@ -105,15 +105,10 @@ function SubmissionPreview() {
             <TextField
               name="title"
               label="Title of Artwork"
-              aria-readonly
               fullWidth
               size="small"
               value={formValues.title}
-              slotProps={{
-                input: {
-                  readOnly: true,
-                },
-              }}
+              disabled
             />
           </Grid>
 
@@ -132,7 +127,7 @@ function SubmissionPreview() {
                 value={formValues.mediaType}
                 name="mediaType"
                 label="Media Type"
-                inputProps={{ readOnly: true }}
+                disabled
               >
                 <MenuItem value={formValues.mediaType}>
                   <em>{formValues.mediaType}</em>
@@ -152,7 +147,7 @@ function SubmissionPreview() {
           rows={4}
           value={formValues.description}
           sx={{ mb: 3 }}
-          slotProps={{ input: { readOnly: true } }}
+          disabled
         />
 
         {/* Social Media Link Field */}
@@ -164,7 +159,7 @@ function SubmissionPreview() {
           fullWidth
           value={formValues.mediaLink ? formValues.mediaLink : "None"}
           sx={{ mb: 2 }}
-          slotProps={{ input: { readOnly: true } }}
+          disabled
         />
 
         {/* Action Button */}
