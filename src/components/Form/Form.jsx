@@ -123,14 +123,12 @@ function Form({ setOpen }) {
       <Box component="form" sx={{ p: 3 }}>
         <Box
           sx={{
-            // mt: { xs: 0, md: 2 },
             textAlign: "center",
             maxWidth: "100%",
           }}
         >
           <Box
             sx={{
-              // mb: 3,
               p: 8,
               textAlign: "center",
               borderRadius: 2,
@@ -190,7 +188,6 @@ function Form({ setOpen }) {
               size="small"
               sx={{
                 textTransform: "capitalize",
-                // my: { xs: 3, md: 0 }
               }}
               fullWidth
               required
