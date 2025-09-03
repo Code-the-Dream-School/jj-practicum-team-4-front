@@ -18,12 +18,17 @@ export const StyledCard = styled(Card)(() => ({
   boxShadow: 3,
   display: "flex",
   flexDirection: "column",
-  
+  transition: "transform 0.2s, box-shadow 0.2s",
+  cursor: "pointer",
+  "&:hover": {
+    transform: "translateY(-8px) scale(1.03)",
+    boxShadow: 6,
+  },
 }));
 
 // Image styles
 export const StyledCardMedia = styled(CardMedia)(() => ({
-  height: 300,
+  height: 400,
   objectFit: "cover",
 }));
 
@@ -38,23 +43,21 @@ export const PlaceholderBox = styled(Box)(() => ({
   fontSize: "1rem",
 }));
 //  Centered Card content styles
-export const StyledCardContent = styled(CardContent )(() => ({
-//  sx: {
-    
-
+export const StyledCardContent = styled(CardContent)(() => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  justifyContent: "center"
-
-//  }
+  justifyContent: "center",
+  width: "100%",
+  paddingBottom: "0px",
 }));
 // Centered like button area
 export const CenteredActions = styled(CardActions)(() => ({
   display: "flex",
-  justifyContent: "center",
+  flexDirection: "row",
   alignItems: "center",
+  justifyContent: "center",
   width: "100%",
+  paddingTop: "0px",
   paddingBottom: "16px",
 }));
-
