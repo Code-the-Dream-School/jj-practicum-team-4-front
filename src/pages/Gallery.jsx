@@ -20,8 +20,10 @@ import {
   Link,
 } from "@mui/material";
 import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
+import SubmissionForm from "../components/Form/SubmissionForm.jsx";
 
 export default function Gallery() {
+  const [step, setStep] = useState(1);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   // TODO: Replace with actual authentication logic
@@ -145,14 +147,39 @@ export default function Gallery() {
               </Box>
             </Stack>
             {isLoggedIn && (
-              <Button
-                variant="contained"
-                component={Link}
-                to="/upload-artwork"
-                sx={{ mt: 4, backgroundColor: "#C86D6D" }}
-              >
-                UPLOAD YOUR ARTWORK
-              </Button>
+              <>
+                <Button
+                  variant="contained"
+                  component={Link}
+                  to="/upload-artwork"
+                  sx={{ mt: 4, backgroundColor: "#C86D6D" }}
+                  onClick={() => setOpen(true)}
+                >
+                  UPLOAD YOUR ARTWORK
+                </Button>
+                <Modal open={open}>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: 800,
+                      width: "90%",
+                      bgcolor: "background.paper",
+                      boxShadow: 24,
+                      overflowY: "auto",
+                    }}
+                  >
+                    {step === 1 && (
+                      <SubmissionForm setOpen={setOpen} setStep={setStep} />
+                    )}
+                    {step === 2 && (
+                      <SubmissionPreview setOpen={setOpen} setStep={setStep} />
+                    )}
+                  </Box>
+                </Modal>
+              </>
             )}
           </Container>
         </Box>

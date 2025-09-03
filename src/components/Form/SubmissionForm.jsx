@@ -23,7 +23,7 @@ import {
 
 const mediaTypeOptions = ["mixed media", "waterColor", "oil paint", "pencil"];
 
-function Form({ setOpen }) {
+function SubmissionForm({ setOpen, setStep }) {
   const [isSubmit, setIsSubmit] = React.useState(false);
   const [errors, setErrors] = React.useState({});
   const [formValues, setFormValues] = React.useState({
@@ -267,7 +267,7 @@ function Form({ setOpen }) {
           sx={{ mb: 2 }}
         />
         <Box
-          sx={{ display: "flex", justifyContent: "space-around", mt: 2, mb: 4 }}
+          sx={{ display: "flex", justifyContent: "space-around", mt: 2, mb: 1 }}
         >
           <Button
             color="error"
@@ -279,10 +279,11 @@ function Form({ setOpen }) {
           </Button>
           <Button
             disabled={
-              (formValues.title &&
-                formValues.imageUrl &&
-                formValues.mediaType &&
-                formValues.description) == "" || isSubmit
+              !formValues.title ||
+              !formValues.imageUrl ||
+              !formValues.mediaType ||
+              !formValues.description ||
+              isSubmit
             }
             variant="contained"
             size="large"
@@ -292,6 +293,7 @@ function Form({ setOpen }) {
               textTransform: "capitalize",
               fontSize: "1.1rem",
             }}
+            onClick={() => setStep(2)}
           >
             {isSubmit ? "Submitted" : "next"}
           </Button>
@@ -301,4 +303,4 @@ function Form({ setOpen }) {
   );
 }
 
-export default Form;
+export default SubmissionForm;
