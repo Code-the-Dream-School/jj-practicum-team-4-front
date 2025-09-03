@@ -20,8 +20,10 @@ import {
   Link,
 } from "@mui/material";
 import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
+import SubmissionForm from "../components/Form/SubmissionForm.jsx";
 
 export default function Gallery() {
+  const [step, setStep] = useState(1);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   // TODO: Replace with actual authentication logic
@@ -169,7 +171,12 @@ export default function Gallery() {
                       overflowY: "auto",
                     }}
                   >
-                    <SubmissionPreview setOpen={setOpen} />
+                    {step === 1 && (
+                      <SubmissionForm setOpen={setOpen} setStep={setStep} />
+                    )}
+                    {step === 2 && (
+                      <SubmissionPreview setOpen={setOpen} setStep={setStep} />
+                    )}
                   </Box>
                 </Modal>
               </>
@@ -178,13 +185,38 @@ export default function Gallery() {
         </Box>
       </Container>
 
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Typography variant="h3" align="center" gutterBottom>
-          Gallery
-        </Typography>
-        <Grid container spacing={4} justifyContent="center">
+      <Container
+        maxWidth="xl"
+        sx={{
+          minHeight: "60vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          py: { xs: 6, md: 10 },
+        }}
+      >
+        <Box sx={{ width: "100%", mb: 4 }}>
+          <Typography variant="h3" align="center" gutterBottom>
+            Gallery
+          </Typography>
+        </Box>
+        <Grid
+          container
+          spacing={4}
+          justifyContent="center"
+          alignItems="end"
+          sx={{ width: "100%" }}
+        >
           {artworks.map((art) => (
-            <Grid item xs={12} sm={6} md={4} key={art.id}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              key={art.id}
+              sx={{ display: "flex", justifyContent: "center" }}
+            >
               <Card onClick={() => setSelected(art)}>
                 <CardMedia
                   component="img"
