@@ -53,7 +53,7 @@ export default function BestOfArtwork() {
           textTransform="uppercase"
           align="center"
         >
-          challenge topic
+          last week's challenge topic
         </Typography>
         <Typography
           variant="subtitle1"
@@ -68,7 +68,7 @@ export default function BestOfArtwork() {
           spacing={4}
           justifyContent="center"
           alignItems="center"
-          sx={{ mt: 8 }}
+          sx={{ mt: 8, mx: 5 }}
         >
           {artworks.map((art) => (
             <Grid item xs={12} sm={6} md={4} key={art.id}>
