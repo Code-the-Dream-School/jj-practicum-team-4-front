@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Icon, Modal } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
-import hero from "../assets/hero4.png";
 import { CssBaseline } from "@mui/material";
 import UserCard from "../components/usercard/usercard.jsx";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
@@ -20,9 +19,13 @@ import {
   Button,
   Link,
 } from "@mui/material";
+import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
 
 export default function Gallery() {
+  const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
+  // TODO: Replace with actual authentication logic
+  const isLoggedIn = true; // Set to true to simulate logged-in user
   // Placeholder artwork data
   const [artworks] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
@@ -63,37 +66,33 @@ export default function Gallery() {
       <Container maxWidth="xl" disableGutters>
         <Box
           sx={{
-            backgroundImage: `url(${hero})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            minHeight: "35em",
-            position: "relative",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
+            backgroundColor: "#f5f5f7",
+            borderBottom: "1px solid #e0e0e0",
+            padding: "3em 2em",
+            textAlign: "center",
           }}
         >
-          <Box
-            sx={{
-              textAlign: "center",
-              pb: 3,
-              width: "100%",
-              mx: 3,
-            }}
-          >
+          <Container maxWidth="lg">
             <Typography
-              variant="h4"
+              variant="h3"
               align="center"
-              sx={{ mb: 8 }}
-              margin-bottom="10px"
+              sx={{ mb: 3, color: "#2c3e50" }}
             >
               WEEKLY CHALLENGE TOPIC
             </Typography>
-            <Typography variant="h5" align="center" sx={{ mb: 10 }}>
-              DURATION :
+            <Typography
+              variant="h5"
+              align="center"
+              sx={{ mb: 3, color: "#34495e" }}
+            >
+              DURATION: [Your duration here]
             </Typography>
-            <Typography variant="h6" align="center" sx={{ mb: 10 }}>
-              INSTRUCTION/EXPLANATION:
+            <Typography
+              variant="body1"
+              align="center"
+              sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
+            >
+              INSTRUCTION/EXPLANATION: [Your detailed instructions here]
             </Typography>
             <Stack
               direction="row"
@@ -101,8 +100,14 @@ export default function Gallery() {
               justifyContent="center"
               alignItems="center"
             >
-              <Box>
-                <AccountCircleOutlinedIcon fontSize="large" /> {/* your icon */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <AccountCircleOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
                 <Typography align="center">
                   Create
                   <br />
@@ -110,17 +115,28 @@ export default function Gallery() {
                 </Typography>
               </Box>
               <ArrowRightAltOutlinedIcon fontSize="large" />
-              <Box>
-                <FileUploadOutlinedIcon fontSize="large" />
-                {/* your icon */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <FileUploadOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
                 <Typography align="center">
                   Upload your
                   <br /> artwork image
                 </Typography>
               </Box>
               <ArrowRightAltOutlinedIcon fontSize="large" />
-              <Box>
-                <InsertDriveFileOutlinedIcon fontSize="large" />
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <InsertDriveFileOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
                 <Typography align="center">
                   Submit your
                   <br />
@@ -128,15 +144,37 @@ export default function Gallery() {
                 </Typography>
               </Box>
             </Stack>
-            <Button
-              variant="contained"
-              component={Link}
-              to="/sign-in"
-              sx={{ my: 2 }}
-            >
-              SIGNIN
-            </Button>
-          </Box>
+            {isLoggedIn && (
+              <>
+                <Button
+                  variant="contained"
+                  component={Link}
+                  to="/upload-artwork"
+                  sx={{ mt: 4, backgroundColor: "#C86D6D" }}
+                  onClick={() => setOpen(true)}
+                >
+                  UPLOAD YOUR ARTWORK
+                </Button>
+                <Modal open={open}>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: 800,
+                      width: "90%",
+                      bgcolor: "background.paper",
+                      boxShadow: 24,
+                      overflowY: "auto",
+                    }}
+                  >
+                    <SubmissionPreview setOpen={setOpen} />
+                  </Box>
+                </Modal>
+              </>
+            )}
+          </Container>
         </Box>
       </Container>
 
