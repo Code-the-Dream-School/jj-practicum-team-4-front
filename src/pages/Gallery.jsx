@@ -19,7 +19,7 @@ import {
   Button,
   Link,
 } from "@mui/material";
-import Form from "../components/Form/Form.jsx";
+import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
 
 export default function Gallery() {
   const [open, setOpen] = useState(false);
@@ -145,34 +145,14 @@ export default function Gallery() {
               </Box>
             </Stack>
             {isLoggedIn && (
-              <>
-                <Button
-                  variant="contained"
-                  component={Link}
-                  to="/upload-artwork"
-                  sx={{ mt: 4, backgroundColor: "#C86D6D" }}
-                  onClick={() => setOpen(true)}
-                >
-                  UPLOAD YOUR ARTWORK
-                </Button>
-                <Modal open={open}>
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      maxWidth: 800,
-                      width: "90%",
-                      bgcolor: "background.paper",
-                      boxShadow: 24,
-                      overflowY: "auto",
-                    }}
-                  >
-                    <Form setOpen={setOpen} />
-                  </Box>
-                </Modal>
-              </>
+              <Button
+                variant="contained"
+                component={Link}
+                to="/upload-artwork"
+                sx={{ mt: 4, backgroundColor: "#C86D6D" }}
+              >
+                UPLOAD YOUR ARTWORK
+              </Button>
             )}
           </Container>
         </Box>
