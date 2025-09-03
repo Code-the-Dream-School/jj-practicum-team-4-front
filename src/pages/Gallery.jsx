@@ -20,8 +20,10 @@ import {
   Link,
 } from "@mui/material";
 import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
+import SubmissionForm from "../components/Form/SubmissionForm.jsx";
 
 export default function Gallery() {
+  const [step, setStep] = useState(1);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   // TODO: Replace with actual authentication logic
@@ -169,7 +171,12 @@ export default function Gallery() {
                       overflowY: "auto",
                     }}
                   >
-                    <SubmissionPreview setOpen={setOpen} />
+                    {step === 1 && (
+                      <SubmissionForm setOpen={setOpen} setStep={setStep} />
+                    )}
+                    {step === 2 && (
+                      <SubmissionPreview setOpen={setOpen} setStep={setStep} />
+                    )}
                   </Box>
                 </Modal>
               </>

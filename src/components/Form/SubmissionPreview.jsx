@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 
-function SubmissionPreview({ setOpen }) {
+function SubmissionPreview({ setOpen, setStep }) {
   const [formValues, setFormValues] = React.useState({
     imageUrl: "images.jpeg",
     title: "Arthive",
@@ -169,7 +169,12 @@ function SubmissionPreview({ setOpen }) {
 
         {/* Action Button */}
         <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
-          <Button variant="outlined" color="secondary" sx={{ px: 4 }}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            sx={{ px: 4 }}
+            onClick={() => setStep(1)}
+          >
             Edit
           </Button>
           <Button
