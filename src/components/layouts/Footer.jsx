@@ -10,7 +10,7 @@ function Footer() {
       sx={{
         mt: "auto",
         color: "white",
-        bgcolor: "text.primary",
+        bgcolor: "primary.main",
         pt: 4,
         display: "flex",
         flexDirection: "column",
@@ -59,13 +59,31 @@ function Footer() {
         <Box
           sx={{ display: "flex", gap: 2, justifyContent: "flex-end", pt: 3 }}
         >
-          <Typography variant="body2" color="grey" component={Link} to="#">
+          <Typography
+            variant="body2"
+            color="grey.50"
+            sx={{ textDecoration: "none" }}
+            component={Link}
+            to="#"
+          >
             Privacy Policy
           </Typography>
-          <Typography variant="body2" color="grey" component={Link} to="#">
+          <Typography
+            variant="body2"
+            color="grey.50"
+            sx={{ textDecoration: "none" }}
+            component={Link}
+            to="#"
+          >
             Terms of Service
           </Typography>
-          <Typography variant="body2" color="grey" component={Link} to="#">
+          <Typography
+            variant="body2"
+            color="grey.50"
+            sx={{ textDecoration: "none" }}
+            component={Link}
+            to="#"
+          >
             Cookie Policy
           </Typography>
         </Box>
