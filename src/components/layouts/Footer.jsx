@@ -53,7 +53,7 @@ function Footer() {
           </Typography>
         </Box>
         <Typography variant="body2" color="white">
-          &copy; 2024 CTD - jjj Team 4. All rights reserved.
+          &copy; 2025 CTD - jjj Team 4. All rights reserved.
         </Typography>
         <Divider sx={{ borderColor: "white" }} />
         <Box
