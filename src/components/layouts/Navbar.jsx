@@ -12,23 +12,30 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const pages = ["gallery", "best of artwork", "about", "challenge prompt"];
-const settings = ["Logout"];
+const settings = ["Profile", "Logout"];
 function Navbar() {
-  const [isAuth, setIsAuth] = React.useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleAuth = () => {
-    setIsAuth(true);
-    setAnchorElNav(null);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setAnchorElUser(null);
+      navigate("/");
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
-
-  const handleLogout = () => {
-    setIsAuth(false);
+  
+  const handleProfile = () => {
     setAnchorElUser(null);
+    navigate("/profile");
   };
 
   const handleOpenNavMenu = (event) => {
@@ -98,7 +105,7 @@ function Navbar() {
             onClose={handleCloseNavMenu}
             sx={{ display: { xs: "block", md: "none" } }}
           >
-            {pages.slice(0, isAuth ? 4 : 3).map((page) => (
+            {pages.slice(0, isAuthenticated ? 4 : 3).map((page) => (
               <MenuItem key={page} onClick={handleCloseNavMenu}>
                 <Typography
                   color="primary"
@@ -117,7 +124,7 @@ function Navbar() {
           </Menu>
         </Box>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {pages.slice(0, isAuth ? 4 : 3).map((page) => (
+          {pages.slice(0, isAuthenticated ? 4 : 3).map((page) => (
             <Button
               component={Link}
               to={page.replaceAll(" ", "-")}
@@ -129,14 +136,14 @@ function Navbar() {
             </Button>
           ))}
         </Box>
-        {isAuth ? (
+        {isAuthenticated ? (
           <>
             <Tooltip title="Open settings">
               <IconButton
                 onClick={handleOpenUserMenu}
                 sx={{ p: 0, order: { xs: 3, md: 0 } }}
               >
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={user?.username || "User"} src={user?.profileImage || "/static/images/avatar/2.jpg"} />
               </IconButton>
             </Tooltip>
             <Menu
@@ -159,7 +166,9 @@ function Navbar() {
                 <MenuItem
                   key={setting}
                   onClick={
-                    setting === "Logout" ? handleLogout : handleCloseUserMenu
+                    setting === "Logout" ? handleLogout : 
+                    setting === "Profile" ? handleProfile : 
+                    handleCloseUserMenu
                   }
                 >
                   <Typography sx={{ textAlign: "center" }}>

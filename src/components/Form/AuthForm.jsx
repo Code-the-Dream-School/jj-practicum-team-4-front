@@ -12,15 +12,25 @@ import {
   TextField,
   Typography,
   Avatar,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function AuthForm() {
   const [isFormSubmit, setIsFormSubmit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("error");
+  
+  const { login, loginWithGoogle, error, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -31,13 +41,33 @@ function AuthForm() {
     }
   };
 
-  const handleAuthSubmit = (e) => {
+  const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setIsFormSubmit(true);
-    console.log(`submitted - email: ${email}, password: ${password}`);
+    
+    try {
+      await login(email, password);
+      setAlertSeverity("success");
+      setAlertMessage("Login successful!");
+      setAlertOpen(true);
+      
+      // Redirect to home page after successful login
+      setTimeout(() => navigate("/"), 1500);
+    } catch (error) {
+      setIsFormSubmit(false);
+      setAlertSeverity("error");
+      setAlertMessage(error.response?.data?.error || "Login failed. Please check your credentials.");
+      setAlertOpen(true);
+    }
   };
 
-  const handleGoogleLogin = () => {};
+  const handleGoogleLogin = () => {
+    loginWithGoogle();
+  };
+  
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
   return (
     <>
       <CssBaseline />
@@ -123,13 +153,13 @@ function AuthForm() {
               />
             </FormControl>
             <Button
-              disabled={isFormSubmit || (!email && !password)}
+              disabled={isLoading || (!email && !password)}
               type="submit"
               variant="contained"
               size="large"
               sx={{ textTransform: "capitalize", mt: 3 }}
             >
-              {isFormSubmit ? "loading" : "sign in"}
+              {isLoading ? "loading" : "sign in"}
             </Button>
           </Box>
           <Divider sx={{ color: "grey" }}>or</Divider>
@@ -154,6 +184,17 @@ function AuthForm() {
           </Box>
         </Container>
       </Box>
+      
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseAlert} severity={alertSeverity} sx={{ width: "100%" }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
