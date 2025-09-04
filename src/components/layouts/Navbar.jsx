@@ -13,7 +13,13 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Link } from "react-router-dom";
 
-const pages = ["gallery", "best of artwork", "about", "challenge prompt"];
+const pages = [
+  "home",
+  "gallery",
+  "best of artwork",
+  "about",
+  "challenge prompt",
+];
 const settings = ["Logout"];
 function Navbar() {
   const [isAuth, setIsAuth] = React.useState(false);
@@ -97,7 +103,7 @@ function Navbar() {
             onClose={handleCloseNavMenu}
             sx={{ display: { xs: "block", md: "none" } }}
           >
-            {pages.slice(0, isAuth ? 4 : 3).map((page) => (
+            {pages.slice(0, isAuth ? 5 : 4).map((page) => (
               <MenuItem key={page} onClick={handleCloseNavMenu}>
                 <Typography
                   color="primary"
@@ -116,10 +122,10 @@ function Navbar() {
           </Menu>
         </Box>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {pages.slice(0, isAuth ? 4 : 3).map((page) => (
+          {pages.slice(0, isAuth ? 5 : 4).map((page) => (
             <Button
               component={Link}
-              to={page.replaceAll(" ", "-")}
+              to={page === "home" ? "/" : page.replaceAll(" ", "-")}
               key={page}
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
