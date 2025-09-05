@@ -13,9 +13,13 @@ import {
   TextField,
   Typography,
   Avatar,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { getData } from "../../util";
+import { testAuth } from "../../util/test";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -24,6 +28,13 @@ function AuthForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("error");
+
+  const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -34,33 +45,30 @@ function AuthForm() {
     }
   };
 
-  // console.log({ email, password });
-  const handleAuthenticate = async (credentials) => {
-    const options = {
-      method: "POST",
-      body: JSON.stringify(credentials),
-      headers: { "Content-Type": "application/json" },
-    };
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    console.log(`submitted - email: ${email}, password: ${password}`);
+    setIsLoading(true);
+    setError("");
 
     try {
-      const res = await fetch(`${baseUrl}/auth/login`, options);
-      if (!res.ok) {
-        if (res.status === 401) {
-          console.dir(res);
-        }
-        throw new Error(res.status);
-      }
-      console.log(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+      const user = await testAuth.login(email, password);
+      login(user);
+      console.log("login success:", user);
+      setAlertOpen(true);
+      setAlertSeverity("success");
+      setAlertMessage("Login successful!");
 
-  const handleAuthSubmit = (e) => {
-    e.preventDefault();
-    setIsFormSubmit(true);
-    console.log(`submitted - email: ${email}, password: ${password}`);
-    handleAuthenticate({ email, password });
+      // redirect to home page
+      setTimeout(() => navigate("/"), 1500);
+    } catch (err) {
+      setError(err.message);
+      setIsFormSubmit(false);
+      setAlertMessage("Login failed. Please check you credentials");
+      setAlertOpen(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {};
@@ -149,13 +157,13 @@ function AuthForm() {
               />
             </FormControl>
             <Button
-              // disabled={isFormSubmit || (!email && !password)}
+              disabled={isLoading || (!email && !password)}
               type="submit"
               variant="contained"
               size="large"
               sx={{ textTransform: "capitalize", mt: 3 }}
             >
-              {isFormSubmit ? "loading" : "sign in"}
+              {isLoading ? "Logging in..." : "sign in"}
             </Button>
           </Box>
           <Divider sx={{ color: "grey" }}>or</Divider>
@@ -180,6 +188,20 @@ function AuthForm() {
           </Box>
         </Container>
       </Box>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        // onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          // onClose={handleCloseAlert}
+          severity={alertSeverity}
+          sx={{ width: "100%" }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

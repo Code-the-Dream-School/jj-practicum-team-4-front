@@ -12,10 +12,12 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const pages = ["gallery", "best of artwork", "about", "challenge prompt"];
 const settings = ["Logout"];
 function Navbar() {
+  const { isAuthenticated, logout } = useAuth();
   const [isAuth, setIsAuth] = React.useState(false);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -27,6 +29,7 @@ function Navbar() {
 
   const handleLogout = () => {
     setIsAuth(false);
+    logout;
     setAnchorElUser(null);
   };
 
@@ -97,7 +100,7 @@ function Navbar() {
             onClose={handleCloseNavMenu}
             sx={{ display: { xs: "block", md: "none" } }}
           >
-            {pages.slice(0, isAuth ? 4 : 3).map((page) => (
+            {pages.slice(0, isAuthenticated ? 4 : 3).map((page) => (
               <MenuItem key={page} onClick={handleCloseNavMenu}>
                 <Typography
                   color="primary"
@@ -116,7 +119,7 @@ function Navbar() {
           </Menu>
         </Box>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {pages.slice(0, isAuth ? 4 : 3).map((page) => (
+          {pages.slice(0, isAuthenticated ? 4 : 3).map((page) => (
             <Button
               component={Link}
               to={page.replaceAll(" ", "-")}
@@ -128,7 +131,7 @@ function Navbar() {
             </Button>
           ))}
         </Box>
-        {isAuth ? (
+        {isAuthenticated ? (
           <>
             <Tooltip title="Open settings">
               <IconButton
