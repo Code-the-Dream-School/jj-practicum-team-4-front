@@ -55,7 +55,7 @@ function Navbar() {
 
   return (
     <AppBar>
-      <Toolbar disableGutters maxWidth="xl" sx={{ mx: 3 }}>
+      <Toolbar disableGutters sx={{ mx: 3 }}>
         <AdbIcon sx={{ display: "flex", mr: 1, order: { xs: 1, md: 0 } }} />
         <Typography
           variant="h6"
