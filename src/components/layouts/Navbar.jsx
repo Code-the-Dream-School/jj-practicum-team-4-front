@@ -14,7 +14,13 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const pages = ["gallery", "best of artwork", "about", "challenge prompt"];
+const pages = [
+  "home",
+  "gallery",
+  "best of artwork",
+  "about",
+  "challenge prompt",
+];
 const settings = ["Logout"];
 function Navbar() {
   const { isAuthenticated, logout } = useAuth();
@@ -122,7 +128,7 @@ function Navbar() {
           {pages.slice(0, isAuthenticated ? 4 : 3).map((page) => (
             <Button
               component={Link}
-              to={page.replaceAll(" ", "-")}
+              to={page === "home" ? "/" : page.replaceAll(" ", "-")}
               key={page}
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
