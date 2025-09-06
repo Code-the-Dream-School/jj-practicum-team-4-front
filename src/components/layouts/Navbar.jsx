@@ -6,7 +6,6 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
@@ -15,8 +14,14 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const pages = ["gallery", "best of artwork", "about", "challenge prompt"];
-const settings = ["Profile", "Logout"];
+const pages = [
+  "home",
+  "gallery",
+  "best of artwork",
+  "about",
+  "challenge prompt",
+];
+const settings = ["Logout"];
 function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
@@ -105,7 +110,7 @@ function Navbar() {
             onClose={handleCloseNavMenu}
             sx={{ display: { xs: "block", md: "none" } }}
           >
-            {pages.slice(0, isAuthenticated ? 4 : 3).map((page) => (
+            {pages.slice(0, isAuth ? 5 : 4).map((page) => (
               <MenuItem key={page} onClick={handleCloseNavMenu}>
                 <Typography
                   color="primary"
@@ -124,10 +129,10 @@ function Navbar() {
           </Menu>
         </Box>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {pages.slice(0, isAuthenticated ? 4 : 3).map((page) => (
+          {pages.slice(0, isAuth ? 5 : 4).map((page) => (
             <Button
               component={Link}
-              to={page.replaceAll(" ", "-")}
+              to={page === "home" ? "/" : page.replaceAll(" ", "-")}
               key={page}
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
