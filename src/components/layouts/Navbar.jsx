@@ -110,7 +110,7 @@ function Navbar() {
             onClose={handleCloseNavMenu}
             sx={{ display: { xs: "block", md: "none" } }}
           >
-            {pages.slice(0, isAuth ? 5 : 4).map((page) => (
+            {pages.slice(0, isAuthenticated ? 5 : 4).map((page) => (
               <MenuItem key={page} onClick={handleCloseNavMenu}>
                 <Typography
                   color="primary"
@@ -129,7 +129,7 @@ function Navbar() {
           </Menu>
         </Box>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {pages.slice(0, isAuth ? 5 : 4).map((page) => (
+          {pages.slice(0, isAuthenticated ? 5 : 4).map((page) => (
             <Button
               component={Link}
               to={page === "home" ? "/" : page.replaceAll(" ", "-")}
