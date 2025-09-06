@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import authReducer from './authReducer';
 import api, { authService } from '../services/api';
+import { jwtDecode } from 'jwt-decode';
 
 // Create the auth context
 const AuthContext = createContext();
@@ -8,6 +9,7 @@ const AuthContext = createContext();
 // Initial state for the auth reducer
 const initialState = {
   user: null,
+  token: null,
   isAuthenticated: false,
   isLoading: false,
   error: null
@@ -23,23 +25,51 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkLoggedIn = async () => {
       try {
-        const storedUser = localStorage.getItem('user');
+        const storedUserData = authService.getCurrentUser();
         
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          
-          // Optionally verify token with backend
-          dispatch({ 
-            type: 'LOGIN_SUCCESS', 
-            payload: user 
-          });
+        if (storedUserData && storedUserData.token) {
+          // Check if token is expired
+          try {
+            const decodedToken = jwtDecode(storedUserData.token);
+            const currentTime = Date.now() / 1000;
+            
+            // If token is expired, log out user
+            if (decodedToken.exp && decodedToken.exp < currentTime) {
+              console.log('Token expired, logging out user');
+              localStorage.removeItem('user');
+              dispatch({ type: 'LOGOUT' });
+              return;
+            }
+            
+            // If token is valid, set user as authenticated
+            console.log('Token valid, user authenticated');
+            dispatch({ 
+              type: 'LOGIN_SUCCESS', 
+              payload: {
+                user: storedUserData.user,
+                token: storedUserData.token
+              }
+            });
+            
+            // Verify token with backend to ensure it's still valid
+            try {
+              await authService.checkAuth();
+              console.log('Token verified with backend');
+            } catch (error) {
+              console.error('Token verification failed:', error);
+              // If token verification fails, don't log out user yet as the token might still be valid
+              // This prevents unnecessary logouts when backend is temporarily unavailable
+            }
+          } catch (tokenError) {
+            console.error('Invalid token:', tokenError);
+            localStorage.removeItem('user');
+            dispatch({ type: 'LOGOUT' });
+          }
         }
       } catch (error) {
-        // If there's an error (like invalid JSON in localStorage), clear it
+        console.error('Error checking login status:', error);
         localStorage.removeItem('user');
-        dispatch({ 
-          type: 'LOGOUT' 
-        });
+        dispatch({ type: 'LOGOUT' });
       }
     };
 
@@ -52,18 +82,28 @@ export const AuthProvider = ({ children }) => {
     
     try {
       // Use the authService which is properly configured with credentials
-      const user = await authService.login(email, password);
+      const response = await authService.login(email, password);
       
-      dispatch({ 
-        type: 'LOGIN_SUCCESS', 
-        payload: user 
-      });
-      
-      return user;
+      if (response && response.token) {
+        console.log('Login successful, token received');
+        
+        dispatch({ 
+          type: 'LOGIN_SUCCESS', 
+          payload: {
+            user: response.user,
+            token: response.token
+          }
+        });
+        
+        return response;
+      } else {
+        throw new Error('Login failed: No token received');
+      }
     } catch (error) {
+      console.error('Login error:', error);
       dispatch({ 
         type: 'LOGIN_FAILURE', 
-        payload: error.response?.data?.error || 'Login failed. Please check your credentials.'
+        payload: error.response?.data?.message || error.response?.data?.error || error.message || 'Login failed. Please check your credentials.'
       });
       throw error;
     }
@@ -94,21 +134,30 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGIN_REQUEST' });
     
     try {
-      console.log('Sending registration data:', userData);
+      console.log('Sending registration data:', {...userData, password: '******'});
       // Use the authService which is properly configured with credentials
-      const user = await authService.register(userData);
+      const response = await authService.register(userData);
       
-      dispatch({ 
-        type: 'LOGIN_SUCCESS', 
-        payload: user 
-      });
-      
-      return user;
+      if (response && response.token) {
+        console.log('Registration successful, token received');
+        
+        dispatch({ 
+          type: 'LOGIN_SUCCESS', 
+          payload: {
+            user: response.user,
+            token: response.token
+          }
+        });
+        
+        return response;
+      } else {
+        throw new Error('Registration failed: No token received');
+      }
     } catch (error) {
       console.error('Registration error:', error);
       dispatch({ 
         type: 'LOGIN_FAILURE', 
-        payload: error.response?.data?.error || 'Registration failed. Please try again.'
+        payload: error.response?.data?.message || error.response?.data?.error || error.message || 'Registration failed. Please try again.'
       });
       throw error;
     }

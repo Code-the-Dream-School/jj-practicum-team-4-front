@@ -74,9 +74,10 @@ function SignUpForm() {
       return;
     }
     
-    // Create username that complies with backend validation (letters, numbers, underscores, dashes only)
+    // Prepare user data for registration that matches backend expectations
     const userData = {
-      username: formData.firstName + '_' + formData.lastName,
+      first_name: formData.firstName,
+      last_name: formData.lastName,
       email: formData.email,
       password: formData.password
     };
@@ -84,9 +85,9 @@ function SignUpForm() {
     console.log('Prepared user data for registration:', { ...userData, password: '***' });
     
     try {
-      console.log('Sending registration request to:', '/register');
+      console.log('Sending registration request to:', '/auth/register');
       const result = await register(userData);
-      console.log('Registration success response:', result);
+      console.log('Registration success response:', { success: !!result });
       
       setAlertSeverity("success");
       setAlertMessage("Registration successful!");

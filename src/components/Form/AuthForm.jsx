@@ -46,7 +46,10 @@ function AuthForm() {
     setIsFormSubmit(true);
     
     try {
-      await login(email, password);
+      console.log('Attempting login with:', { email });
+      const response = await login(email, password);
+      console.log('Login response received:', { success: !!response });
+      
       setAlertSeverity("success");
       setAlertMessage("Login successful!");
       setAlertOpen(true);
@@ -54,9 +57,15 @@ function AuthForm() {
       // Redirect to home page after successful login
       setTimeout(() => navigate("/"), 1500);
     } catch (error) {
+      console.error('Login submission error:', error);
       setIsFormSubmit(false);
       setAlertSeverity("error");
-      setAlertMessage(error.response?.data?.error || "Login failed. Please check your credentials.");
+      setAlertMessage(
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        error.message || 
+        "Login failed. Please check your credentials."
+      );
       setAlertOpen(true);
     }
   };
@@ -119,13 +128,13 @@ function AuthForm() {
               onChange={handleAuthChange}
               type="email"
               name="email"
-              required={password}
+              required
               id="outlined-basic"
               label="Email"
               variant="outlined"
               sx={{ mb: 3 }}
             />
-            <FormControl variant="outlined" required={email}>
+            <FormControl variant="outlined" required>
               <InputLabel htmlFor="outlined-adornment-password">
                 Password
               </InputLabel>

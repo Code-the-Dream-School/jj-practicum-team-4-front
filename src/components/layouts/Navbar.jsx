@@ -32,7 +32,7 @@ function Navbar() {
       console.error('Logout failed:', error);
     }
   };
-  
+
   const handleProfile = () => {
     setAnchorElUser(null);
     navigate("/profile");
@@ -56,7 +56,7 @@ function Navbar() {
 
   return (
     <AppBar>
-      <Toolbar disableGutters maxWidth="xl" sx={{ mx: 3 }}>
+      <Toolbar disableGutters sx={{ mx: 3 }}>
         <AdbIcon sx={{ display: "flex", mr: 1, order: { xs: 1, md: 0 } }} />
         <Typography
           variant="h6"
@@ -166,9 +166,9 @@ function Navbar() {
                 <MenuItem
                   key={setting}
                   onClick={
-                    setting === "Logout" ? handleLogout : 
-                    setting === "Profile" ? handleProfile : 
-                    handleCloseUserMenu
+                    setting === "Logout" ? handleLogout :
+                      setting === "Profile" ? handleProfile :
+                        handleCloseUserMenu
                   }
                 >
                   <Typography sx={{ textAlign: "center" }}>
@@ -184,7 +184,7 @@ function Navbar() {
             to="sign-in"
             color="inherit"
             sx={{ order: { xs: 3, md: 0 } }}
-            // onClick={handleAuth}
+          // onClick={handleAuth}
           >
             Sign in
           </Button>

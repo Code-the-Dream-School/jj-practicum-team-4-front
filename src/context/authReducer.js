@@ -13,7 +13,8 @@ const authReducer = (state, action) => {
         ...state,
         isAuthenticated: true,
         isLoading: false,
-        user: action.payload,
+        user: action.payload.user,
+        token: action.payload.token,
         error: null
       };
       
@@ -23,6 +24,7 @@ const authReducer = (state, action) => {
         isAuthenticated: false,
         isLoading: false,
         user: null,
+        token: null,
         error: action.payload
       };
       
@@ -32,6 +34,7 @@ const authReducer = (state, action) => {
         isAuthenticated: false,
         isLoading: false,
         user: null,
+        token: null,
         error: null
       };
       
@@ -39,6 +42,12 @@ const authReducer = (state, action) => {
       return {
         ...state,
         error: null
+      };
+    
+    case 'UPDATE_TOKEN':
+      return {
+        ...state,
+        token: action.payload
       };
       
     default:
