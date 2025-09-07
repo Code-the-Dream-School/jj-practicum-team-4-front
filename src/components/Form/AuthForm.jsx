@@ -17,24 +17,28 @@ import {
   Alert,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { testAuth } from "../../util/test";
+import { testAuth } from "../../services/test";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 function AuthForm() {
+  // user auth state management
   const [isFormSubmit, setIsFormSubmit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -71,6 +75,22 @@ function AuthForm() {
     }
   };
 
+  useEffect(() => {
+    testFetch();
+  }, []);
+
+  const testFetch = async () => {
+    try {
+      const res = await fetch(`${baseUrl}/auth/login`);
+      if (!res.ok) {
+        throw new Error(res.status);
+      }
+      const data = res.data;
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleGoogleLogin = () => {};
   return (
     <>

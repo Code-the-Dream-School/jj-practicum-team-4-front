@@ -25,17 +25,17 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   // Check if user is already logged in (from localStorage) when app loads
-  // const checkLoggedIn = async () => {
-  //   try {
-  //     const storedUser = localStorage.getItem("user");
-  //     if (storedUser) {
-  //       const user = JSON.parse(storedUser);
-  //     }
-  //   } catch (err) {}
-  // };
-  // useEffect(() => {
-  //   checkLoggedIn();
-  // }, []);
+  const checkLoggedIn = async () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+      }
+    } catch (err) {}
+  };
+  useEffect(() => {
+    checkLoggedIn();
+  }, []);
 
   const login = (userData) => {
     setUser(userData);
