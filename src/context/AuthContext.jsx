@@ -24,33 +24,51 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   // Check if user is already logged in (from localStorage) when app loads
   const checkLoggedIn = async () => {
+    console.log("checked local storage");
     try {
       const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-      }
-    } catch (err) {}
+      // if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      setUser(userData);
+      setIsAuthenticated(true);
+      console.log("Restored user from localStorage", userData);
+      // }
+    } catch (err) {
+      console.error("Error reading from localStorage", error);
+      localStorage.removeItem("user");
+    }
   };
   useEffect(() => {
     checkLoggedIn();
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    setIsAuthenticated(true);
-  };
+  // const login = (userData) => {
+  //   setUser(userData);
+  //   setIsAuthenticated(true);
+  // };
+  // const login = async (email, password) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const res = await login(email, password);
+  //     setError(null);
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-  };
+  // const logout = () => {
+  //   setUser(null);
+  //   setIsAuthenticated(false);
+  // };
 
   return (
-    <AuthContext.Provider
-      value={{ user, isAuthenticated, login, logout, isLoading }}
-    >
+    <AuthContext.Provider value={{ user, error, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

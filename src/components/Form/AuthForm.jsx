@@ -25,7 +25,7 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 function AuthForm() {
   // user auth state management
-  const [isFormSubmit, setIsFormSubmit] = useState(false);
+  // const [isFormSubmit, setIsFormSubmit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +38,7 @@ function AuthForm() {
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  // const { login } = useAuth();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -54,43 +54,46 @@ function AuthForm() {
     console.log(`submitted - email: ${email}, password: ${password}`);
     setIsLoading(true);
     setError("");
+    setAlertMessage("");
+    setAlertOpen(false);
 
     try {
       const user = await testAuth.login(email, password);
-      login(user);
-      console.log("login success:", user);
+      // login(user);
       setAlertOpen(true);
       setAlertSeverity("success");
       setAlertMessage("Login successful!");
+      console.log("login success:", user);
+
+      // TODO: store this user in Context
 
       // redirect to home page
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       setError(err.message);
-      setIsFormSubmit(false);
-      setAlertMessage("Login failed. Please check you credentials");
+      setAlertMessage("Invalid email or password");
       setAlertOpen(true);
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    testFetch();
-  }, []);
+  // useEffect(() => {
+  //   testFetch();
+  // }, []);
 
-  const testFetch = async () => {
-    try {
-      const res = await fetch(`${baseUrl}/auth/login`);
-      if (!res.ok) {
-        throw new Error(res.status);
-      }
-      const data = res.data;
-      console.log(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const testFetch = async () => {
+  //   try {
+  //     const res = await fetch(`${baseUrl}/auth/login`);
+  //     if (!res.ok) {
+  //       throw new Error(res.status);
+  //     }
+  //     const data = res.data;
+  //     console.log(data);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
   const handleGoogleLogin = () => {};
   return (
     <>
