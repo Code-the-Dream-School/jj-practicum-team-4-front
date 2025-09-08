@@ -165,13 +165,10 @@ export const authService = {
   // Logout user
   logout: async () => {
     try {
-      logApiCall("call", "/auth/logout");
       const res = await api.get("/auth/logout");
       localStorage.removeItem("user");
-      logApiCall("success", "/auth/logout");
       return res;
     } catch (error) {
-      logApiCall("error", "/auth/logout", {}, false, error);
       // Even on API error, we should remove the user from localStorage
       localStorage.removeItem("user");
       throw error;

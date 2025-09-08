@@ -84,6 +84,7 @@ function AuthForm() {
   };
 
   const handleGoogleLogin = () => {};
+
   return (
     <>
       <CssBaseline />

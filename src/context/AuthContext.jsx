@@ -1,12 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { authService } from "../services/api";
-import authReducer from "./authReducer";
 import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
@@ -22,7 +15,6 @@ const initialState = {
 
 // AuthProvider component that wraps the entire route
 export const AuthProvider = ({ children }) => {
-  // const [state, dispatch] = useReducer(authReducer, initialState);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +29,7 @@ export const AuthProvider = ({ children }) => {
         // check if token expired
         try {
           const decodedToken = jwtDecode(storedUser.token);
+          console.log(decodedToken);
           const currentTime = Date.now() / 1000;
 
           // if expired, logout user
@@ -107,28 +100,11 @@ export const AuthProvider = ({ children }) => {
       console.log("logging...");
       // Use the authService which is properly configured with credentials
       const response = await authService.login(email, password);
-
-      // setUser(userData);
-      console.log(response);
-
-      setUser(response);
+      const decodeUserToken = jwtDecode(response.token);
+      setUser({ user: response.user, token: decodeUserToken });
       setIsAuthenticated(true);
       localStorage.setItem("user", JSON.stringify(response));
       console.log("logon successful in authcontext:", response);
-      // if (response && response.token) {
-      //   console.log("Login successful, token received");
-      // dispatch({
-      //   type: "LOGIN_SUCCESS",
-      //   payload: {
-      //     user: response.user,
-      //     token: response.token,
-      //   },
-      // });
-
-      //   return response;
-      // } else {
-      //   throw new Error("Login failed: No token received");
-      // }
       return response;
     } catch (error) {
       console.error("Login error:", error);
@@ -136,14 +112,6 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("user");
-      // dispatch({
-      //   type: "LOGIN_FAILURE",
-      //   payload:
-      //     error.response?.data?.message ||
-      //     error.response?.data?.error ||
-      //     error.message ||
-      //     "Login failed. Please check your credentials.",
-      // });
       throw error;
     } finally {
       setIsLoading(false);
@@ -157,7 +125,6 @@ export const AuthProvider = ({ children }) => {
       // Use the authService which handles localStorage and is properly configured
       await authService.logout();
 
-      // dispatch({ type: "LOGOUT" });
       setUser(null);
       setIsAuthenticated(false);
       setError(null);
@@ -171,7 +138,6 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("user");
-      // dispatch({ type: "LOGOUT" });
     } finally {
       setIsLoading(false);
     }
