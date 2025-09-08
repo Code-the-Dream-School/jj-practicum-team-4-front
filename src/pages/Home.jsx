@@ -154,10 +154,10 @@ export default function Home() {
 
         {/* Top Most Liked/Voted Artworks Section */}
         <Box sx={{ p: 4, bgcolor: "grey.100", borderRadius: 2 }}>
-          <Typography variant="h5" align="center" gutterBottom>
+          <Typography variant="h3" align="center" gutterBottom>
             Top Most Liked/Voted Artworks
           </Typography>
-          {/* Future top artworks content goes here */}
+
           <Box
             sx={{
               display: "grid",
