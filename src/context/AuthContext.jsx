@@ -44,40 +44,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Register a new user
   const register = async (userData) => {
     dispatch({ type: "LOGIN_REQUEST" });
 
     try {
-      // console.log("Sending registration data:", {
-      //   ...userData,
-      //   password: "******",
-      // });
+      console.log("Sending registration data:", userData);
       // Use the authService which is properly configured with credentials
-      const response = await authService.register(userData);
+      const user = await authService.register(userData);
 
-      if (response && response.token) {
-        console.log("Registration successful, token received");
+      dispatch({
+        type: "LOGIN_SUCCESS",
+        payload: user,
+      });
 
-        dispatch({
-          type: "LOGIN_SUCCESS",
-          payload: {
-            user: response.user,
-            token: response.token,
-          },
-        });
-
-        return response;
-      } else {
-        throw new Error("Registration failed: No token received");
-      }
+      return user;
     } catch (error) {
       console.error("Registration error:", error);
       dispatch({
         type: "LOGIN_FAILURE",
         payload:
-          error.response?.data?.message ||
           error.response?.data?.error ||
-          error.message ||
           "Registration failed. Please try again.",
       });
       throw error;

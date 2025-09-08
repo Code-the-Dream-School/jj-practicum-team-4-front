@@ -21,6 +21,7 @@ import { testAuth } from "../../services/test";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getAllData, getData } from "../../util";
+import { authService } from "../../services/api";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 const baseGoogleUrl = import.meta.env.VITE_GOOGLE_AUTH_URL;
@@ -77,7 +78,7 @@ function AuthForm() {
     setAlertOpen(false);
 
     try {
-      const user = await testAuth.login(email, password);
+      const user = await authService.login(email, password);
       // login(user);
       setAlertOpen(true);
       setAlertSeverity("success");
@@ -97,22 +98,6 @@ function AuthForm() {
     }
   };
 
-  // useEffect(() => {
-  //   testFetch();
-  // }, []);
-
-  // const testFetch = async () => {
-  //   try {
-  //     const res = await fetch(`${baseUrl}/auth/login`);
-  //     if (!res.ok) {
-  //       throw new Error(res.status);
-  //     }
-  //     const data = res.data;
-  //     console.log(data);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
   const handleGoogleLogin = () => {};
   return (
     <>
