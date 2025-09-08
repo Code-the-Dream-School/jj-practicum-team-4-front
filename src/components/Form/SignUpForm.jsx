@@ -115,7 +115,7 @@ export const SignUpForm = () => {
       setAlertMessage("Registration successful!");
       setAlertSeverity("success");
 
-      setTimeout(() => navigate("/"), 1500);
+      setTimeout(() => navigate("/gallery"), 1500);
       console.log("Registration successful:", newUser);
     } catch (err) {
       console.error(err);

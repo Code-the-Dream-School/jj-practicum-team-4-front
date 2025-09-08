@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -19,8 +19,6 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { getAllData, getData } from "../../util";
-import { authService } from "../../services/api";
 
 function AuthForm() {
   // user auth state management
@@ -60,7 +58,7 @@ function AuthForm() {
       console.log("login success:");
 
       // redirect to home page
-      setTimeout(() => navigate("/"), 1500);
+      setTimeout(() => navigate("/gallery"), 1500);
     } catch (err) {
       setError(err.message);
       setAlertMessage("Invalid email or password");
