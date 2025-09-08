@@ -29,7 +29,6 @@ function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  // const [isLoading, setIsLoading] = useState(false);
 
   // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
@@ -37,8 +36,7 @@ function AuthForm() {
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
-  // const { login } = useAuth();
+  const { login, isLoading, user } = useAuth();
 
   // const getGoogleUsers = async () => {
   //   const allUsersData = await getAllData(baseGoogleUrl);
@@ -60,19 +58,15 @@ function AuthForm() {
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     console.log(`submitted - email: ${email}, password: ${password}`);
-    // setIsLoading(true);
-    // setError("");
     setAlertMessage("");
     setAlertOpen(false);
 
     try {
-      const user = await login(email, password);
+      await login(email, password);
       setAlertOpen(true);
       setAlertSeverity("success");
       setAlertMessage("Login successful!");
-      console.log("login success:", user);
-
-      // TODO: store this user in Context
+      console.log("login success:");
 
       // redirect to home page
       setTimeout(() => navigate("/"), 1500);

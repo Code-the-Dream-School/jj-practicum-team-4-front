@@ -62,31 +62,26 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Register a new user
-  // const register = async (userData) => {
-  //   dispatch({ type: "LOGIN_REQUEST" });
-
-  //   try {
-  //     console.log("Sending registration data:", userData);
-  //     // Use the authService which is properly configured with credentials
-  //     const user = await authService.register(userData);
-
-  //     dispatch({
-  //       type: "LOGIN_SUCCESS",
-  //       payload: user,
-  //     });
-
-  //     return user;
-  //   } catch (error) {
-  //     console.error("Registration error:", error);
-  //     dispatch({
-  //       type: "LOGIN_FAILURE",
-  //       payload:
-  //         error.response?.data?.error ||
-  //         "Registration failed. Please try again.",
-  //     });
-  //     throw error;
-  //   }
-  // };
+  const register = async (userData) => {
+    // dispatch({ type: "LOGIN_REQUEST" });
+    setIsLoading(true);
+    setError(null);
+    try {
+      console.log("Sending registration data:", userData);
+      // Use the authService which is properly configured with credentials
+      const newUserData = await authService.register(userData);
+      console.log(newUserData);
+      return newUserData;
+    } catch (error) {
+      console.error("Registration error:", error);
+      setError("Login failed", error);
+      setIsAuthenticated(false);
+      setUser(null);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     checkLoggedIn();
@@ -154,7 +149,7 @@ export const AuthProvider = ({ children }) => {
         error,
         isAuthenticated,
         isLoading,
-        // register,
+        register,
         login,
         logout,
         clearError,

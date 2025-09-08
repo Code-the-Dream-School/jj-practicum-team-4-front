@@ -110,10 +110,17 @@ export const SignUpForm = () => {
     });
 
     try {
-      const newUserData = await register(userData);
+      await register(userData);
+      setAlertOpen(true);
+      setAlertMessage("Registration successful!");
+      setAlertSeverity("success");
+
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       console.error(err);
+      setAlertMessage("Failed sign up. Please try again.");
+      setAlertSeverity("alert");
+      setAlertOpen(true);
     }
   };
 
