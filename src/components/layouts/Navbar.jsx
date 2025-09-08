@@ -162,7 +162,9 @@ function Navbar() {
                   onClick={handleOpenUserMenu}
                   sx={{ p: 0, order: { xs: 3, md: 0 } }}
                 >
-                  <Avatar>{!user ? "U" : user.user.fullName.charAt(0)}</Avatar>
+                  <Avatar>
+                    {!user ? "U" : user.user.fullName.charAt(0).toUpperCase()}
+                  </Avatar>
                 </IconButton>
               </Tooltip>
               <Menu
