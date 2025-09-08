@@ -17,6 +17,8 @@ import { Link } from "react-router-dom";
 
 function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,7 +26,6 @@ function SignUpForm() {
     password: "",
   });
 
-  console.log(formData);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));

@@ -20,8 +20,10 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { testAuth } from "../../services/test";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { getAllData, getData } from "../../util";
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const baseUrl = import.meta.env.VITE_API_URL;
+const baseGoogleUrl = import.meta.env.VITE_GOOGLE_AUTH_URL;
 
 function AuthForm() {
   // user auth state management
@@ -39,6 +41,23 @@ function AuthForm() {
 
   const navigate = useNavigate();
   // const { login } = useAuth();
+
+  // TESTING TO GET USER DATA
+  const getUsers = async () => {
+    const allUsersData = await getAllData(`${baseUrl}/auth/login`);
+    console.log(allUsersData);
+  };
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  // const getGoogleUsers = async () => {
+  //   const allUsersData = await getAllData(baseGoogleUrl);
+  //   console.log(allUsersData);
+  // };
+  // useEffect(() => {
+  //   getGoogleUsers();
+  // }, []);
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
