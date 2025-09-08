@@ -62,7 +62,11 @@ export const AuthProvider = ({ children }) => {
       console.log("Sending registration data:", userData);
       // Use the authService which is properly configured with credentials
       const newUserData = await authService.register(userData);
-      console.log(newUserData);
+
+      console.log("AuthContext File: Registration successful", newUserData);
+      setUser({ token: newUserData.token, user: newUserData.user });
+      setIsAuthenticated(true);
+      setError(null);
       return newUserData;
     } catch (error) {
       console.error("Registration error:", error);
