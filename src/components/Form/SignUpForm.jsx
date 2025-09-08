@@ -14,6 +14,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -31,6 +32,7 @@ export const SignUpForm = () => {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const { error, isLoading, register } = useAuth();
 
@@ -109,6 +111,7 @@ export const SignUpForm = () => {
 
     try {
       const newUserData = await register(userData);
+      setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       console.error(err);
     }

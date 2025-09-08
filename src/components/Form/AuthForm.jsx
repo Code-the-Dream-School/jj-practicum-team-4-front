@@ -17,14 +17,10 @@ import {
   Alert,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { testAuth } from "../../services/test";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getAllData, getData } from "../../util";
 import { authService } from "../../services/api";
-
-const baseUrl = import.meta.env.VITE_API_URL;
-const baseGoogleUrl = import.meta.env.VITE_GOOGLE_AUTH_URL;
 
 function AuthForm() {
   // user auth state management
@@ -33,7 +29,7 @@ function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
@@ -41,16 +37,8 @@ function AuthForm() {
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
   // const { login } = useAuth();
-
-  // TESTING TO GET USER DATA
-  const getUsers = async () => {
-    const allUsersData = await getAllData(`${baseUrl}/auth/user`);
-    console.log(allUsersData);
-  };
-  useEffect(() => {
-    getUsers();
-  }, []);
 
   // const getGoogleUsers = async () => {
   //   const allUsersData = await getAllData(baseGoogleUrl);
@@ -72,14 +60,13 @@ function AuthForm() {
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     console.log(`submitted - email: ${email}, password: ${password}`);
-    setIsLoading(true);
-    setError("");
+    // setIsLoading(true);
+    // setError("");
     setAlertMessage("");
     setAlertOpen(false);
 
     try {
-      const user = await authService.login(email, password);
-      // login(user);
+      const user = await login(email, password);
       setAlertOpen(true);
       setAlertSeverity("success");
       setAlertMessage("Login successful!");
@@ -93,8 +80,6 @@ function AuthForm() {
       setError(err.message);
       setAlertMessage("Invalid email or password");
       setAlertOpen(true);
-    } finally {
-      setIsLoading(false);
     }
   };
 

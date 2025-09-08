@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const pages = [
@@ -22,21 +22,22 @@ const pages = [
   "challenge prompt",
 ];
 const settings = ["Logout"];
+
 function Navbar() {
-  const { isAuthenticated, logout } = useAuth();
-  const [isAuth, setIsAuth] = React.useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const navigate = useNavigate();
 
-  const handleAuth = () => {
-    setIsAuth(true);
-    setAnchorElNav(null);
-  };
-
-  const handleLogout = () => {
-    setIsAuth(false);
-    logout;
-    setAnchorElUser(null);
+  // console.log(user.user.fullName.charAt(0));
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setAnchorElUser(null);
+      navigate("/");
+    } catch (err) {
+      console.error("logout failed:", err);
+    }
   };
 
   const handleOpenNavMenu = (event) => {
@@ -106,7 +107,7 @@ function Navbar() {
             onClose={handleCloseNavMenu}
             sx={{ display: { xs: "block", md: "none" } }}
           >
-            {pages.slice(0, isAuthenticated ? 4 : 3).map((page) => (
+            {pages.slice(0, isAuthenticated ? 5 : 4).map((page) => (
               <MenuItem key={page} onClick={handleCloseNavMenu}>
                 <Typography
                   color="primary"
@@ -125,7 +126,7 @@ function Navbar() {
           </Menu>
         </Box>
         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          {pages.slice(0, isAuthenticated ? 4 : 3).map((page) => (
+          {pages.slice(0, isAuthenticated ? 5 : 4).map((page) => (
             <Button
               component={Link}
               to={page === "home" ? "/" : page.replaceAll(" ", "-")}
@@ -144,7 +145,7 @@ function Navbar() {
                 onClick={handleOpenUserMenu}
                 sx={{ p: 0, order: { xs: 3, md: 0 } }}
               >
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar>{!user ? "U" : user.user.fullName.charAt(0)}</Avatar>
               </IconButton>
             </Tooltip>
             <Menu
@@ -183,7 +184,6 @@ function Navbar() {
             to="sign-in"
             color="inherit"
             sx={{ order: { xs: 3, md: 0 } }}
-            // onClick={handleAuth}
           >
             Sign in
           </Button>

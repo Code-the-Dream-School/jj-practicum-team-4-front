@@ -91,12 +91,13 @@ api.interceptors.request.use(
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (user && user.token) {
       config.headers["Authorization"] = `Bearer ${user.token}`;
-      logApiCall("request", config.url, {}, true);
+      // logApiCall("request", config.url, {}, true);
     }
     return config;
   },
   (error) => {
-    logApiCall("request", error.config?.url, {}, false, error);
+    // logApiCall("request", error.config?.url, {}, false, error);
+    console.log(error);
     return Promise.reject(error);
   }
 );
@@ -104,11 +105,11 @@ api.interceptors.request.use(
 // Add a response interceptor for logging
 api.interceptors.response.use(
   (response) => {
-    logApiCall("response", response.config.url, {}, true);
+    // logApiCall("response", response.config.url, {}, true);
     return response;
   },
   (error) => {
-    logApiCall("response", error.config?.url, {}, false, error);
+    // logApiCall("response", error.config?.url, {}, false, error);
     return Promise.reject(error);
   }
 );
@@ -118,23 +119,23 @@ export const authService = {
   // Login with email and password
   login: async (email, password) => {
     try {
-      logApiCall("call", "/auth/login", { email });
+      // logApiCall("call", "/auth/login", { email });
       // Ensure we're using absolute URL with the proper auth endpoint
       const response = await api.post("/auth/login", { email, password });
 
       if (response.data && response.data.token) {
         // Store user data and token in localStorage
         localStorage.setItem("user", JSON.stringify(response.data));
-        logApiCall("success", "/auth/login", { email });
+        // logApiCall("success", "/auth/login", { email });
       } else if (response.data) {
         // If we get a response but no token, log it clearly
         console.warn("Login successful but no token received:", response.data);
         localStorage.setItem("user", JSON.stringify(response.data));
-        logApiCall("partial", "/auth/login", { email });
+        // logApiCall("partial", "/auth/login", { email });
       }
       return response.data;
     } catch (error) {
-      logApiCall("error", "/auth/login", { email }, false, error);
+      // logApiCall("error", "/auth/login", { email }, false, error);
       throw error;
     }
   },
@@ -152,47 +153,6 @@ export const authService = {
     }
   },
 
-  // Register new user
-  // register: async (userData) => {
-  //   try {
-  //     logApiCall("call", "/auth/register", { ...userData, password: "******" });
-
-  // Log full request details for debugging
-  // console.log("Register request URL:", `${baseUrl}/auth/register`);
-  // console.log("Register headers:", {
-  //   "Content-Type": "application/json",
-  //   Origin: window.location.origin,
-  // });
-
-  // Make request with explicit configuration to help debug CORS issues
-  //     const response = await axios({
-  //       method: "post",
-  //       url: `${baseUrl}/auth/register`,
-  //       data: userData,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       withCredentials: true,
-  //     });
-
-  //     if (response.data && response.data.token) {
-  //       localStorage.setItem("user", JSON.stringify(response.data));
-  //       logApiCall("success", "/auth/register");
-  //     } else if (response.data) {
-  //       console.warn(
-  //         "Registration successful but no token received:",
-  //         response.data
-  //       );
-  //       localStorage.setItem("user", JSON.stringify(response.data));
-  //       logApiCall("partial", "/auth/register");
-  //     }
-  //     return response.data;
-  //   } catch (error) {
-  //     logApiCall("error", "/auth/register", {}, false, error);
-  //     throw error;
-  //   }
-  // },
-
   // Google OAuth login (redirects to backend Google auth route)
   loginWithGoogle: () => {
     const googleAuthUrl =
@@ -206,9 +166,10 @@ export const authService = {
   logout: async () => {
     try {
       logApiCall("call", "/auth/logout");
-      await api.get("/auth/logout");
+      const res = await api.get("/auth/logout");
       localStorage.removeItem("user");
       logApiCall("success", "/auth/logout");
+      return res;
     } catch (error) {
       logApiCall("error", "/auth/logout", {}, false, error);
       // Even on API error, we should remove the user from localStorage

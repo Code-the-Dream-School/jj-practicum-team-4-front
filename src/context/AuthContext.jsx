@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { authService } from "../services/api";
 import authReducer from "./authReducer";
+import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
 // initial state for the auth reducer
@@ -21,7 +22,7 @@ const initialState = {
 
 // AuthProvider component that wraps the entire route
 export const AuthProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  // const [state, dispatch] = useReducer(authReducer, initialState);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,15 +30,38 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is already logged in (from localStorage) when app loads
   const checkLoggedIn = async () => {
-    // console.log("checked local storage");
     try {
-      const storedUser = localStorage.getItem("user");
-      // if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setUser(userData);
-      setIsAuthenticated(true);
-      // console.log("Restored user from localStorage", userData);
-      // }
+      const storedUser = authService.getCurrentUser();
+
+      if (storedUser && storedUser.token) {
+        // check if token expired
+        try {
+          const decodedToken = jwtDecode(storedUser.token);
+          const currentTime = Date.now() / 1000;
+
+          // if expired, logout user
+          if (decodedToken.exp && decodedToken.exp < currentTime) {
+            console.log("token expired, logging out user");
+            localStorage.removeItem("user");
+            setUser(null);
+            setIsAuthenticated(false);
+            setError(null);
+            return;
+          }
+
+          //if token is valid, set user as authenticated
+          console.log("token is valid, user authenticated", storedUser);
+          setUser(storedUser);
+          setIsAuthenticated(true);
+          setError(null);
+        } catch (tokenError) {
+          console.error("invalid token:", tokenError);
+          localStorage.removeItem("user");
+          setUser(null);
+          setIsAuthenticated(false);
+          setError(null);
+        }
+      }
     } catch (err) {
       console.error("Error reading from localStorage", error);
       localStorage.removeItem("user");
@@ -45,59 +69,131 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Register a new user
-  const register = async (userData) => {
-    dispatch({ type: "LOGIN_REQUEST" });
+  // const register = async (userData) => {
+  //   dispatch({ type: "LOGIN_REQUEST" });
 
-    try {
-      console.log("Sending registration data:", userData);
-      // Use the authService which is properly configured with credentials
-      const user = await authService.register(userData);
-
-      dispatch({
-        type: "LOGIN_SUCCESS",
-        payload: user,
-      });
-
-      return user;
-    } catch (error) {
-      console.error("Registration error:", error);
-      dispatch({
-        type: "LOGIN_FAILURE",
-        payload:
-          error.response?.data?.error ||
-          "Registration failed. Please try again.",
-      });
-      throw error;
-    }
-  };
-
-  useEffect(() => {
-    checkLoggedIn();
-  }, [user]);
-
-  // const login = (userData) => {
-  //   setUser(userData);
-  //   setIsAuthenticated(true);
-  // };
-  // const login = async (email, password) => {
-  //   setIsLoading(true);
   //   try {
-  //     const res = await login(email, password);
-  //     setError(null);
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setIsLoading(false);
+  //     console.log("Sending registration data:", userData);
+  //     // Use the authService which is properly configured with credentials
+  //     const user = await authService.register(userData);
+
+  //     dispatch({
+  //       type: "LOGIN_SUCCESS",
+  //       payload: user,
+  //     });
+
+  //     return user;
+  //   } catch (error) {
+  //     console.error("Registration error:", error);
+  //     dispatch({
+  //       type: "LOGIN_FAILURE",
+  //       payload:
+  //         error.response?.data?.error ||
+  //         "Registration failed. Please try again.",
+  //     });
+  //     throw error;
   //   }
   // };
 
-  // const logout = () => {
-  //   setUser(null);
-  //   setIsAuthenticated(false);
-  // };
+  useEffect(() => {
+    checkLoggedIn();
+  }, []);
+
+  const login = async (email, password) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      console.log("logging...");
+      // Use the authService which is properly configured with credentials
+      const response = await authService.login(email, password);
+
+      // setUser(userData);
+      console.log(response);
+
+      setUser(response);
+      setIsAuthenticated(true);
+      localStorage.setItem("user", JSON.stringify(response));
+      console.log("logon successful in authcontext:", response);
+      // if (response && response.token) {
+      //   console.log("Login successful, token received");
+      // dispatch({
+      //   type: "LOGIN_SUCCESS",
+      //   payload: {
+      //     user: response.user,
+      //     token: response.token,
+      //   },
+      // });
+
+      //   return response;
+      // } else {
+      //   throw new Error("Login failed: No token received");
+      // }
+      return response;
+    } catch (error) {
+      console.error("Login error:", error);
+      setError(error.message);
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("user");
+      // dispatch({
+      //   type: "LOGIN_FAILURE",
+      //   payload:
+      //     error.response?.data?.message ||
+      //     error.response?.data?.error ||
+      //     error.message ||
+      //     "Login failed. Please check your credentials.",
+      // });
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    setIsLoading(true);
+
+    try {
+      // Use the authService which handles localStorage and is properly configured
+      await authService.logout();
+
+      // dispatch({ type: "LOGOUT" });
+      setUser(null);
+      setIsAuthenticated(false);
+      setError(null);
+
+      // clear local storage
+      localStorage.removeItem("user");
+      console.log("logout successful");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if there's an error with the API call, the authService will still handle localStorage
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("user");
+      // dispatch({ type: "LOGOUT" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const clearError = () => {
+    setError(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, error, isLoading, register }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        error,
+        isAuthenticated,
+        isLoading,
+        // register,
+        login,
+        logout,
+        clearError,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
