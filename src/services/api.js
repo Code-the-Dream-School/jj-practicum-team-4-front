@@ -139,46 +139,59 @@ export const authService = {
     }
   },
 
-  // Register new user
   register: async (userData) => {
     try {
-      logApiCall("call", "/auth/register", { ...userData, password: "******" });
-
-      // Log full request details for debugging
-      // console.log("Register request URL:", `${baseUrl}/auth/register`);
-      // console.log("Register headers:", {
-      //   "Content-Type": "application/json",
-      //   Origin: window.location.origin,
-      // });
-
-      // Make request with explicit configuration to help debug CORS issues
-      const response = await axios({
-        method: "post",
-        url: `${baseUrl}/auth/register`,
-        data: userData,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
-
-      if (response.data && response.data.token) {
+      // Auth endpoints are mounted at root in the backend
+      const response = await api.post("/auth/register", userData);
+      if (response.data) {
         localStorage.setItem("user", JSON.stringify(response.data));
-        logApiCall("success", "/auth/register");
-      } else if (response.data) {
-        console.warn(
-          "Registration successful but no token received:",
-          response.data
-        );
-        localStorage.setItem("user", JSON.stringify(response.data));
-        logApiCall("partial", "/auth/register");
       }
       return response.data;
     } catch (error) {
-      logApiCall("error", "/auth/register", {}, false, error);
       throw error;
     }
   },
+
+  // Register new user
+  // register: async (userData) => {
+  //   try {
+  //     logApiCall("call", "/auth/register", { ...userData, password: "******" });
+
+  // Log full request details for debugging
+  // console.log("Register request URL:", `${baseUrl}/auth/register`);
+  // console.log("Register headers:", {
+  //   "Content-Type": "application/json",
+  //   Origin: window.location.origin,
+  // });
+
+  // Make request with explicit configuration to help debug CORS issues
+  //     const response = await axios({
+  //       method: "post",
+  //       url: `${baseUrl}/auth/register`,
+  //       data: userData,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       withCredentials: true,
+  //     });
+
+  //     if (response.data && response.data.token) {
+  //       localStorage.setItem("user", JSON.stringify(response.data));
+  //       logApiCall("success", "/auth/register");
+  //     } else if (response.data) {
+  //       console.warn(
+  //         "Registration successful but no token received:",
+  //         response.data
+  //       );
+  //       localStorage.setItem("user", JSON.stringify(response.data));
+  //       logApiCall("partial", "/auth/register");
+  //     }
+  //     return response.data;
+  //   } catch (error) {
+  //     logApiCall("error", "/auth/register", {}, false, error);
+  //     throw error;
+  //   }
+  // },
 
   // Google OAuth login (redirects to backend Google auth route)
   loginWithGoogle: () => {
