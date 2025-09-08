@@ -3,14 +3,6 @@ import { authService } from "../services/api";
 import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
-// initial state for the auth reducer
-const initialState = {
-  user: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
-};
-
 // Using api service for all API calls
 
 // AuthProvider component that wraps the entire route

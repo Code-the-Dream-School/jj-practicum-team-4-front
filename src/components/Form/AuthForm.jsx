@@ -24,7 +24,6 @@ import { authService } from "../../services/api";
 
 function AuthForm() {
   // user auth state management
-  // const [isFormSubmit, setIsFormSubmit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,14 +36,6 @@ function AuthForm() {
 
   const navigate = useNavigate();
   const { login, isLoading, user } = useAuth();
-
-  // const getGoogleUsers = async () => {
-  //   const allUsersData = await getAllData(baseGoogleUrl);
-  //   console.log(allUsersData);
-  // };
-  // useEffect(() => {
-  //   getGoogleUsers();
-  // }, []);
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -92,7 +83,7 @@ function AuthForm() {
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: "600px", width: "100%" }}>
-          <Box>
+          <Box sx={{ mb: 5 }}>
             <Typography
               variant="h4"
               component="h1"
@@ -100,10 +91,14 @@ function AuthForm() {
             >
               sign in
             </Typography>
-            <Box sx={{ mb: 5, pl: 1 }}>
+            <Box sx={{ pl: 1 }}>
               <Typography
                 component="span"
-                sx={{ textTransform: "capitalize", pr: 0.5, fontSize: "14px" }}
+                sx={{
+                  textTransform: "capitalize",
+                  pr: 0.5,
+                  fontSize: "14px",
+                }}
               >
                 new user?
               </Typography>
