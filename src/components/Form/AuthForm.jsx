@@ -44,7 +44,7 @@ function AuthForm() {
 
   // TESTING TO GET USER DATA
   const getUsers = async () => {
-    const allUsersData = await getAllData(`${baseUrl}/auth/login`);
+    const allUsersData = await getAllData(`${baseUrl}/auth/user`);
     console.log(allUsersData);
   };
   useEffect(() => {

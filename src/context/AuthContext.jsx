@@ -5,22 +5,23 @@ import React, {
   useReducer,
   useState,
 } from "react";
-
+import { authService } from "../services/api";
+import authReducer from "./authReducer";
 const AuthContext = createContext();
 
 // initial state for the auth reducer
-// const initialState = {
-//   user: null,
-//   isAuthenticated: false,
-//   isLoading: false,
-//   error: null,
-// };
+const initialState = {
+  user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  error: null,
+};
 
 // Using api service for all API calls
 
 // AuthProvider component that wraps the entire route
 export const AuthProvider = ({ children }) => {
-  // const [state, dispatch] = useReducer(authReducer, initialState);
+  const [state, dispatch] = useReducer(authReducer, initialState);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,23 +29,64 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is already logged in (from localStorage) when app loads
   const checkLoggedIn = async () => {
-    console.log("checked local storage");
+    // console.log("checked local storage");
     try {
       const storedUser = localStorage.getItem("user");
       // if (storedUser) {
       const userData = JSON.parse(storedUser);
       setUser(userData);
       setIsAuthenticated(true);
-      console.log("Restored user from localStorage", userData);
+      // console.log("Restored user from localStorage", userData);
       // }
     } catch (err) {
       console.error("Error reading from localStorage", error);
       localStorage.removeItem("user");
     }
   };
+
+  const register = async (userData) => {
+    dispatch({ type: "LOGIN_REQUEST" });
+
+    try {
+      // console.log("Sending registration data:", {
+      //   ...userData,
+      //   password: "******",
+      // });
+      // Use the authService which is properly configured with credentials
+      const response = await authService.register(userData);
+
+      if (response && response.token) {
+        console.log("Registration successful, token received");
+
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: {
+            user: response.user,
+            token: response.token,
+          },
+        });
+
+        return response;
+      } else {
+        throw new Error("Registration failed: No token received");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      dispatch({
+        type: "LOGIN_FAILURE",
+        payload:
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Registration failed. Please try again.",
+      });
+      throw error;
+    }
+  };
+
   useEffect(() => {
     checkLoggedIn();
-  }, []);
+  }, [user]);
 
   // const login = (userData) => {
   //   setUser(userData);
@@ -68,7 +110,7 @@ export const AuthProvider = ({ children }) => {
   // };
 
   return (
-    <AuthContext.Provider value={{ user, error, isLoading }}>
+    <AuthContext.Provider value={{ user, error, isLoading, register }}>
       {children}
     </AuthContext.Provider>
   );
