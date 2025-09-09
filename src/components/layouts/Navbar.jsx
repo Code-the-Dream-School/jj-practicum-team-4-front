@@ -42,7 +42,7 @@ function Navbar() {
       setAlertSeverity("info");
 
       setTimeout(() => {
-        (navigate("/sign-in"), setAlertOpen(false), setAlertMessage(null));
+        (navigate("/gallery"), setAlertOpen(false), setAlertMessage(null));
       }, 1000);
     } catch (err) {
       console.error("logout failed:", err);

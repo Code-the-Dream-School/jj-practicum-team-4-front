@@ -7,9 +7,8 @@ const AuthContext = createContext();
 // Initial state for the auth reducer
 const initialState = {
   user: null,
-  token: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true, // Start with loading true while we check authentication
   error: null,
 };
 
@@ -17,41 +16,28 @@ const initialState = {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Check if user is already logged in (from localStorage) when app loads
+  // Check if user is already logged in via server session when app loads
   const checkLoggedIn = async () => {
+    dispatch({ type: "LOGIN_REQUEST" }); // Set loading state
+    
     try {
-      const storedUser = authService.getCurrentUser();
-
-      if (storedUser && storedUser.token) {
-        // check if token expired
-        try {
-          const decodedToken = jwtDecode(storedUser.token);
-          console.log(decodedToken);
-          const currentTime = Date.now() / 1000;
-
-          // if expired, logout user
-          if (decodedToken.exp && decodedToken.exp < currentTime) {
-            console.log("token expired, logging out user");
-            localStorage.removeItem("user");
-            dispatch({ type: "LOGOUT" });
-            return;
-          }
-
-          //if token is valid, set user as authenticated
-          console.log("token is valid, user authenticated", storedUser);
-          dispatch({
-            type: "LOGIN_SUCCESS",
-            payload: { user: storedUser.user, token: decodedToken },
-          });
-        } catch (tokenError) {
-          console.error("invalid token:", tokenError);
-          localStorage.removeItem("user");
-          dispatch({ type: "LOGIN_FAILURE" });
-        }
+      // This will verify with the server if the user is authenticated
+      // using httpOnly cookies that are automatically included in the request
+      const userData = await authService.getCurrentUser();
+      
+      if (userData && userData.isAuthenticated) {
+        // If the server validates the session, update the state
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: { user: userData.user }
+        });
+      } else {
+        // User is not authenticated
+        dispatch({ type: "LOGOUT" });
       }
     } catch (err) {
-      console.error("Error reading from localStorage", error);
-      localStorage.removeItem("user");
+      console.error("Error checking authentication status:", err);
+      dispatch({ type: "LOGOUT" });
     }
   };
 
@@ -59,27 +45,26 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     dispatch({ type: "LOGIN_REQUEST" });
     try {
-      console.log("Sending registration data:", userData);
-      // Use the authService which is properly configured with credentials
-      const res = await authService.register(userData);
-      if (res && res.token) {
-        console.log("AuthContext File: Registration successful", res);
+      // The register API call will set the httpOnly cookie for us
+      const response = await authService.register(userData);
+      
+      if (response && response.user) {
         dispatch({
           type: "LOGIN_SUCCESS",
-          payload: { user: res.user, token: res.token },
+          payload: { user: response.user }
         });
-        return res;
+        console.log("Registration successful");
+        return response;
       } else {
-        throw new Error("Registration failed. no token received");
+        throw new Error("Registration failed - no user data received");
       }
     } catch (error) {
       console.error("Registration error:", error);
       dispatch({
         type: "LOGIN_FAILURE",
-        payload:
-          error.response?.data?.error ||
-          error.message ||
-          "Registration failed. Please try again",
+        payload: error.response?.data?.message || 
+                 error.message || 
+                 "Registration failed. Please try again",
       });
       throw error;
     }
@@ -89,55 +74,61 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkLoggedIn();
+    
+    // Listen for session expired events (from token refresh failures)
+    const handleSessionExpired = () => {
+      console.warn('Session expired event received');
+      dispatch({ type: "SESSION_EXPIRED" });
+    };
+    
+    window.addEventListener('auth:sessionExpired', handleSessionExpired);
+    
+    return () => {
+      window.removeEventListener('auth:sessionExpired', handleSessionExpired);
+    };
   }, []);
 
   const login = async (email, password) => {
     dispatch({ type: "LOGIN_REQUEST" });
     try {
-      console.log("logging...");
-      // Use the authService which is properly configured with credentials
+      // The login API call will set the httpOnly cookie for us
       const response = await authService.login(email, password);
-      if (response && response.token) {
-        const decodeUserToken = jwtDecode(response.token);
+      
+      if (response && response.user) {
         dispatch({
           type: "LOGIN_SUCCESS",
-          payload: { user: response.user, token: decodeUserToken },
+          payload: { user: response.user }
         });
-        localStorage.setItem("user", JSON.stringify(response));
-        console.log("logon successful in authcontext:", response);
+        console.log("Login successful");
         return response;
       } else {
-        throw new Error("Login failed");
+        throw new Error("Login failed - no user data received");
       }
     } catch (error) {
       console.error("Login error:", error);
       dispatch({
         type: "LOGIN_FAILURE",
-        payload: "Login failed. Please check your email and password",
+        payload: error.response?.data?.message || "Login failed. Please check your email and password",
       });
-      localStorage.removeItem("user");
       throw error;
     }
   };
 
   const logout = async () => {
     try {
-      // Use the authService which handles localStorage and is properly configured
+      // The logout API call will clear the httpOnly cookie for us
       await authService.logout();
       dispatch({ type: "LOGOUT" });
-      // clear local storage
-      localStorage.removeItem("user");
-      console.log("logout successful");
+      console.log("Logout successful");
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if there's an error with the API call, the authService will still handle localStorage
+      // Even if there's an error with the API call, we should still update the UI
       dispatch({ type: "LOGOUT" });
-      localStorage.removeItem("user");
     }
   };
 
   const clearError = () => {
-    setError(null);
+    dispatch({ type: "CLEAR_ERROR" });
   };
 
   return (

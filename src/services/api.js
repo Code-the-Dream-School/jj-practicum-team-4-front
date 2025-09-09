@@ -85,31 +85,121 @@ const logApiCall = (
   }
 };
 
-// Add a request interceptor to include auth token if it exists
+// Implement CSRF protection for sensitive operations
+let csrfToken = null;
+
+// Function to get a CSRF token from the server
+const fetchCsrfToken = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/auth/csrf-token`, { withCredentials: true });
+    if (response.data && response.data.csrfToken) {
+      csrfToken = response.data.csrfToken;
+      return csrfToken;
+    }
+    console.error('Failed to get CSRF token');
+    return null;
+  } catch (error) {
+    console.error('Error fetching CSRF token:', error);
+    return null;
+  }
+};
+
+// Add CSRF token to requests that need it
 api.interceptors.request.use(
-  (config) => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (user && user.token) {
-      config.headers["Authorization"] = `Bearer ${user.token}`;
-      // logApiCall("request", config.url, {}, true);
+  async (config) => {
+    // List of methods that modify state and require CSRF protection
+    const sensitiveOperations = ['/auth/login', '/auth/register', '/auth/logout', '/auth/refresh-token'];
+    const isPrivilegedOperation = sensitiveOperations.some(op => config.url?.includes(op));
+    const isModifyingMethod = ['post', 'put', 'patch', 'delete'].includes(config.method?.toLowerCase());
+    
+    // Only add CSRF token for sensitive operations
+    if (isModifyingMethod && isPrivilegedOperation) {
+      // Get token if we don't have one
+      if (!csrfToken) {
+        csrfToken = await fetchCsrfToken();
+      }
+      
+      if (csrfToken) {
+        config.headers['X-CSRF-Token'] = csrfToken;
+      } else {
+        console.warn('No CSRF token available for protected operation');
+      }
     }
     return config;
   },
   (error) => {
-    // logApiCall("request", error.config?.url, {}, false, error);
-    console.log(error);
+    console.log("Request error:", error);
     return Promise.reject(error);
   }
 );
 
-// Add a response interceptor for logging
+// Add a response interceptor for handling token refresh
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve();
+    }
+  });
+  
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => {
-    // logApiCall("response", response.config.url, {}, true);
     return response;
   },
-  (error) => {
-    // logApiCall("response", error.config?.url, {}, false, error);
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // If the error is 401 and we haven't already tried to refresh
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // If we're already refreshing, wait for the refresh to complete
+        return new Promise(function(resolve, reject) {
+          failedQueue.push({resolve, reject});
+        })
+          .then(() => {
+            return api(originalRequest);
+          })
+          .catch(err => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Call refresh token endpoint
+        const res = await api.post('/auth/refresh-token');
+        
+        if (res.status === 200) {
+          // Token refreshed successfully
+          processQueue(null);
+          return api(originalRequest);
+        } else {
+          // Handle token refresh failure
+          // This might happen if the refresh token is invalid or expired
+          // In that case, we should log the user out
+          processQueue(new Error('Token refresh failed'));
+          window.dispatchEvent(new CustomEvent('auth:sessionExpired'));
+          return Promise.reject(error);
+        }
+      } catch (refreshError) {
+        processQueue(refreshError);
+        // If refresh token fails, dispatch session expired event
+        window.dispatchEvent(new CustomEvent('auth:sessionExpired'));
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
     return Promise.reject(error);
   }
 );
@@ -119,24 +209,22 @@ export const authService = {
   // Login with email and password
   login: async (email, password) => {
     try {
-      // logApiCall("call", "/auth/login", { email });
-      // Ensure we're using absolute URL with the proper auth endpoint
+      // Credentials are included automatically because withCredentials: true
       const response = await api.post("/auth/login", { email, password });
 
-      if (response.data && response.data.token) {
-        // Store user data and token in localStorage
-        localStorage.setItem("user", JSON.stringify(response.data));
-        // logApiCall("success", "/auth/login", { email });
+      // We no longer store the token in localStorage as it comes in as httpOnly cookie
+      // Instead we just store user info for UI purposes
+      if (response.data && response.data.user) {
+        localStorage.setItem("userInfo", JSON.stringify(response.data.user));
       } else if (response.data) {
-        // If we get a response but no token, log it clearly
-        console.warn("Login successful but no token received:", response.data);
-        localStorage.setItem("user", JSON.stringify(response.data));
-        // logApiCall("partial", "/auth/login", { email });
+        console.warn("Login successful but user data not received:", response.data);
       }
       return response.data;
     } catch (error) {
-      // logApiCall("error", "/auth/login", { email }, false, error);
-      throw error;
+      localStorage.removeItem("userInfo");
+      const errorMessage = error.response?.data?.message || error.message || "Login failed. Please try again.";
+      console.error("Login error:", errorMessage);
+      throw { message: errorMessage, originalError: error };
     }
   },
 
@@ -144,12 +232,16 @@ export const authService = {
     try {
       // Auth endpoints are mounted at root in the backend
       const response = await api.post("/auth/register", userData);
-      if (response.data) {
-        localStorage.setItem("user", JSON.stringify(response.data));
+      // Only store user info (not tokens) for UI purposes
+      if (response.data && response.data.user) {
+        localStorage.setItem("userInfo", JSON.stringify(response.data.user));
       }
       return response.data;
     } catch (error) {
-      throw error;
+      localStorage.removeItem("userInfo");
+      const errorMessage = error.response?.data?.message || error.message || "Registration failed. Please try again.";
+      console.error("Registration error:", errorMessage);
+      throw { message: errorMessage, originalError: error };
     }
   },
 
@@ -166,12 +258,15 @@ export const authService = {
   logout: async () => {
     try {
       const res = await api.get("/auth/logout");
-      localStorage.removeItem("user");
+      // We still need to clean up the user info from localStorage
+      localStorage.removeItem("userInfo");
       return res;
     } catch (error) {
       // Even on API error, we should remove the user from localStorage
-      localStorage.removeItem("user");
-      throw error;
+      localStorage.removeItem("userInfo");
+      const errorMessage = error.response?.data?.message || error.message || "Logout failed, but session cleared locally.";
+      console.error("Logout error:", errorMessage);
+      throw { message: errorMessage, originalError: error };
     }
   },
 
@@ -189,31 +284,42 @@ export const authService = {
   },
 
   // Get the current user from localStorage
-  getCurrentUser: () => {
+  getCurrentUser: async () => {
     try {
-      const user = localStorage.getItem("user");
-      if (user) {
-        return JSON.parse(user);
+      // First check if we have basic user info in localStorage
+      const userInfo = localStorage.getItem("userInfo");
+      
+      // Then verify with the server that the session is still valid
+      // This will work because httpOnly cookies are sent automatically
+      const response = await api.get("/auth/me");
+      
+      if (response.data && response.data.user) {
+        // Update the stored user info with the latest from the server
+        localStorage.setItem("userInfo", JSON.stringify(response.data.user));
+        return {
+          user: response.data.user,
+          isAuthenticated: true
+        };
       }
+      
+      // If server says we're not authenticated, clean up localStorage
+      localStorage.removeItem("userInfo");
       return null;
     } catch (error) {
-      logApiCall("error", "getCurrentUser", {}, false, error);
+      // If there's an error (like 401 Unauthorized), clean up localStorage
+      localStorage.removeItem("userInfo");
       return null;
     }
   },
 
   // Get the authorization token
-  getToken: () => {
+  // We no longer need to get tokens directly since they're stored in httpOnly cookies
+  isAuthenticated: async () => {
     try {
-      const user = localStorage.getItem("user");
-      if (user) {
-        const userData = JSON.parse(user);
-        return userData.token;
-      }
-      return null;
+      const response = await api.get("/auth/me");
+      return response.status === 200;
     } catch (error) {
-      logApiCall("error", "getToken", {}, false, error);
-      return null;
+      return false;
     }
   },
 };
