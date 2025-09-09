@@ -118,9 +118,8 @@ export const SignUpForm = () => {
       setTimeout(() => navigate("/gallery"), 1500);
       console.log("Registration successful:", newUser);
     } catch (err) {
-      console.error(err);
-      setAlertMessage("Failed sign up. Please try again.");
-      setAlertSeverity("alert");
+      setAlertMessage(error);
+      setAlertSeverity("error");
       setAlertOpen(true);
     }
   };

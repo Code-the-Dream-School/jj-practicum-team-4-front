@@ -25,7 +25,6 @@ function AuthForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
 
   // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
@@ -33,7 +32,7 @@ function AuthForm() {
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const navigate = useNavigate();
-  const { login, isLoading, user } = useAuth();
+  const { login, isLoading } = useAuth();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -60,7 +59,6 @@ function AuthForm() {
       // redirect to home page
       setTimeout(() => navigate("/gallery"), 1500);
     } catch (err) {
-      setError(err.message);
       setAlertMessage("Invalid email or password");
       setAlertOpen(true);
     }

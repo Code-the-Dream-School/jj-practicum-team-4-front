@@ -163,7 +163,7 @@ function Navbar() {
                   sx={{ p: 0, order: { xs: 3, md: 0 } }}
                 >
                   <Avatar>
-                    {!user ? "U" : user.user.fullName.charAt(0).toUpperCase()}
+                    {!user ? "U" : user.fullName.charAt(0).toUpperCase()}
                   </Avatar>
                 </IconButton>
               </Tooltip>
