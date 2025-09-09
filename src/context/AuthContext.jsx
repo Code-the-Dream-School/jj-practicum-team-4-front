@@ -19,12 +19,30 @@ export const AuthProvider = ({ children }) => {
   // Check if user is already logged in via server session when app loads
   const checkLoggedIn = async () => {
     dispatch({ type: "LOGIN_REQUEST" }); // Set loading state
-    
+
     try {
-      // This will verify with the server if the user is authenticated
+      // First check if we have user info in localStorage (could be from Google auth)
+      const storedUserInfo = localStorage.getItem("userInfo");
+      const storedToken = localStorage.getItem("token");
+
+      if (storedUserInfo && storedToken) {
+        // We have stored user data, set authenticated state
+        const userData = JSON.parse(storedUserInfo);
+        
+        // Log stored user data for debugging
+        console.log('Loading user from localStorage:', userData);
+        
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: { user: userData }
+        });
+        return; // Exit early, we're authenticated
+      }
+
+      // If no stored data, verify with the server if the user is authenticated
       // using httpOnly cookies that are automatically included in the request
       const userData = await authService.getCurrentUser();
-      
+
       if (userData && userData.isAuthenticated) {
         // If the server validates the session, update the state
         dispatch({
@@ -47,7 +65,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // The register API call will set the httpOnly cookie for us
       const response = await authService.register(userData);
-      
+
       if (response && response.user) {
         dispatch({
           type: "LOGIN_SUCCESS",
@@ -62,9 +80,9 @@ export const AuthProvider = ({ children }) => {
       console.error("Registration error:", error);
       dispatch({
         type: "LOGIN_FAILURE",
-        payload: error.response?.data?.message || 
-                 error.message || 
-                 "Registration failed. Please try again",
+        payload: error.response?.data?.message ||
+          error.message ||
+          "Registration failed. Please try again",
       });
       throw error;
     }
@@ -74,15 +92,15 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkLoggedIn();
-    
+
     // Listen for session expired events (from token refresh failures)
     const handleSessionExpired = () => {
       console.warn('Session expired event received');
       dispatch({ type: "SESSION_EXPIRED" });
     };
-    
+
     window.addEventListener('auth:sessionExpired', handleSessionExpired);
-    
+
     return () => {
       window.removeEventListener('auth:sessionExpired', handleSessionExpired);
     };
@@ -93,7 +111,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // The login API call will set the httpOnly cookie for us
       const response = await authService.login(email, password);
-      
+
       if (response && response.user) {
         dispatch({
           type: "LOGIN_SUCCESS",
@@ -118,17 +136,42 @@ export const AuthProvider = ({ children }) => {
     try {
       // The logout API call will clear the httpOnly cookie for us
       await authService.logout();
+      // Clear localStorage items related to authentication
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
+
       dispatch({ type: "LOGOUT" });
       console.log("Logout successful");
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if there's an error with the API call, we should still update the UI
+      // Even if there's an error with the API call, we should still clear stored data
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
       dispatch({ type: "LOGOUT" });
     }
   };
 
   const clearError = () => {
     dispatch({ type: "CLEAR_ERROR" });
+  };
+
+  // Google OAuth login function
+  const loginWithGoogle = () => {
+    dispatch({ type: "LOGIN_REQUEST" });
+    try {
+      // This will redirect the user to Google's OAuth page
+      authService.loginWithGoogle();
+      // The rest of the authentication will be handled when redirected back
+      // So we don't need to dispatch any actions here
+      return true;
+    } catch (error) {
+      console.error("Google login error:", error);
+      dispatch({
+        type: "LOGIN_FAILURE",
+        payload: "Failed to initiate Google login"
+      });
+      return false;
+    }
   };
 
   return (
@@ -138,6 +181,7 @@ export const AuthProvider = ({ children }) => {
         register,
         login,
         logout,
+        loginWithGoogle,
         clearError,
       }}
     >

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Icon, Modal } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Icon, Modal, Snackbar, Alert } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import { CssBaseline } from "@mui/material";
 import UserCard from "../components/usercard/usercard.jsx";
@@ -22,14 +22,62 @@ import {
 import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
 import SubmissionForm from "../components/Form/SubmissionForm.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Gallery() {
   const { isAuthenticated } = useAuth();
   const [step, setStep] = useState(1);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
-  // TODO: Replace with actual authentication logic
-  const isLoggedIn = true; // Set to true to simulate logged-in user
+  const [showAuthSuccess, setShowAuthSuccess] = useState(false);
+  const location = useLocation();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if the URL has auth=success query parameter
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('auth') === 'success') {
+      // Get token and user data from URL if available
+      const token = searchParams.get('token');
+      const userDataParam = searchParams.get('userData');
+
+      if (token && userDataParam) {
+        try {
+          // Parse the user data
+          const userData = JSON.parse(decodeURIComponent(userDataParam));
+          
+          // Log the received user data for debugging
+          console.log('Received user data from Google auth:', userData);
+          
+          // Store token and user data in localStorage
+          localStorage.setItem('token', token);
+          
+          // Make sure picture field is explicitly included in stored userInfo
+          const userInfoToStore = {
+            ...userData,
+            picture: userData.picture || null,
+            fullName: userData.fullName || ''
+          };
+          
+          localStorage.setItem('userInfo', JSON.stringify(userInfoToStore));
+          
+          // Show success notification
+          setShowAuthSuccess(true);
+          
+          // Reload to refresh authentication state
+          setTimeout(() => window.location.reload(), 1000);
+        } catch (err) {
+          console.error('Error processing authentication data:', err);
+        }
+      } else {
+        setShowAuthSuccess(true);
+      }
+
+      // Clean up the URL to remove the query parameters
+      window.history.replaceState({}, document.title, location.pathname);
+    }
+  }, [location, navigate]);
   // Placeholder artwork data
   const [artworks] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
@@ -265,6 +313,22 @@ export default function Gallery() {
           </Box>
         </Modal>
       </Container>
+
+      {/* Authentication success notification */}
+      <Snackbar
+        open={showAuthSuccess}
+        autoHideDuration={6000}
+        onClose={() => setShowAuthSuccess(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setShowAuthSuccess(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Successfully logged in with Google!
+        </Alert>
+      </Snackbar>
     </>
   );
 }

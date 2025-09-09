@@ -32,7 +32,7 @@ function AuthForm() {
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login, loginWithGoogle, isLoading } = useAuth();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -64,7 +64,18 @@ function AuthForm() {
     }
   };
 
-  const handleGoogleLogin = () => {};
+  const handleGoogleLogin = () => {
+    setAlertMessage("");
+    setAlertOpen(false);
+    try {
+      loginWithGoogle();
+      // No need to handle redirect here as it's done in the authService
+    } catch (err) {
+      setAlertMessage("Failed to connect to Google authentication");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+    }
+  };
 
   return (
     <>
