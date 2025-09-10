@@ -21,8 +21,10 @@ import {
 } from "@mui/material";
 import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
 import SubmissionForm from "../components/Form/SubmissionForm.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Gallery() {
+  const { isAuthenticated } = useAuth();
   const [step, setStep] = useState(1);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -146,7 +148,7 @@ export default function Gallery() {
                 </Typography>
               </Box>
             </Stack>
-            {isLoggedIn && (
+            {isAuthenticated && (
               <>
                 <Button
                   variant="contained"
