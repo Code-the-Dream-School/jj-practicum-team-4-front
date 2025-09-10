@@ -169,7 +169,6 @@ export const authService = {
       localStorage.removeItem("user");
       return res;
     } catch (error) {
-      // Even on API error, we should remove the user from localStorage
       localStorage.removeItem("user");
       throw error;
     }
