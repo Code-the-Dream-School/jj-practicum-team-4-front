@@ -1,13 +1,19 @@
 import axios from "axios";
 
 // note: not used, but could be used with GET with params
-const getData = async (url, params) => {
+const getData = async (url, data, config = {}) => {
   try {
-    let res = await axios.get(url, params);
-    let data = await res.data;
-    return data;
+    let res = await axios.get(url, data, {
+      ...config,
+      withCredentials: true,
+    });
+
+    // let data = await res.data;
+    // return data;
+    return res.data;
   } catch (error) {
     console.log(error, `error - getData in ${url} route`);
+    throw error;
   }
 };
 
@@ -18,6 +24,59 @@ const getAllData = async (url) => {
     return data;
   } catch (error) {
     console.log(error, `error - getAllData in ${url} route`);
+    throw error;
+  }
+};
+
+const postData = async (url, data, config = {}) => {
+  try {
+    const res = await axios.post(url, data, {
+      ...config,
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error, `error - postData in ${url} route`);
+    throw error;
+  }
+};
+
+const patchData = async (url, data, config = {}) => {
+  try {
+    let res = await axios.patch(url, data, {
+      ...config,
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error, `error - patchData in ${url} route`);
+    throw error;
+  }
+};
+
+const putData = async (url, data, config = {}) => {
+  try {
+    const res = await axios.put(url, data, {
+      ...config,
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error, `error - putData in ${url} route`);
+    throw error;
+  }
+};
+
+const deleteData = async (url, config = {}) => {
+  try {
+    const res = await axios.delete(url, {
+      ...config,
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error, `error - deleteData in ${url} route`);
+    throw error;
   }
 };
 
@@ -29,4 +88,4 @@ const isEmpty = (value) => {
   );
 };
 
-export { getData, getAllData, isEmpty };
+export { getData, getAllData, postData, patchData, putData, deleteData, isEmpty };
