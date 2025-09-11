@@ -1,6 +1,7 @@
 import * as React from "react";
 // file import
 import { isEmpty } from "../../util";
+import { postData } from "../../services/test";
 
 // MUI import
 import CloseIcon from "@mui/icons-material/Close";
@@ -25,19 +26,21 @@ const mediaTypeOptions = ["mixed media", "waterColor", "oil paint", "pencil"];
 
 function SubmissionForm({ setOpen, setStep }) {
   const [isSubmit, setIsSubmit] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [errors, setErrors] = React.useState({});
-  const [formValues, setFormValues] = React.useState({
-    imageUrl: "",
+  const [formData, setFormData] = React.useState({
+    image_url: "",
     title: "",
-    mediaType: "",
+    media_tag: "",
     description: "",
-    mediaLink: "",
+    social_link: "",
+    createdAt: "",
   });
 
   const formRules = {
-    imageUrl: { required: true },
+    image_url: { required: true },
     title: { required: true },
-    mediaType: { required: true },
+    media_tag: { required: true },
     description: { required: true },
     mediaLink: { required: false },
   };
@@ -46,9 +49,9 @@ function SubmissionForm({ setOpen, setStep }) {
     const { name, value } = e.target;
     if (e.target.type === "file") {
       const file = e.target.files[0];
-      setFormValues((prev) => ({ ...prev, [name]: file.name }));
+      setFormData((prev) => ({ ...prev, [name]: file.name }));
     } else {
-      setFormValues((prevVal) => ({ ...prevVal, [name]: value }));
+      setFormData((prevVal) => ({ ...prevVal, [name]: value }));
     }
 
     if (errors[name]) {
@@ -69,10 +72,22 @@ function SubmissionForm({ setOpen, setStep }) {
     if (isEmpty(value)) return;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("submitted", formValues);
-    setIsSubmit(true);
+    setIsLoading(true);
+    const payload = {
+      ...formData,
+      createdAt: new Date().toISOString(),
+    };
+    try {
+      const response = await postData(payload);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      setStep(2);
+    }
   };
 
   return (
@@ -151,30 +166,29 @@ function SubmissionForm({ setOpen, setStep }) {
             }}
           >
             <Button
-              color={!formValues.imageUrl ? "primary" : "success"}
+              color={!formData.image_url ? "primary" : "success"}
               component="label"
               role={undefined}
               variant="contained"
               tabIndex={-1}
               startIcon={<CloudUploadIcon />}
-              aria-required
               onBlur={handleBlur}
             >
-              {!formValues.imageUrl ? "Upload files" : "File Uploaded"}
+              {!formData.image_url ? "Upload files" : "File Uploaded"}
               <Input
                 sx={{
                   display: "none",
                 }}
                 type="file"
                 required
-                name="imageUrl"
+                name="image_url"
                 onChange={handleChange}
               />
             </Button>
             <FormHelperText sx={{ mt: 2, textAlign: "center" }}>
-              {!formValues.imageUrl
+              {!formData.image_url
                 ? "File rules shows here e.g. JPG, JPEC, PNG and WEBP. Max 15MB."
-                : `File Name: ${formValues.imageUrl}`}
+                : `File Name: ${formData.image_url}`}
             </FormHelperText>
           </Box>
         </Box>
@@ -188,10 +202,10 @@ function SubmissionForm({ setOpen, setStep }) {
               required
               fullWidth
               size="small"
-              value={formValues.title}
+              value={formData.title}
               onChange={handleChange}
               onBlur={handleBlur}
-              helperText={!formValues.title.trim() && "Required"}
+              helperText={!formData.title.trim() && "Required"}
             />
           </Grid>
 
@@ -203,7 +217,7 @@ function SubmissionForm({ setOpen, setStep }) {
               }}
               fullWidth
               required
-              error={!!errors.mediaType}
+              error={!!errors.media_tag}
             >
               <InputLabel id="demo-simple-select-standard-label">
                 Media Type
@@ -211,10 +225,10 @@ function SubmissionForm({ setOpen, setStep }) {
               <Select
                 labelId="demo-simple-select-standard-label"
                 id="demo-simple-select-standard"
-                value={formValues.mediaType}
+                value={formData.media_tag}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                name="mediaType"
+                name="media_tag"
                 label="Media Type"
               >
                 <MenuItem value="">
@@ -230,8 +244,8 @@ function SubmissionForm({ setOpen, setStep }) {
                   </MenuItem>
                 ))}
               </Select>
-              {!formValues.mediaType && (
-                <FormHelperText error={!!errors.mediaType}>
+              {!formData.media_tag && (
+                <FormHelperText error={!!errors.media_tag}>
                   Required
                 </FormHelperText>
               )}
@@ -250,10 +264,10 @@ function SubmissionForm({ setOpen, setStep }) {
           rows={4}
           onChange={handleChange}
           onBlur={handleBlur}
-          value={formValues.description}
+          value={formData.description}
           placeholder="Tell us about your artwork..."
           sx={{ mb: 2 }}
-          helperText={!formValues.description.trim() && "Required"}
+          helperText={!formData.description.trim() && "Required"}
         />
 
         <TextField
@@ -263,7 +277,7 @@ function SubmissionForm({ setOpen, setStep }) {
           label="Social Media Link (optional)"
           fullWidth
           onChange={handleChange}
-          value={formValues.mediaLink}
+          value={formData.mediaLink}
           sx={{ mb: 2 }}
         />
         <Box
@@ -279,10 +293,10 @@ function SubmissionForm({ setOpen, setStep }) {
           </Button>
           <Button
             disabled={
-              !formValues.title ||
-              !formValues.imageUrl ||
-              !formValues.mediaType ||
-              !formValues.description ||
+              !formData.title ||
+              !formData.image_url ||
+              !formData.media_tag ||
+              !formData.description ||
               isSubmit
             }
             variant="contained"
@@ -293,7 +307,7 @@ function SubmissionForm({ setOpen, setStep }) {
               textTransform: "capitalize",
               fontSize: "1.1rem",
             }}
-            onClick={() => setStep(2)}
+            onClick={handleSubmit}
           >
             {isSubmit ? "Submitted" : "next"}
           </Button>

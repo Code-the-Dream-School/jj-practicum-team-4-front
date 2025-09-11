@@ -67,7 +67,10 @@ export default function Gallery() {
   return (
     <>
       <CssBaseline />
-      <Container maxWidth="xl" disableGutters>
+      <Container
+        // maxWidth="xl"
+        disableGutters
+      >
         <Box
           sx={{
             backgroundColor: "#f5f5f7",
@@ -211,10 +214,10 @@ export default function Gallery() {
         >
           {artworks.map((art) => (
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
+              // item
+              // xs={12}
+              // sm={6}
+              // md={4}
               key={art.id}
               sx={{ display: "flex", justifyContent: "center" }}
             >

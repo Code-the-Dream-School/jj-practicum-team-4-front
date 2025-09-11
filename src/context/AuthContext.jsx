@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         // check if token expired
         try {
           const decodedToken = jwtDecode(storedUser.token);
-          console.log(decodedToken);
+          // console.log(decodedToken);
           const currentTime = Date.now() / 1000;
 
           // if expired, logout user
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
           }
 
           //if token is valid, set user as authenticated
-          console.log("token is valid, user authenticated", storedUser);
+          // console.log("token is valid, user authenticated", storedUser);
           dispatch({
             type: "LOGIN_SUCCESS",
             payload: { user: storedUser.user, token: decodedToken },

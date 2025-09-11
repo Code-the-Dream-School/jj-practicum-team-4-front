@@ -1,0 +1,68 @@
+{
+  "artwork": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "prompt_id": 1,
+      "image_url": "https://example.com/images/artwork1.png",
+      "title": "Sunset Over the Ocean",
+      "description": "A digital painting of a vibrant sunset with waves reflecting warm colors.",
+      "media_tag": "digital-painting",
+      "like_counter": 0,
+      "createdAt": "2025-09-10T17:00:00Z"
+    },
+    {
+      "id": "53cc",
+      "image_url": "",
+      "title": "arthive",
+      "media_tag": "",
+      "description": "fdafdasfdasfdasfdasf",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:31:54.867Z",
+      "imageUrl": "arthive_logo.png",
+      "mediaType": "waterColor",
+      "mediaLink": "fdasfdas"
+    },
+    {
+      "id": "440c",
+      "image_url": "",
+      "title": "arthive",
+      "media_tag": "",
+      "description": "fdafdafda",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:35:04.705Z",
+      "imageUrl": "arthive_logo.png",
+      "mediaType": "waterColor",
+      "mediaLink": "fdasfdas"
+    },
+    {
+      "id": "2ee2",
+      "image_url": "arthive_logo.png",
+      "title": "arthive",
+      "media_tag": "mixed media",
+      "description": "fdafdasfdsafdasfdasfdsa",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:40:46.893Z",
+      "mediaLink": "fdasfdsa"
+    },
+    {
+      "id": "0d56",
+      "image_url": "arthive_logo-removebg-preview.png",
+      "title": "arthive",
+      "media_tag": "waterColor",
+      "description": "fdasfdasfdasfdsafdasfda",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:41:36.974Z"
+    },
+    {
+      "id": "559b",
+      "image_url": "arthive_logo.png",
+      "title": "arthive",
+      "media_tag": "mixed media",
+      "description": "fdafdafdafdafdasfd",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:44:28.184Z",
+      "mediaLink": "fdsa"
+    }
+  ]
+}
