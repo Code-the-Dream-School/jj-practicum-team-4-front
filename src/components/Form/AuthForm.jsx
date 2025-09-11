@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -12,15 +13,26 @@ import {
   TextField,
   Typography,
   Avatar,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function AuthForm() {
-  const [isFormSubmit, setIsFormSubmit] = useState(false);
+  // user auth state management
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // UI alert
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("error");
+
+  const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -31,13 +43,29 @@ function AuthForm() {
     }
   };
 
-  const handleAuthSubmit = (e) => {
+  const handleAuthSubmit = async (e) => {
     e.preventDefault();
-    setIsFormSubmit(true);
     console.log(`submitted - email: ${email}, password: ${password}`);
+    setAlertMessage("");
+    setAlertOpen(false);
+
+    try {
+      await login(email, password);
+      setAlertOpen(true);
+      setAlertSeverity("success");
+      setAlertMessage("Login successful!");
+      console.log("login success:");
+
+      // redirect to home page
+      setTimeout(() => navigate("/gallery"), 1500);
+    } catch (err) {
+      setAlertMessage("Invalid email or password");
+      setAlertOpen(true);
+    }
   };
 
   const handleGoogleLogin = () => {};
+
   return (
     <>
       <CssBaseline />
@@ -51,7 +79,7 @@ function AuthForm() {
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: "600px", width: "100%" }}>
-          <Box>
+          <Box sx={{ mb: 5 }}>
             <Typography
               variant="h4"
               component="h1"
@@ -59,10 +87,14 @@ function AuthForm() {
             >
               sign in
             </Typography>
-            <Box sx={{ mb: 5, pl: 1 }}>
+            <Box sx={{ pl: 1 }}>
               <Typography
                 component="span"
-                sx={{ textTransform: "capitalize", pr: 0.5, fontSize: "14px" }}
+                sx={{
+                  textTransform: "capitalize",
+                  pr: 0.5,
+                  fontSize: "14px",
+                }}
               >
                 new user?
               </Typography>
@@ -123,13 +155,13 @@ function AuthForm() {
               />
             </FormControl>
             <Button
-              disabled={isFormSubmit || (!email && !password)}
+              disabled={isLoading || (!email && !password)}
               type="submit"
               variant="contained"
               size="large"
               sx={{ textTransform: "capitalize", mt: 3 }}
             >
-              {isFormSubmit ? "loading" : "sign in"}
+              {isLoading ? "Logging in..." : "sign in"}
             </Button>
           </Box>
           <Divider sx={{ color: "grey" }}>or</Divider>
@@ -154,6 +186,20 @@ function AuthForm() {
           </Box>
         </Container>
       </Box>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        // onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          // onClose={handleCloseAlert}
+          severity={alertSeverity}
+          sx={{ width: "100%" }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import axios from "axios";
 
+const baseUrl = import.meta.env.VITE_API_URL;
 // note: not used, but could be used with GET with params
 const getData = async (url, data, config = {}) => {
   try {
@@ -19,7 +20,14 @@ const getData = async (url, data, config = {}) => {
 
 const getAllData = async (url) => {
   try {
-    let res = await axios.get(url);
+    const token = localStorage.getItem("token");
+
+    let res = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
     let data = await res.data;
     return data;
   } catch (error) {

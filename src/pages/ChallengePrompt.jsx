@@ -16,6 +16,10 @@ import {
   Stack,
   CircularProgress ,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,35 +27,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { getData, postData, patchData, deleteData } from "../util";
 
-// const initialPrompts = [
-//   {
-//     id: 1,
-//     title: "Self-Portrait Reimagined",
-//     description:
-//       "Create a self-portrait — but with a twist. Imagine yourself in another time, place, or even as a fantasy being.",
-//     rules:
-//       "Must be based on you." +
-//       "Can be realistic, abstract, or stylized." +
-//       "No offensive or disrespectful depictions.",
-//     startDate: "2025-08-10",
-//     endDate: "2025-08-17",
-//     status: "ACTIVE",
-//   },
-//   {
-//     id: 2,
-//     title: "Myth & Legends",
-//     description:
-//       "Depict a mythological creature, character, or story from any culture.",
-//     rules:
-//       "Must include a written note about which myth inspired the artwork." +
-//       "Respect cultural origins." +
-//       "No copyrighted characters.",
 
-//     startDate: "2025-08-02",
-//     endDate: "2025-08-09",
-//     status: "CLOSED",
-//   },
-// ];
 
 const statusOptions = ["ACTIVE", "CLOSED"];
 
@@ -75,9 +51,9 @@ export default function ChallengePrompts() {
   const [isCreating, setIsCreating] = useState(false);
   // const URL = `${import.meta.env.VITE_API_URL}prompts/active`;
   const BASE_URL = import.meta.env.VITE_API_URL;
-  const ACTIVE_URL = `${BASE_URL}prompts/active`;
-  const ALL_URL = `${BASE_URL}prompts/all`;
-  const PROMPTS_URL = `${BASE_URL}prompts`;
+  const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
+  const ALL_URL = `${BASE_URL}/api/prompts/all`;
+  const PROMPTS_URL = `${BASE_URL}/api/prompts`;
 
 
   const handleChange = (e) => {
@@ -94,6 +70,16 @@ export default function ChallengePrompts() {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US');
+  };
+  const showSuccess = (message) => {
+    setSuccess(message);
+    setTimeout(() => setSuccess(null), 5000);
+  };
+
+  // Show error message temporarily
+  const showError = (message) => {
+    setError(message);
+    setTimeout(() => setError(null), 8000);
   };
 
   const formatFormForAPI = (formData) => {
@@ -140,6 +126,7 @@ export default function ChallengePrompts() {
     } catch (error) {
       console.error("Error fetching prompt:", error);
       setError("Failed to load challenge prompts. Please try again.");
+      setPrompts([]);
     } finally {
       setLoading(false);
     }
@@ -162,6 +149,7 @@ export default function ChallengePrompts() {
     } catch (error) {
       console.error("Error fetching all prompts:", error);
       setError("Failed to load all challenge prompts. Please try again.");
+      setPrompts([]);
     } finally {
       setLoading(false);
     }
@@ -170,35 +158,7 @@ export default function ChallengePrompts() {
   useEffect(() => {
     fetchActivePrompt();
   }, []);
-  // useEffect(() => {
-  //   const fetchPrompt = async () => {
-  //     try {
-  //       const response = await getData(URL);
-  //       console.log("API response:", response);
-
-  //       if (response?.prompt) {
-  //         const p = response.prompt;
-  //         const formatted = {
-  //           id: p._id,
-  //           title: p.title,
-  //           description: p.description,
-  //           rules: p.rule || "",
-  //           startDate: p.start_date ? p.start_date.slice(0, 10) : "",
-  //           endDate: p.end_date ? p.end_date.slice(0, 10) : "",
-  //           status: p.is_active ? "ACTIVE" : "CLOSED",
-  //         };
-  //         setPrompts([formatted]); // 👈 always array
-  //       } else {
-  //         setPrompts([]); // no active prompt
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching prompt:", error);
-  //     }
-  //   };
-
-  //   fetchPrompt();
-  // }, []);
-
+  
   const handleCreate = () => {
     setIsCreating(true);
     setEditingId(null);
@@ -211,6 +171,7 @@ export default function ChallengePrompts() {
       status: "ACTIVE",
     });
     setError(null);
+    setSuccess(null);
   };
 
   const handleSave = async() => {
@@ -218,11 +179,12 @@ export default function ChallengePrompts() {
       setError("Please fill in all required fields.");
       return;
     }
+    setSaving(true);
+    setError(null);
 
 
     try {
-      setSaving(true);
-      setError(null);
+      
 
       const apiData = formatFormForAPI(form);
       console.log("Sending data:", apiData);
@@ -236,19 +198,30 @@ export default function ChallengePrompts() {
       setPrompts((prev) =>
         prev.map((p) => (p.id === editingId ? formatted : p)),
       );
-    }
-      setEditingId(null);
+       setEditingId(null); 
+    } else {
+          showError(response?.message || "Failed to update challenge prompt");
+        }
+      // setEditingId(null);
     } else {
       const response = await postData(PROMPTS_URL, apiData);
         console.log("Create response:", response);
         
         if (response?.success && response?.prompt) {
+          showSuccess("Challenge prompt created successfully!");
           const formatted = formatPromptFromAPI(response.prompt);
           setPrompts((prev) => [...prev, formatted]);
-        }
+          setIsCreating(false);
+        
       // setPrompts((prev) => [...prev, { ...form, id: Date.now() }]);
-      setIsCreating(false);
-    }
+      
+    } else {
+          showError(response?.message || "Failed to create challenge prompt");
+        }
+      }
+      
+      // Reset form on success
+      if (response?.success) {
     setForm({
       title: "",
       description: "",
@@ -257,9 +230,13 @@ export default function ChallengePrompts() {
       endDate: "",
       status: "ACTIVE",
     });
+  }
     } catch (error) {
       console.error("Error saving prompt:", error);
-      setError("Failed to save prompt. Please try again.");
+      const errorMessage = error?.response?.data?.message || 
+                          (editingId ? "Failed to update challenge prompt" : "Failed to create challenge prompt");
+      showError(errorMessage);
+      // setError("Failed to save prompt. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -270,27 +247,39 @@ export default function ChallengePrompts() {
     setForm({ ...prompt });
     setIsCreating(false);
     setError(null);
+    setSuccess(null);
   };
-
-  const handleDelete = async(id) => {
-    if (!window.confirm("Are you sure you want to delete this challenge prompt?")) {
-      return;
-    }
-
+  const handleDeleteClick = (prompt) => {
+    setPromptToDelete(prompt);
+    setDeleteConfirmOpen(true);
+  };
+  const handleDeleteConfirm = async(id) => {
+    // if (!window.confirm("Are you sure you want to delete this challenge prompt?")) {
+    //   return;
+    // }
+    if (!promptToDelete) return;
+     setSaving(true);
+     setError(null);
     try {
-      setError(null);
-      const response = await deleteData(`${PROMPTS_URL}/${id}`);
+      // setError(null);
+      const response = await deleteData(`${PROMPTS_URL}/${promptToDelete.id}`);
       console.log("Delete response:", response);
       
       if (response?.success) {
          showSuccess("Challenge prompt deleted successfully!");
-    setPrompts((prev) => prev.filter((p) => p.id !== id));
+    setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete.id));
       } else {
         showError(response?.message || "Failed to delete challenge prompt");
       }
       } catch (error) {
       console.error("Error deleting prompt:", error);
-      setError("Failed to delete prompt. Please try again.");
+      // setError("Failed to delete prompt. Please try again.");
+      const errorMessage = error?.response?.data?.message || "Failed to delete challenge prompt";
+      showError(errorMessage);
+    }finally {
+      setSaving(false);
+      setDeleteConfirmOpen(false);
+      setPromptToDelete(null);
     }
   };
     const handleDeleteCancel = () => {
@@ -310,6 +299,7 @@ export default function ChallengePrompts() {
       status: "ACTIVE",
     });
     setError(null);
+    setSuccess(null);
   };
 
   const handleRefresh = () => {
@@ -343,6 +333,11 @@ export default function ChallengePrompts() {
           {error}
         </Alert>
       )}
+      {success && (
+        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
+          {success}
+        </Alert>
+      )}
 
       <Stack direction="row" spacing={2} mb={2}>
         <Button variant="contained" onClick={handleCreate} disabled={saving}>
@@ -374,6 +369,8 @@ export default function ChallengePrompts() {
               fullWidth
               required
               disabled={saving}
+              error={!form.title.trim() && (isCreating || editingId)}
+              helperText={!form.title.trim() && (isCreating || editingId) ? "Title is required" : ""}
             />
             <TextField
               label="Description"
@@ -381,21 +378,26 @@ export default function ChallengePrompts() {
               value={form.description}
               onChange={handleChange}
               multiline
-              rows={2}
+              rows={3}
               fullWidth
               required
               disabled={saving}
+              error={!form.description.trim() && (isCreating || editingId)}
+              helperText={!form.description.trim() && (isCreating || editingId) ? "Description is required" : ""}
             />
+            
             <TextField
               label="Rules"
               name="rules"
               value={form.rules}
               onChange={handleChange}
               multiline
-              rows={2}
+              rows={3}
               fullWidth
               required
               disabled={saving}
+              error={!form.rules.trim() && (isCreating || editingId)}
+              helperText={!form.rules.trim() && (isCreating || editingId) ? "Rules are required" : ""}
             />
             <Stack direction="row" spacing={2}>
               <TextField
@@ -407,7 +409,11 @@ export default function ChallengePrompts() {
                 InputLabelProps={{ shrink: true }}
                 required
                 disabled={saving}
+                error={!form.startDate && (isCreating || editingId)}
+                helperText={!form.startDate && (isCreating || editingId) ? "Start date is required" : ""}
               />
+                
+              
               <TextField
                 label="End Date"
                 name="endDate"
@@ -417,7 +423,10 @@ export default function ChallengePrompts() {
                 InputLabelProps={{ shrink: true }}
                 required
                 disabled={saving}
+                error={!form.endDate && (isCreating || editingId)}
+                helperText={!form.endDate && (isCreating || editingId) ? "End date is required" : ""}
               />
+              
               <TextField
                 select
                 label="Status"
@@ -510,7 +519,7 @@ export default function ChallengePrompts() {
                         <EditIcon />
                       </IconButton>
                       <IconButton
-                        onClick={() => handleDelete(prompt.id)}
+                        onClick={() => handleDeleteClick(prompt.id)}
                         sx={{ bgcolor: "#E6B6B6" }}
                         disabled={saving}
                       >
@@ -532,6 +541,29 @@ export default function ChallengePrompts() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog open={deleteConfirmOpen} onClose={handleDeleteCancel}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete the challenge prompt {promptToDelete?.title}? 
+            This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} disabled={saving}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteConfirm} 
+            color="error" 
+            variant="contained"
+            disabled={saving}
+            startIcon={saving ? <CircularProgress size={16} /> : null}
+          >
+            {saving ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
