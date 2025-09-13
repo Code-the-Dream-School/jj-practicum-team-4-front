@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import Box from "@mui/material/Box";
@@ -14,8 +14,18 @@ import {
   Select,
   Typography,
 } from "@mui/material";
+import { getSubmissionData } from "../../services/test";
 
 function SubmissionPreview({ setOpen, setStep }) {
+  const previewData = async () => {
+    const res = await getSubmissionData();
+    console.log(res);
+  };
+
+  useEffect(() => {
+    previewData();
+  }, []);
+
   const [formValues, setFormValues] = React.useState({
     imageUrl: "images.jpeg",
     title: "Arthive",

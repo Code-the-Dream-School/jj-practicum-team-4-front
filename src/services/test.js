@@ -13,12 +13,25 @@ const postData = async (submissionData) => {
   try {
     const res = await api.post("/artwork", submissionData);
     if (!res.data) {
-      throw new error(res.status);
+      throw new Error(res.status);
     }
+    console.log(res);
     return { status: res.status, data: res.data };
   } catch (error) {
     console.log(error.response?.data?.message || error.message);
   }
 };
 
-export { postData };
+const getSubmissionData = async () => {
+  try {
+    const res = await api.get("/artwork");
+    if (!res.data) {
+      throw new Error(res.status);
+    }
+    console.log("getting submission data", res.data);
+  } catch (error) {
+    console.log(error.response?.data?.message || error.message);
+  }
+};
+
+export { postData, getSubmissionData };

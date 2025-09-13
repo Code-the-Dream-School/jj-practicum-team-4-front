@@ -1,7 +1,7 @@
 {
   "artwork": [
     {
-      "id": 1,
+      "id": "1",
       "user_id": 1,
       "prompt_id": 1,
       "image_url": "https://example.com/images/artwork1.png",
@@ -63,6 +63,60 @@
       "social_link": "",
       "createdAt": "2025-09-11T01:44:28.184Z",
       "mediaLink": "fdsa"
+    },
+    {
+      "id": "9c82",
+      "image_url": "arthive_logo-removebg-preview.png",
+      "title": "arthive",
+      "media_tag": "mixed media",
+      "description": "afdafdasfdasfdas",
+      "social_link": "",
+      "createdAt": "2025-09-12T16:49:34.229Z"
+    },
+    {
+      "id": "2649",
+      "image_url": "arthive_logo.png",
+      "title": "arthive ",
+      "media_tag": "mixed media",
+      "description": "fdasfdafdafda",
+      "social_link": "",
+      "createdAt": "2025-09-12T16:56:10.010Z"
+    },
+    {
+      "id": "c65a",
+      "image_url": "image.png",
+      "title": "trqtreq",
+      "media_tag": "mixed media",
+      "description": "fdafda",
+      "social_link": "",
+      "createdAt": "2025-09-12T17:17:47.773Z"
+    },
+    {
+      "id": "f276",
+      "image_url": "image.png",
+      "title": "fafda",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "",
+      "createdAt": "2025-09-12T17:23:01.932Z"
+    },
+    {
+      "id": "37ae",
+      "image_url": "arthive_logo.png",
+      "title": "Arthive",
+      "media_tag": "waterColor",
+      "description": "fdafdafdafdasfdsafsa",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "9891",
+      "image_url": "arthive_logo.png",
+      "title": "fdafda",
+      "media_tag": "oil paint",
+      "description": "fdafdafda",
+      "social_link": "null",
+      "createdAt": ""
     }
   ]
 }

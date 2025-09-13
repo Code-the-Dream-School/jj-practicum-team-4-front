@@ -49,6 +49,23 @@ function SubmissionForm({ setOpen, setStep }) {
     const { name, value } = e.target;
     if (e.target.type === "file") {
       const file = e.target.files[0];
+      // console.log({ name: file.name, size: file.size, type: file.type });
+      // console.log(file.type.startsWith("image/"));
+      if (!file.type.startsWith("image/")) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "Please select an image file!",
+        }));
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        // console.log("file too large!");
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "File too large! File must not exceed 5MB",
+        }));
+        return;
+      }
       setFormData((prev) => ({ ...prev, [name]: file.name }));
     } else {
       setFormData((prevVal) => ({ ...prevVal, [name]: value }));
@@ -59,6 +76,7 @@ function SubmissionForm({ setOpen, setStep }) {
     }
   };
 
+  console.log(errors);
   const handleBlur = (e) => {
     const { name, value } = e.target;
     const fieldRules = formRules[name];
@@ -75,12 +93,23 @@ function SubmissionForm({ setOpen, setStep }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const payload = {
-      ...formData,
+    setFormData((prevData) => ({
+      ...prevData,
       createdAt: new Date().toISOString(),
-    };
+    }));
+    const newFormData = new FormData();
+    newFormData.append("image_url", formData.image_url);
+    newFormData.append("title", formData.title);
+    newFormData.append("media_tag", formData.media_tag);
+    newFormData.append("description", formData.description);
+    newFormData.append(
+      "social_link",
+      formData.social_link ? formData.social_link : null
+    );
+    newFormData.append("createdAt", formData.createdAt);
+
     try {
-      const response = await postData(payload);
+      const response = await postData(newFormData);
       console.log(response);
     } catch (error) {
       console.log(error);
@@ -161,12 +190,18 @@ function SubmissionForm({ setOpen, setStep }) {
               borderRadius: 2,
               bgcolor: "grey.50",
               border: "2px dashed",
-              borderColor: "grey.300",
+              borderColor: errors.image_url ? "red" : "grey.300",
               transition: "border-color 0.2s ease",
             }}
           >
             <Button
-              color={!formData.image_url ? "primary" : "success"}
+              color={
+                formData.image_url
+                  ? errors.image_url
+                    ? "primary"
+                    : "success"
+                  : "primary"
+              }
               component="label"
               role={undefined}
               variant="contained"
@@ -187,9 +222,14 @@ function SubmissionForm({ setOpen, setStep }) {
             </Button>
             <FormHelperText sx={{ mt: 2, textAlign: "center" }}>
               {!formData.image_url
-                ? "File rules shows here e.g. JPG, JPEC, PNG and WEBP. Max 15MB."
+                ? "Only JPG and JPEG. Max 5MB."
                 : `File Name: ${formData.image_url}`}
             </FormHelperText>
+            {errors.image_url && (
+              <FormHelperText error sx={{ mt: 2, textAlign: "center" }}>
+                {errors.image_url}
+              </FormHelperText>
+            )}
           </Box>
         </Box>
         <Grid container spacing={2} sx={{ my: 2 }}>
@@ -297,6 +337,10 @@ function SubmissionForm({ setOpen, setStep }) {
               !formData.image_url ||
               !formData.media_tag ||
               !formData.description ||
+              errors.title ||
+              errors.image_url ||
+              errors.media_tag ||
+              errors.description ||
               isSubmit
             }
             variant="contained"
