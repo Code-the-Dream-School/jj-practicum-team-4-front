@@ -22,14 +22,12 @@ import {
 import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
 import SubmissionForm from "../components/Form/SubmissionForm.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import FormModal from "../components/Modal/FormModal.jsx";
 
 export default function Gallery() {
   const { isAuthenticated } = useAuth();
-  const [step, setStep] = useState(1);
-  const [open, setOpen] = useState(false);
+  const [shownModal, setShownModal] = useState(false);
   const [selected, setSelected] = useState(null);
-  // TODO: Replace with actual authentication logic
-  const isLoggedIn = true; // Set to true to simulate logged-in user
   // Placeholder artwork data
   const [artworks] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
@@ -67,10 +65,7 @@ export default function Gallery() {
   return (
     <>
       <CssBaseline />
-      <Container
-        // maxWidth="xl"
-        disableGutters
-      >
+      <Container disableGutters>
         <Box
           sx={{
             backgroundColor: "#f5f5f7",
@@ -155,14 +150,16 @@ export default function Gallery() {
               <>
                 <Button
                   variant="contained"
-                  component={Link}
-                  to="/upload-artwork"
                   sx={{ mt: 4, backgroundColor: "#C86D6D" }}
-                  onClick={() => setOpen(true)}
+                  onClick={() => setShownModal(true)}
                 >
                   UPLOAD YOUR ARTWORK
                 </Button>
-                <Modal open={open}>
+                <FormModal
+                  shownModal={shownModal}
+                  setShownModal={setShownModal}
+                />
+                {/* <Modal open={open}>
                   <Box
                     sx={{
                       position: "absolute",
@@ -183,7 +180,7 @@ export default function Gallery() {
                       <SubmissionPreview setOpen={setOpen} setStep={setStep} />
                     )}
                   </Box>
-                </Modal>
+                </Modal> */}
               </>
             )}
           </Container>

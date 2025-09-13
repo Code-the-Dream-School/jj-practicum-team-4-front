@@ -24,7 +24,7 @@ import {
 
 const mediaTypeOptions = ["mixed media", "waterColor", "oil paint", "pencil"];
 
-function SubmissionForm({ setOpen, setStep }) {
+function SubmissionForm({ setShownModal, setStep }) {
   const [isSubmit, setIsSubmit] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errors, setErrors] = React.useState({});
@@ -142,7 +142,7 @@ function SubmissionForm({ setOpen, setStep }) {
         >
           Upload Your Artwork
         </Typography>
-        <IconButton aria-label="close" onClick={() => setOpen(false)}>
+        <IconButton aria-label="close" onClick={() => setShownModal(false)}>
           <CloseIcon />
         </IconButton>
       </Box>
@@ -327,7 +327,7 @@ function SubmissionForm({ setOpen, setStep }) {
             color="error"
             variant="outlined"
             sx={{ px: 4 }}
-            onClick={() => setOpen(false)}
+            onClick={() => setShownModal(false)}
           >
             Cancel
           </Button>
@@ -341,7 +341,7 @@ function SubmissionForm({ setOpen, setStep }) {
               errors.image_url ||
               errors.media_tag ||
               errors.description ||
-              isSubmit
+              isLoading
             }
             variant="contained"
             size="large"
@@ -353,7 +353,7 @@ function SubmissionForm({ setOpen, setStep }) {
             }}
             onClick={handleSubmit}
           >
-            {isSubmit ? "Submitted" : "next"}
+            {isLoading ? "Loading..." : "next"}
           </Button>
         </Box>
       </Box>

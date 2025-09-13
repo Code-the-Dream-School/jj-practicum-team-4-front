@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { getSubmissionData } from "../../services/test";
 
-function SubmissionPreview({ setOpen, setStep }) {
+function SubmissionPreview({ setShownModal, setStep }) {
   const previewData = async () => {
     const res = await getSubmissionData();
     console.log(res);
@@ -58,7 +58,7 @@ function SubmissionPreview({ setOpen, setStep }) {
         >
           Review Upload Your Artwork
         </Typography>
-        <IconButton aria-label="close" onClick={() => setOpen(false)}>
+        <IconButton aria-label="close" onClick={() => setShownModal(false)}>
           <CloseIcon />
         </IconButton>
       </Box>
