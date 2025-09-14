@@ -1,7 +1,6 @@
 import * as React from "react";
 // file import
 import { isEmpty } from "../../util";
-import { postData } from "../../services/test";
 
 // MUI import
 import CloseIcon from "@mui/icons-material/Close";
@@ -10,6 +9,7 @@ import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import {
   Button,
   Divider,
@@ -24,17 +24,21 @@ import {
 
 const mediaTypeOptions = ["mixed media", "waterColor", "oil paint", "pencil"];
 
-function SubmissionForm({ setShownModal, setStep }) {
-  const [isSubmit, setIsSubmit] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
+function SubmissionForm({
+  handleClose,
+  handleSubmission,
+  isLoading,
+  postData,
+}) {
   const [errors, setErrors] = React.useState({});
+  const [imageFile, setImageFile] = React.useState(postData?.image_url || "");
   const [formData, setFormData] = React.useState({
-    image_url: "",
-    title: "",
-    media_tag: "",
-    description: "",
-    social_link: "",
-    createdAt: "",
+    image_url: imageFile,
+    title: postData?.title || "",
+    media_tag: postData?.media_tag || "",
+    description: postData?.description || "",
+    social_link: postData?.social_link || "",
+    createdAt: postData?.createdAt || "",
   });
 
   const formRules = {
@@ -49,8 +53,7 @@ function SubmissionForm({ setShownModal, setStep }) {
     const { name, value } = e.target;
     if (e.target.type === "file") {
       const file = e.target.files[0];
-      // console.log({ name: file.name, size: file.size, type: file.type });
-      // console.log(file.type.startsWith("image/"));
+      setImageFile(file);
       if (!file.type.startsWith("image/")) {
         setErrors((prev) => ({
           ...prev,
@@ -59,14 +62,16 @@ function SubmissionForm({ setShownModal, setStep }) {
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        // console.log("file too large!");
         setErrors((prev) => ({
           ...prev,
           [name]: "File too large! File must not exceed 5MB",
         }));
         return;
       }
-      setFormData((prev) => ({ ...prev, [name]: file.name }));
+      setFormData((prev) => ({
+        ...prev,
+        image_url: URL.createObjectURL(file),
+      }));
     } else {
       setFormData((prevVal) => ({ ...prevVal, [name]: value }));
     }
@@ -76,7 +81,6 @@ function SubmissionForm({ setShownModal, setStep }) {
     }
   };
 
-  console.log(errors);
   const handleBlur = (e) => {
     const { name, value } = e.target;
     const fieldRules = formRules[name];
@@ -90,33 +94,13 @@ function SubmissionForm({ setShownModal, setStep }) {
     if (isEmpty(value)) return;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setFormData((prevData) => ({
       ...prevData,
       createdAt: new Date().toISOString(),
     }));
-    const newFormData = new FormData();
-    newFormData.append("image_url", formData.image_url);
-    newFormData.append("title", formData.title);
-    newFormData.append("media_tag", formData.media_tag);
-    newFormData.append("description", formData.description);
-    newFormData.append(
-      "social_link",
-      formData.social_link ? formData.social_link : null
-    );
-    newFormData.append("createdAt", formData.createdAt);
-
-    try {
-      const response = await postData(newFormData);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      setStep(2);
-    }
+    handleSubmission(formData);
   };
 
   return (
@@ -142,7 +126,7 @@ function SubmissionForm({ setShownModal, setStep }) {
         >
           Upload Your Artwork
         </Typography>
-        <IconButton aria-label="close" onClick={() => setShownModal(false)}>
+        <IconButton aria-label="close" onClick={() => handleClose(false)}>
           <CloseIcon />
         </IconButton>
       </Box>
@@ -194,6 +178,20 @@ function SubmissionForm({ setShownModal, setStep }) {
               transition: "border-color 0.2s ease",
             }}
           >
+            {imageFile && (
+              <Box sx={{ mb: 2 }}>
+                <Box
+                  width="100%"
+                  component="img"
+                  src={`${formData.image_url}`}
+                  alt={`Uploaded image`}
+                />
+                <Box
+                  sx={{ display: "flex", justifyContent: "space-between" }}
+                ></Box>
+              </Box>
+            )}
+
             <Button
               color={
                 formData.image_url
@@ -206,10 +204,16 @@ function SubmissionForm({ setShownModal, setStep }) {
               role={undefined}
               variant="contained"
               tabIndex={-1}
-              startIcon={<CloudUploadIcon />}
+              startIcon={
+                !imageFile ? (
+                  <CloudUploadIcon />
+                ) : (
+                  <DriveFileRenameOutlineIcon />
+                )
+              }
               onBlur={handleBlur}
             >
-              {!formData.image_url ? "Upload files" : "File Uploaded"}
+              {!formData.image_url ? "Upload files" : `Edit files`}
               <Input
                 sx={{
                   display: "none",
@@ -222,8 +226,8 @@ function SubmissionForm({ setShownModal, setStep }) {
             </Button>
             <FormHelperText sx={{ mt: 2, textAlign: "center" }}>
               {!formData.image_url
-                ? "Only JPG and JPEG. Max 5MB."
-                : `File Name: ${formData.image_url}`}
+                ? "Only accepted JPG/PNG. Max 5MB."
+                : `File Name: ${imageFile.name}`}
             </FormHelperText>
             {errors.image_url && (
               <FormHelperText error sx={{ mt: 2, textAlign: "center" }}>
@@ -327,7 +331,7 @@ function SubmissionForm({ setShownModal, setStep }) {
             color="error"
             variant="outlined"
             sx={{ px: 4 }}
-            onClick={() => setShownModal(false)}
+            onClick={() => handleClose(false)}
           >
             Cancel
           </Button>

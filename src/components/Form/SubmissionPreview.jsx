@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import Box from "@mui/material/Box";
@@ -14,27 +14,53 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import { getSubmissionData } from "../../services/test";
+import { postSubmissionData } from "../../services/test";
 
-function SubmissionPreview({ setShownModal, setStep }) {
-  const previewData = async () => {
-    const res = await getSubmissionData();
-    console.log(res);
+function SubmissionPreview({
+  handleClose,
+  setStep,
+  postData,
+  isLoading,
+  setIsLoading,
+}) {
+  const handleSuccess = () => {
+    // close the modal
+    // display alert says your artwork submission submitted successfully
   };
 
-  useEffect(() => {
-    previewData();
-  }, []);
+  const handleFailure = () => {
+    // leave modal open
+    // display alert says submission failed. try again, or check network.
+    // all values in input should be remain.
+  };
 
-  const [formValues, setFormValues] = React.useState({
-    imageUrl: "images.jpeg",
-    title: "Arthive",
-    mediaType: "mixed media",
-    description:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Libero exercitationem commodi, incidunt animi a veritatis error, non natus alias labore doloremque quos dolorem perferendis minus cum. Sequi expedita doloribus inventore.",
-    mediaLink: "",
-  });
+  const handleSubmissionSuccess = async () => {
+    setIsLoading(true);
+    try {
+      const apiFormData = new FormData();
 
+      apiFormData.append("image_url", postData.image_url);
+      apiFormData.append("title", postData.title);
+      apiFormData.append("media_tag", postData.media_tag);
+      apiFormData.append("description", postData.description);
+      apiFormData.append(
+        "social_link",
+        postData.social_link ? postData.social_link : null
+      );
+      apiFormData.append("createdAt", postData.createdAt);
+
+      const response = await postSubmissionData(apiFormData);
+      if (!response) {
+        throw new Error("Failed to post data", response.status);
+      }
+      console.log("submitted form", response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      handleClose();
+    }
+  };
   return (
     <Box sx={{ maxHeight: "100vh", boxSizing: "border-box" }}>
       <Box
@@ -58,7 +84,7 @@ function SubmissionPreview({ setShownModal, setStep }) {
         >
           Review Upload Your Artwork
         </Typography>
-        <IconButton aria-label="close" onClick={() => setShownModal(false)}>
+        <IconButton aria-label="close" onClick={() => handleClose()}>
           <CloseIcon />
         </IconButton>
       </Box>
@@ -96,23 +122,14 @@ function SubmissionPreview({ setShownModal, setStep }) {
       {/* Form Section */}
       <Box sx={{ p: 3 }}>
         {/* image preview */}
-        <Box sx={{ mt: 2, mb: 4, textAlign: "center" }}>
+        <Box sx={{ mt: 2, mb: 4 }}>
+          <Typography color="text.secondary">Uploaded image</Typography>
           <Box
             width="100%"
             component="img"
-            src="src/assets/images/placeholder.png"
-            alt={`Preview image of ${formValues.title}`}
+            src={`${postData.image_url}`}
+            alt={`Uploaded image`}
           />
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography color="text.secondary">
-              File Name: {formValues.imageUrl}
-            </Typography>
-            <IconButton
-            // onClick={}
-            >
-              <DriveFileRenameOutlineIcon />
-            </IconButton>
-          </Box>
         </Box>
         <Grid container spacing={2} sx={{ my: 2 }}>
           {/* Title Field */}
@@ -122,7 +139,7 @@ function SubmissionPreview({ setShownModal, setStep }) {
               label="Title of Artwork"
               fullWidth
               size="small"
-              value={formValues.title}
+              value={postData.title}
               disabled
             />
           </Grid>
@@ -139,13 +156,13 @@ function SubmissionPreview({ setShownModal, setStep }) {
               <Select
                 labelId="demo-simple-select-standard-label"
                 id="demo-simple-select-standard"
-                value={formValues.mediaType}
-                name="mediaType"
+                value={postData.media_tag}
+                name="media_tag"
                 label="Media Type"
                 disabled
               >
-                <MenuItem value={formValues.mediaType}>
-                  <em>{formValues.mediaType}</em>
+                <MenuItem value={postData.media_tag}>
+                  <em>{postData.media_tag}</em>
                 </MenuItem>
               </Select>
             </FormControl>
@@ -160,7 +177,7 @@ function SubmissionPreview({ setShownModal, setStep }) {
           fullWidth
           multiline
           rows={4}
-          value={formValues.description}
+          value={postData.description}
           sx={{ mb: 3 }}
           disabled
         />
@@ -172,7 +189,7 @@ function SubmissionPreview({ setShownModal, setStep }) {
           id="mediaLink"
           label="Social Media Link (optional)"
           fullWidth
-          value={formValues.mediaLink ? formValues.mediaLink : "None"}
+          value={postData.mediaLink ? postData.mediaLink : "None"}
           sx={{ mb: 2 }}
           disabled
         />
@@ -188,14 +205,16 @@ function SubmissionPreview({ setShownModal, setStep }) {
             Edit
           </Button>
           <Button
+            disabled={isLoading}
             variant="contained"
             size="large"
             sx={{
               px: 4,
               py: 1.5,
             }}
+            onClick={() => handleSubmissionSuccess()}
           >
-            submit
+            {isLoading ? "Submitting..." : "submit"}
           </Button>
         </Box>
       </Box>

@@ -9,7 +9,7 @@ const api = axios.create({
   },
 });
 
-const postData = async (submissionData) => {
+const postSubmissionData = async (submissionData) => {
   try {
     const res = await api.post("/artwork", submissionData);
     if (!res.data) {
@@ -34,4 +34,4 @@ const getSubmissionData = async () => {
   }
 };
 
-export { postData, getSubmissionData };
+export { postSubmissionData, getSubmissionData };
