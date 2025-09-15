@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import formatDateForDisplay from "../util/date.jsx";
+// import formatDateForDisplay from "../util/date.jsx";
 import {
   Box,
   Container,
@@ -17,15 +17,25 @@ import { CssBaseline } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import UserCard from "../components/usercard/usercard.jsx";
 
+
 export default function Home() {
 
   const [prompt, setPrompt]= useState(null);
+     const formatDateForDisplay = (dateString) => {
+     if (!dateString) return "";
+  //   // const date = new Date(dateString);
+  //   // console.log('Date from server:', date);
+  //   // console.log('Date after locale:', date.toLocaleDateString('en-US'));
+  //   // return date.toLocaleDateString('en-US');
+     return dateString;
+   };
 
   useEffect(() => {
-    const storedPrompt = localStorage.getItem("activeChallengePrompt");
+    const storedPrompt = localStorage.getItem("activePrompt");
     if (storedPrompt) {
       setPrompt(JSON.parse(storedPrompt));
     }
+    
   }, []);
 
   const [artworks] = useState([
@@ -141,10 +151,10 @@ export default function Home() {
               Discover fresh prompts every week. Share your creations. Get
               meaningful feedback. Build your artistic confidence.
             </Typography>
-            <Typography variant="h6" align="center" gutterBottom>
-              WEEKLY CHALLENGE TOPIC {prompt ? `:${prompt.title}` : ""}
+            <Typography variant="h6" align="center" fontWeight={600} gutterBottom>
+              WEEKLY CHALLENGE TOPIC  {prompt ? `: ${prompt.title}` : ""}
             </Typography>
-            <Typography variant="h6" align="center" gutterBottom>
+            <Typography variant="h6" align="center" fontWeight={600} gutterBottom>
               DURATION {prompt ? `: ${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}` : ""}
             </Typography>
             <Stack
