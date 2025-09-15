@@ -129,7 +129,7 @@ function Navbar() {
                   <Typography
                     color="primary"
                     component={Link}
-                    to={page.replaceAll(" ", "-")}
+                    to={page === "home" ? "/" : page.replaceAll(" ", "-")}
                     sx={{
                       textAlign: "center",
                       textDecoration: "none",
