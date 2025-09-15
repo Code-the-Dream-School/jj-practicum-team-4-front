@@ -44,7 +44,6 @@ const isEmpty = (value) => {
 };
 
 const isFileValid = (file) => {
-  console.log(file);
   if (!file.type.startsWith("image/")) {
     return { error: "please select an image file" };
   }

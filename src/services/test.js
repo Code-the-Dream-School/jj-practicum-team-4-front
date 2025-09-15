@@ -15,10 +15,9 @@ const postSubmissionData = async (submissionData) => {
     if (!res.data) {
       throw new Error(res.status);
     }
-    console.log(res);
     return { status: res.status, data: res.data };
   } catch (error) {
-    console.log(error.response?.data?.message || error.message);
+    return error.response?.data?.message || error.message;
   }
 };
 

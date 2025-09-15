@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { postSubmissionData } from "../../services/test";
+import ConfirmModal from "../Modal/ConfirmModal";
 
 function SubmissionPreview({
   handleClose,
@@ -22,18 +23,13 @@ function SubmissionPreview({
   postData,
   isLoading,
   setIsLoading,
+  isDialogOpen,
+  setIsDialogOpen,
+  setAlertMessage,
+  setAlertSeverity,
+  setAlertOpen,
+  setAlertTitle,
 }) {
-  const handleSuccess = () => {
-    // close the modal
-    // display alert says your artwork submission submitted successfully
-  };
-
-  const handleFailure = () => {
-    // leave modal open
-    // display alert says submission failed. try again, or check network.
-    // all values in input should be remain.
-  };
-
   const handleSubmissionSuccess = async () => {
     setIsLoading(true);
     try {
@@ -50,15 +46,25 @@ function SubmissionPreview({
       apiFormData.append("createdAt", postData.createdAt);
 
       const response = await postSubmissionData(apiFormData);
-      if (!response) {
-        throw new Error("Failed to post data", response.status);
+
+      if (!response.data) {
+        setIsLoading(false);
+        throw new Error(response);
       }
-      console.log("submitted form", response);
+
+      handleClose();
+      setAlertOpen(true);
+      setAlertTitle("Uploaded Successfully");
+      setAlertMessage("Your artwork successfully uploaded. Great work!");
+      setAlertSeverity("success");
+      setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      setAlertOpen(true);
+      setAlertTitle(error.message);
+      setAlertMessage("Failed to upload your artwork. Please try again!");
+      setAlertSeverity("error");
     } finally {
       setIsLoading(false);
-      handleClose();
     }
   };
   return (
@@ -84,9 +90,15 @@ function SubmissionPreview({
         >
           Review Upload Your Artwork
         </Typography>
-        <IconButton aria-label="close" onClick={() => handleClose()}>
+        <IconButton aria-label="close" onClick={() => setIsDialogOpen(true)}>
           <CloseIcon />
         </IconButton>
+        <ConfirmModal
+          handleClose={handleClose}
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          message="Your form data will be lost if you close this window. Are you sure you want to continue?"
+        />
       </Box>
       {/* Challenge Info Section */}
       <Box sx={{ p: 3, textAlign: "center", bgcolor: "grey.50" }}>

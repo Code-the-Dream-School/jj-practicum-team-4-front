@@ -1,6 +1,7 @@
-import * as React from "react";
+import { useState } from "react";
 // file import
 import { isEmpty, isFileValid } from "../../util";
+import ConfirmModal from "../Modal/ConfirmModal";
 
 // MUI import
 import CloseIcon from "@mui/icons-material/Close";
@@ -29,10 +30,12 @@ function SubmissionForm({
   handleSubmission,
   isLoading,
   postData,
+  isDialogOpen,
+  setIsDialogOpen,
 }) {
-  const [errors, setErrors] = React.useState({});
-  const [imageFile, setImageFile] = React.useState(postData?.image_url || null);
-  const [formData, setFormData] = React.useState({
+  const [errors, setErrors] = useState({});
+  const [imageFile, setImageFile] = useState(postData?.image_url || "");
+  const [formData, setFormData] = useState({
     image_url: imageFile,
     title: postData?.title || "",
     media_tag: postData?.media_tag || "",
@@ -48,36 +51,29 @@ function SubmissionForm({
     description: { required: true },
     mediaLink: { required: false },
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (e.target.type === "file") {
       const file = e.target.files[0];
-      if (file) {
-        const validation = isFileValid(file);
-        if (validation.error) {
-          setErrors((prev) => ({
-            ...prev,
-            [name]: validation.error,
-          }));
-          e.target.value = "";
-          setImageFile(null);
-          setFormData((prev) => ({ ...prev, image_url: null }));
-        } else {
-          setErrors((prev) => ({ ...prev, [name]: "" }));
-          setImageFile(file);
-          setFormData((prev) => ({
-            ...prev,
-            image_url: URL.createObjectURL(file),
-          }));
-        }
+      const validation = isFileValid(file);
+
+      if (validation.error) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: validation.error,
+        }));
+        setImageFile("");
+        setFormData((prev) => ({ ...prev, image_url: "" }));
+      } else {
+        setErrors((prev) => ({ ...prev, [name]: "" }));
+        setImageFile(file);
+        setFormData((prev) => ({
+          ...prev,
+          image_url: URL.createObjectURL(file),
+        }));
       }
     } else {
       setFormData((prevVal) => ({ ...prevVal, [name]: value }));
-    }
-
-    if (errors[name]) {
-      setErrors((prevErr) => ({ ...prevErr, [name]: "" }));
     }
   };
 
@@ -126,9 +122,16 @@ function SubmissionForm({
         >
           Upload Your Artwork
         </Typography>
-        <IconButton aria-label="close" onClick={() => handleClose(false)}>
+        <IconButton aria-label="close" onClick={() => setIsDialogOpen(true)}>
           <CloseIcon />
         </IconButton>
+
+        <ConfirmModal
+          setIsDialogOpen={setIsDialogOpen}
+          isDialogOpen={isDialogOpen}
+          handleClose={handleClose}
+          message="Your form data will be lost if you close this window. Are you sure you want to continue?"
+        />
       </Box>
       <Box sx={{ p: 3, textAlign: "center", bgcolor: "grey.50" }}>
         <Typography
@@ -178,7 +181,7 @@ function SubmissionForm({
               transition: "border-color 0.2s ease",
             }}
           >
-            {imageFile && imageFile.type.startsWith("image/") && (
+            {imageFile && (
               <Box sx={{ mb: 2 }}>
                 <Box
                   width="100%"
@@ -331,7 +334,7 @@ function SubmissionForm({
             color="error"
             variant="outlined"
             sx={{ px: 4 }}
-            onClick={() => handleClose(false)}
+            onClick={() => setIsDialogOpen(true)}
           >
             Cancel
           </Button>
