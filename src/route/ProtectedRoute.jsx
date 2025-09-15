@@ -8,7 +8,10 @@ function ProtectedRoute() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  return isAuthenticated ? <Outlet /> : <Navigate to="/sign-in" />;
+  if (!isAuthenticated) {
+    return <Navigate to="/sign-in" />;
+  }
+  return <Outlet />;
 }
 
 export default ProtectedRoute;

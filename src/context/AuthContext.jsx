@@ -9,16 +9,16 @@ const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true,
   error: null,
 };
 
 // AuthProvider component that wraps the entire route
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-
   // Check if user is already logged in (from localStorage) when app loads
   const checkLoggedIn = async () => {
+    dispatch({ type: "AUTH_LOADING" });
     try {
       const storedUser = authService.getCurrentUser();
 
@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }) => {
             dispatch({ type: "LOGOUT" });
             return;
           }
-
           //if token is valid, set user as authenticated
           console.log("token is valid, user authenticated", storedUser);
           dispatch({
@@ -48,6 +47,8 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem("user");
           dispatch({ type: "LOGIN_FAILURE" });
         }
+      } else {
+        dispatch({ type: "AUTH_CHECK_COMPLETE" });
       }
     } catch (err) {
       console.error("Error reading from localStorage", error);

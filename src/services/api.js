@@ -119,19 +119,16 @@ export const authService = {
   // Login with email and password
   login: async (email, password) => {
     try {
-      // logApiCall("call", "/auth/login", { email });
       // Ensure we're using absolute URL with the proper auth endpoint
       const response = await api.post("/auth/login", { email, password });
 
       if (response.data && response.data.token) {
         // Store user data and token in localStorage
         localStorage.setItem("user", JSON.stringify(response.data));
-        // logApiCall("success", "/auth/login", { email });
       } else if (response.data) {
         // If we get a response but no token, log it clearly
         console.warn("Login successful but no token received:", response.data);
         localStorage.setItem("user", JSON.stringify(response.data));
-        // logApiCall("partial", "/auth/login", { email });
       }
       return response.data;
     } catch (error) {
@@ -169,7 +166,6 @@ export const authService = {
       localStorage.removeItem("user");
       return res;
     } catch (error) {
-      // Even on API error, we should remove the user from localStorage
       localStorage.removeItem("user");
       throw error;
     }
