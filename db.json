@@ -270,6 +270,15 @@
       "description": "fdasfdsa",
       "social_link": "null",
       "createdAt": ""
+    },
+    {
+      "id": "6238",
+      "image_url": "blob:http://localhost:5173/28f98f72-c565-4fdd-baf6-6b13d4e161eb",
+      "title": "arthive logo",
+      "media_tag": "mixed media",
+      "description": "this is created by AI",
+      "social_link": "null",
+      "createdAt": ""
     }
   ]
 }

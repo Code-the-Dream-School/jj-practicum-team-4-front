@@ -1,6 +1,6 @@
 import * as React from "react";
 // file import
-import { isEmpty } from "../../util";
+import { isEmpty, isFileValid } from "../../util";
 
 // MUI import
 import CloseIcon from "@mui/icons-material/Close";
@@ -31,7 +31,7 @@ function SubmissionForm({
   postData,
 }) {
   const [errors, setErrors] = React.useState({});
-  const [imageFile, setImageFile] = React.useState(postData?.image_url || "");
+  const [imageFile, setImageFile] = React.useState(postData?.image_url || null);
   const [formData, setFormData] = React.useState({
     image_url: imageFile,
     title: postData?.title || "",
@@ -53,25 +53,25 @@ function SubmissionForm({
     const { name, value } = e.target;
     if (e.target.type === "file") {
       const file = e.target.files[0];
-      setImageFile(file);
-      if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({
-          ...prev,
-          [name]: "Please select an image file!",
-        }));
-        return;
+      if (file) {
+        const validation = isFileValid(file);
+        if (validation.error) {
+          setErrors((prev) => ({
+            ...prev,
+            [name]: validation.error,
+          }));
+          e.target.value = "";
+          setImageFile(null);
+          setFormData((prev) => ({ ...prev, image_url: null }));
+        } else {
+          setErrors((prev) => ({ ...prev, [name]: "" }));
+          setImageFile(file);
+          setFormData((prev) => ({
+            ...prev,
+            image_url: URL.createObjectURL(file),
+          }));
+        }
       }
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({
-          ...prev,
-          [name]: "File too large! File must not exceed 5MB",
-        }));
-        return;
-      }
-      setFormData((prev) => ({
-        ...prev,
-        image_url: URL.createObjectURL(file),
-      }));
     } else {
       setFormData((prevVal) => ({ ...prevVal, [name]: value }));
     }
@@ -178,7 +178,7 @@ function SubmissionForm({
               transition: "border-color 0.2s ease",
             }}
           >
-            {imageFile && (
+            {imageFile && imageFile.type.startsWith("image/") && (
               <Box sx={{ mb: 2 }}>
                 <Box
                   width="100%"

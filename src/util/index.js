@@ -43,4 +43,15 @@ const isEmpty = (value) => {
   );
 };
 
-export { getData, getAllData, isEmpty };
+const isFileValid = (file) => {
+  console.log(file);
+  if (!file.type.startsWith("image/")) {
+    return { error: "please select an image file" };
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    return { error: "File is too large! Must not exceed 5MB" };
+  }
+  return { valid: true };
+};
+
+export { getData, getAllData, isEmpty, isFileValid };
