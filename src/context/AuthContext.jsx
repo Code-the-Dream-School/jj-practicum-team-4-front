@@ -121,6 +121,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async () => {
+    dispatch({ type: "LOGIN_REQUEST" });
+    try {
+      authService.loginWithGoogle();
+    } catch (error) {
+      console.error("Google login error:", error);
+      dispatch({
+        type: "LOGIN_FAILURE",
+        payload: "Failed to initiate Google login",
+      });
+    }
+  };
+
   const logout = async () => {
     try {
       // Use the authService which handles localStorage and is properly configured

@@ -188,15 +188,11 @@ function AuthForm() {
       </Box>
       <Snackbar
         open={alertOpen}
-        autoHideDuration={6000}
-        // onClose={handleCloseAlert}
+        autoHideDuration={5000}
+        onClose={() => setAlertOpen(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert
-          // onClose={handleCloseAlert}
-          severity={alertSeverity}
-          sx={{ width: "100%" }}
-        >
+        <Alert severity={alertSeverity} sx={{ width: "100%" }}>
           {alertMessage}
         </Alert>
       </Snackbar>
