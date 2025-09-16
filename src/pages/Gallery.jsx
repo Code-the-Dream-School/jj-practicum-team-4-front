@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Icon, Modal } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import { CssBaseline } from "@mui/material";
@@ -30,6 +30,24 @@ export default function Gallery() {
   const [selected, setSelected] = useState(null);
   // TODO: Replace with actual authentication logic
   const isLoggedIn = true; // Set to true to simulate logged-in user
+  const [prompt, setPrompt]= useState(null);
+     const formatDateForDisplay = (dateString) => {
+     if (!dateString) return "";
+  //   // const date = new Date(dateString);
+  //   // console.log('Date from server:', date);
+  //   // console.log('Date after locale:', date.toLocaleDateString('en-US'));
+  //   // return date.toLocaleDateString('en-US');
+     return dateString;
+   };
+
+  useEffect(() => {
+    const storedPrompt = localStorage.getItem("activePrompt");
+    if (storedPrompt) {
+      setPrompt(JSON.parse(storedPrompt));
+    }
+
+  }, []);
+
   // Placeholder artwork data
   const [artworks] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
@@ -82,21 +100,28 @@ export default function Gallery() {
               align="center"
               sx={{ mb: 3, color: "#2c3e50" }}
             >
-              WEEKLY CHALLENGE TOPIC
+              WEEKLY CHALLENGE TOPIC {prompt ? `: ${prompt.title}` : ""}
             </Typography>
             <Typography
               variant="h5"
               align="center"
               sx={{ mb: 3, color: "#34495e" }}
             >
-              DURATION: [Your duration here]
+              DURATION {prompt ? `: ${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}` : ""}
             </Typography>
             <Typography
-              variant="body1"
+              variant="h5"
               align="center"
               sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
             >
-              INSTRUCTION/EXPLANATION: [Your detailed instructions here]
+             DESCRIPTION {prompt ? `: ${prompt.description}` : ""}
+            </Typography>
+            <Typography
+              variant="h5"
+              align="center"
+              sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
+            >
+             RULES {prompt ? `: ${prompt.rules}` : ""}
             </Typography>
             <Stack
               direction="row"
