@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
           // console.log("token is valid, user authenticated", storedUser);
           dispatch({
             type: "LOGIN_SUCCESS",
-            payload: { user: storedUser.user, token: decodedToken },
+            payload: { user: storedUser.user, token: storedUser.token },
           });
         } catch (tokenError) {
           console.error("invalid token:", tokenError);
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         dispatch({ type: "AUTH_CHECK_COMPLETE" });
       }
-    } catch (err) {
+    } catch (error) {
       console.error("Error reading from localStorage", error);
       localStorage.removeItem("user");
     }
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
         const decodeUserToken = jwtDecode(response.token);
         dispatch({
           type: "LOGIN_SUCCESS",
-          payload: { user: response.user, token: decodeUserToken },
+          payload: { user: response.user, token: response.token },
         });
         localStorage.setItem("user", JSON.stringify(response));
         console.log("logon successful in authcontext:", response);

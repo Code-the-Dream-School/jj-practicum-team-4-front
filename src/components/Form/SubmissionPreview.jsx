@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import ConfirmModal from "../Modal/ConfirmModal";
 import { postData } from "../../util";
+import { useAuth } from "../../context/AuthContext";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -32,29 +33,41 @@ function SubmissionPreview({
   setAlertOpen,
   setAlertTitle,
 }) {
-  const handleSubmissionSuccess = async () => {
-    setIsLoading(true);
-    try {
-      const apiFormData = (formData) => {
-        return {
-          image_url: formData.image_url,
-          title: formData.title,
-          media_tag: formData.media_tag,
-          description: formData.description,
-          social_link: formData.social_link ? formData.social_link : null,
-          createdAt: formData.createdAt,
-        };
-      };
-      console.log(postArtworkData);
-      apiFormData(postArtworkData);
+  const { token } = useAuth();
 
-      const response = await postData(`${baseUrl}/api/artwork`, apiFormData);
+  const handleSubmissionSuccess = async () => {
+    const apiFormData = new FormData();
+
+    // Append each field individually
+    apiFormData.append("prompt_id", postArtworkData.prompt_id);
+    apiFormData.append("user_id", postArtworkData.user_id);
+    apiFormData.append("image_url", postArtworkData.imageFile);
+    apiFormData.append("title", postArtworkData.title);
+    apiFormData.append("media_tag", postArtworkData.media_tag);
+    apiFormData.append("description", postArtworkData.description);
+    // apiFormData.append("social_link", postArtworkData.social_link || "");
+    apiFormData.append("like_counter", postArtworkData.like_counter);
+    // apiFormData.append("createdAt", postArtworkData.createdAt);
+
+    for (let pair of apiFormData.entries()) {
+      console.log(pair[0] + ":" + pair[1]);
+    }
+    setIsLoading(true);
+    // console.log(postArtworkData.imageFile.file);
+
+    try {
+      const response = await postData(`${baseUrl}/api/artwork`, apiFormData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response);
 
       if (!response.data) {
         setIsLoading(false);
         throw new Error(response);
       }
-      console.log(response);
 
       handleClose();
       setAlertOpen(true);
@@ -63,9 +76,12 @@ function SubmissionPreview({
       setAlertSeverity("success");
       setIsLoading(false);
     } catch (error) {
+      // console.log(error.message);
       setAlertOpen(true);
       setAlertTitle(error.message);
-      setAlertMessage("Failed to upload your artwork. Please try again!");
+      setAlertMessage(
+        error.response?.data?.message || error.response?.statusText
+      );
       setAlertSeverity("error");
     } finally {
       setIsLoading(false);
@@ -143,7 +159,7 @@ function SubmissionPreview({
           <Box
             width="100%"
             component="img"
-            src={`${postArtworkData.image_url}`}
+            src={URL.createObjectURL(postArtworkData.imageFile)}
             alt={`Uploaded image`}
           />
         </Box>

@@ -22,6 +22,9 @@ import {
   Select,
   Typography,
 } from "@mui/material";
+import { nanoid } from "nanoid";
+import { useAuth } from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const mediaTypeOptions = ["mixed media", "waterColor", "oil paint", "pencil"];
 
@@ -33,24 +36,30 @@ function SubmissionForm({
   isDialogOpen,
   setIsDialogOpen,
 }) {
+  const { token } = useAuth();
+  const decodeToken = jwtDecode(token);
+  const userId = decodeToken.userId;
+
   const [errors, setErrors] = useState({});
-  const [imageFile, setImageFile] = useState(postArtworkData?.image_url || "");
+  const [imageFile, setImageFile] = useState(postArtworkData?.imageFile || "");
   const [formData, setFormData] = useState({
-    image_url: imageFile,
+    imageFile: postArtworkData?.imageFile || null,
     title: postArtworkData?.title || "",
     media_tag: postArtworkData?.media_tag || "",
     description: postArtworkData?.description || "",
-    social_link: postArtworkData?.social_link || "",
-    createdAt: postArtworkData?.createdAt || "",
+    link_counter: 0,
+    // social_link: postArtworkData?.social_link || "",
+    // createdAt: postArtworkData?.createdAt || "",
   });
 
-  const formRules = {
-    image_url: { required: true },
-    title: { required: true },
-    media_tag: { required: true },
-    description: { required: true },
-    mediaLink: { required: false },
-  };
+  console.log("form data:", formData);
+  // const formRules = {
+  //   imageFile: { required: true },
+  //   title: { required: true },
+  //   media_tag: { required: true },
+  //   description: { required: true },
+  //   mediaLink: { required: false },
+  // };
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (e.target.type === "file") {
@@ -63,13 +72,13 @@ function SubmissionForm({
           [name]: validation.error,
         }));
         setImageFile("");
-        setFormData((prev) => ({ ...prev, image_url: "" }));
+        setFormData((prev) => ({ ...prev, imageFile: "" }));
       } else {
         setErrors((prev) => ({ ...prev, [name]: "" }));
         setImageFile(file);
         setFormData((prev) => ({
           ...prev,
-          image_url: URL.createObjectURL(file),
+          imageFile: file,
         }));
       }
     } else {
@@ -77,28 +86,29 @@ function SubmissionForm({
     }
   };
 
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    const fieldRules = formRules[name];
+  // const handleBlur = (e) => {
+  //   const { name, value } = e.target;
+  //   const fieldRules = formRules[name];
 
-    if (fieldRules && fieldRules.required && isEmpty(value)) {
-      setErrors((prevErr) => ({
-        ...prevErr,
-        [name]: "This field is required",
-      }));
-    }
-    if (isEmpty(value)) return;
-  };
-
+  //   if (fieldRules && fieldRules.required && isEmpty(value)) {
+  //     setErrors((prevErr) => ({
+  //       ...prevErr,
+  //       [name]: "This field is required",
+  //     }));
+  //   }
+  //   if (!isEmpty(value)) return;
+  // };
   const handleSubmit = (e) => {
     e.preventDefault();
     const dataToSubmit = {
       ...formData,
-      createdAt: new Date().toISOString(),
+      // createdAt: new Date().toISOString(),
+      prompt_id: nanoid(),
+      user_id: userId,
     };
 
-    console.log(dataToSubmit);
-    handleSubmission(dataToSubmit);
+    console.log("submitted Data to the review form:", dataToSubmit);
+    handleSubmission(dataToSubmit, imageFile);
   };
 
   return (
@@ -179,7 +189,7 @@ function SubmissionForm({
               borderRadius: 2,
               bgcolor: "grey.50",
               border: "2px dashed",
-              borderColor: errors.image_url ? "red" : "grey.300",
+              borderColor: errors.imageFile ? "red" : "grey.300",
               transition: "border-color 0.2s ease",
             }}
           >
@@ -188,7 +198,7 @@ function SubmissionForm({
                 <Box
                   width="100%"
                   component="img"
-                  src={`${formData.image_url}`}
+                  src={URL.createObjectURL(formData.imageFile)}
                   alt={`Uploaded image`}
                 />
                 <Box
@@ -199,8 +209,8 @@ function SubmissionForm({
 
             <Button
               color={
-                formData.image_url
-                  ? errors.image_url
+                formData.imageFile
+                  ? errors.imageFile
                     ? "primary"
                     : "success"
                   : "primary"
@@ -216,27 +226,27 @@ function SubmissionForm({
                   <DriveFileRenameOutlineIcon />
                 )
               }
-              onBlur={handleBlur}
+              // onBlur={handleBlur}
             >
-              {!formData.image_url ? "Upload files" : `Edit files`}
+              {!formData.imageFile ? "Upload files" : `Edit files`}
               <Input
                 sx={{
                   display: "none",
                 }}
                 type="file"
                 required
-                name="image_url"
+                name="imageFile"
                 onChange={handleChange}
               />
             </Button>
             <FormHelperText sx={{ mt: 2, textAlign: "center" }}>
-              {!formData.image_url
+              {!formData.imageFile
                 ? "Only accepted JPG/PNG. Max 5MB."
-                : `File Name: ${imageFile.name}`}
+                : `File Name: ${formData.imageFile.name}`}
             </FormHelperText>
-            {errors.image_url && (
+            {errors.imageFile && (
               <FormHelperText error sx={{ mt: 2, textAlign: "center" }}>
-                {errors.image_url}
+                {errors.imageFile}
               </FormHelperText>
             )}
           </Box>
@@ -253,7 +263,7 @@ function SubmissionForm({
               size="small"
               value={formData.title}
               onChange={handleChange}
-              onBlur={handleBlur}
+              // onBlur={handleBlur}
               helperText={!formData.title.trim() && "Required"}
             />
           </Grid>
@@ -276,7 +286,7 @@ function SubmissionForm({
                 id="demo-simple-select-standard"
                 value={formData.media_tag}
                 onChange={handleChange}
-                onBlur={handleBlur}
+                // onBlur={handleBlur}
                 name="media_tag"
                 label="Media Type"
               >
@@ -312,7 +322,7 @@ function SubmissionForm({
           multiline
           rows={4}
           onChange={handleChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           value={formData.description}
           placeholder="Tell us about your artwork..."
           sx={{ mb: 2 }}
@@ -342,12 +352,12 @@ function SubmissionForm({
           </Button>
           <Button
             disabled={
-              !formData.title ||
-              !formData.image_url ||
+              !formData.title.trim() ||
+              !formData.imageFile ||
               !formData.media_tag ||
-              !formData.description ||
+              !formData.description.trim() ||
               errors.title ||
-              errors.image_url ||
+              errors.imageFile ||
               errors.media_tag ||
               errors.description ||
               isLoading

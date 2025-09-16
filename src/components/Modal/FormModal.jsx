@@ -17,7 +17,10 @@ function FormModal({ shownModal, setShownModal }) {
   const [postArtworkData, setPostArtworkData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  // console.log(
+  //   "post Artwork data form parent component Form Modal:",
+  //   postArtworkData
+  // );
   // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
@@ -84,7 +87,7 @@ function FormModal({ shownModal, setShownModal }) {
       <Snackbar
         open={alertOpen}
         onClose={() => setAlertOpen(false)}
-        autoHideDuration={1500}
+        autoHideDuration={5000}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert
