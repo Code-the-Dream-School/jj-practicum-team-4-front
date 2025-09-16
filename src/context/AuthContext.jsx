@@ -17,6 +17,35 @@ const initialState = {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
   // Check if user is already logged in (from localStorage) when app loads
+  useEffect(() => {
+    checkLoggedIn();
+    checkAuthStatus();
+    handleAuthCallback();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    dispatch({ type: "AUTH_LOADING" });
+    try {
+      const response = await authService.checkAuth();
+      if (response.ok) {
+        console.log(response);
+      }
+    } catch (error) {
+      console.error("Auth status check failed:", error);
+    } finally {
+      dispatch({ type: "AUTH_CHECK_COMPLETE" });
+    }
+  };
+
+  const handleAuthCallback = () => {
+    const urlParams = new URLSearchParams();
+    console.log(urlParams.toString());
+    const authError = urlParams.get("error");
+    const authMessage = urlParams.get("message");
+    console.log(authError);
+    console.log(authMessage);
+  };
+
   const checkLoggedIn = async () => {
     dispatch({ type: "AUTH_LOADING" });
     try {
@@ -50,7 +79,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         dispatch({ type: "AUTH_CHECK_COMPLETE" });
       }
-    } catch (err) {
+    } catch (error) {
       console.error("Error reading from localStorage", error);
       localStorage.removeItem("user");
     }
@@ -86,12 +115,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // console.log(state.error);
-
-  useEffect(() => {
-    checkLoggedIn();
-  }, []);
-
   const login = async (email, password) => {
     dispatch({ type: "LOGIN_REQUEST" });
     try {
@@ -121,26 +144,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const loginWithGoogle = async () => {
-    dispatch({ type: "LOGIN_REQUEST" });
-    try {
-      authService.loginWithGoogle();
-    } catch (error) {
-      console.error("Google login error:", error);
-      dispatch({
-        type: "LOGIN_FAILURE",
-        payload: "Failed to initiate Google login",
-      });
-    }
-  };
-
   const logout = async () => {
     try {
       // Use the authService which handles localStorage and is properly configured
       await authService.logout();
-      dispatch({ type: "LOGOUT" });
       // clear local storage
-      localStorage.removeItem("user");
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("token");
+      dispatch({ type: "LOGOUT" });
+
       console.log("logout successful");
     } catch (error) {
       console.error("Logout error:", error);
@@ -150,8 +162,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async () => {
+    dispatch({ type: "LOGIN_REQUEST" });
+    try {
+      const response = authService.loginWithGoogle();
+      dispatch({ type: "LOGIN_SUCCESS" });
+      console.log(response);
+      return true;
+    } catch (error) {
+      console.error("Google login error:", error);
+      dispatch({
+        type: "LOGIN_FAILURE",
+        payload: "Failed to initiate Google login",
+      });
+      return false;
+    }
+  };
+
   const clearError = () => {
-    setError(null);
+    dispatch({ type: "CLEAR_ERROR" });
   };
 
   return (
@@ -162,6 +191,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         clearError,
+        loginWithGoogle,
       }}
     >
       {children}

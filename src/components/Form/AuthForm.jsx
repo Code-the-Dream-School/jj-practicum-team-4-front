@@ -32,7 +32,7 @@ function AuthForm() {
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, loginWithGoogle, clearError } = useAuth();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -64,7 +64,18 @@ function AuthForm() {
     }
   };
 
-  const handleGoogleLogin = () => {};
+  const handleGoogleLogin = () => {
+    console.log("logging with Google auth");
+    setAlertMessage("");
+    setAlertOpen(false);
+    try {
+      loginWithGoogle();
+    } catch (error) {
+      setAlertMessage("Failed to connect to Google authentication");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+    }
+  };
 
   return (
     <>
@@ -167,6 +178,7 @@ function AuthForm() {
           <Divider sx={{ color: "grey" }}>or</Divider>
           <Box sx={{ mt: 5, justifySelf: "center", width: "100%" }}>
             <Button
+              disabled={isLoading}
               variant="outlined"
               sx={{
                 py: 1.5,
@@ -181,7 +193,7 @@ function AuthForm() {
                 src="src/assets/images/googleIcon.png"
                 sx={{ width: 24, height: 24, mr: 1 }}
               />
-              Continue with Google
+              {isLoading ? "Loading..." : "Continue with Google"}
             </Button>
           </Box>
         </Container>

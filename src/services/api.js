@@ -54,12 +54,12 @@ const logApiCall = (
   if (safeData.password) safeData.password = "********";
 
   // Use appropriate console method based on success/failure
-  // const logMethod = success ? console.log : console.error;
-  // logMethod(
-  //   `🔄 API ${type.toUpperCase()} | ${endpoint} | Success: ${success}`,
-  //   logData,
-  //   safeData
-  // );
+  const logMethod = success ? console.log : console.error;
+  logMethod(
+    `🔄 API ${type.toUpperCase()} | ${endpoint} | Success: ${success}`,
+    logData,
+    safeData
+  );
 
   // Store recent errors in localStorage for debugging (up to 10)
   if (!success) {
@@ -84,6 +84,136 @@ const logApiCall = (
     }
   }
 };
+
+// Implement CSRF protection for sensitive operations
+let csrfToken = null;
+
+// Function to get a CSRF token from the server
+const fetchCsrfToken = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/auth/protected`, {
+      withCredentials: true,
+    });
+    if (response.data && response.data.csrfToken) {
+      csrfToken = response.data.csrfToken;
+      return csrfToken;
+    }
+    console.error("Failed to get CSRF token");
+    return null;
+  } catch (error) {
+    console.error("Error fetching CSRF token:", error);
+    return null;
+  }
+};
+
+// Add CSRF token to requests that need it
+api.interceptors.request.use(
+  async (config) => {
+    // List of methods that modify state and require CSRF protection
+    const sensitiveOperations = [
+      "/auth/login",
+      "/auth/register",
+      "/auth/logout",
+      "/auth/refresh-token",
+    ];
+    const isPrivilegedOperation = sensitiveOperations.some((op) =>
+      config.url?.includes(op)
+    );
+    const isModifyingMethod = ["post", "put", "patch", "delete"].includes(
+      config.method?.toLowerCase()
+    );
+
+    // Only add CSRF token for sensitive operations
+    if (isModifyingMethod && isPrivilegedOperation) {
+      // Get token if we don't have one
+      if (!csrfToken) {
+        csrfToken = await fetchCsrfToken();
+      }
+
+      if (csrfToken) {
+        config.headers["X-CSRF-Token"] = csrfToken;
+      } else {
+        console.warn("No CSRF token available for protected operation");
+      }
+    }
+    return config;
+  },
+  (error) => {
+    console.log("Request error:", error);
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor for handling token refresh
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve();
+    }
+  });
+
+  failedQueue = [];
+};
+
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If the error is 401 and we haven't already tried to refresh
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // If we're already refreshing, wait for the refresh to complete
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => {
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Call refresh token endpoint
+        const res = await api.post("/auth/refresh-token");
+
+        if (res.status === 200) {
+          // Token refreshed successfully
+          processQueue(null);
+          return api(originalRequest);
+        } else {
+          // Handle token refresh failure
+          // This might happen if the refresh token is invalid or expired
+          // In that case, we should log the user out
+          processQueue(new Error("Token refresh failed"));
+          window.dispatchEvent(new CustomEvent("auth:sessionExpired"));
+          return Promise.reject(error);
+        }
+      } catch (refreshError) {
+        processQueue(refreshError);
+        // If refresh token fails, dispatch session expired event
+        window.dispatchEvent(new CustomEvent("auth:sessionExpired"));
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 // Add a request interceptor to include auth token if it exists
 api.interceptors.request.use(
@@ -152,11 +282,20 @@ export const authService = {
 
   // Google OAuth login (redirects to backend Google auth route)
   loginWithGoogle: () => {
-    const googleAuthUrl =
-      import.meta.env.VITE_GOOGLE_AUTH_URL ||
-      `${api.defaults.baseURL}/auth/google`;
-    logApiCall("redirect", googleAuthUrl);
-    window.location.href = googleAuthUrl;
+    try {
+      const googleAuthUrl =
+        import.meta.env.VITE_GOOGLE_AUTH_URL ||
+        `${api.defaults.baseURL}/auth/google`;
+
+      if (!googleAuthUrl) {
+        throw new Error("Google auth URL not configured");
+      }
+
+      logApiCall("redirect", googleAuthUrl);
+      window.location.href = googleAuthUrl;
+    } catch (error) {
+      console.error("Failed to initiate Google login:", error);
+    }
   },
 
   // Logout user
@@ -174,7 +313,7 @@ export const authService = {
   // Check if user is authenticated (can be used to validate session/token)
   checkAuth: async () => {
     try {
-      logApiCall("call", "/auth/protected");
+      // logApiCall("call", "/auth/protected");
       const response = await api.get("/auth/protected");
       logApiCall("success", "/auth/protected");
       return response.data;
