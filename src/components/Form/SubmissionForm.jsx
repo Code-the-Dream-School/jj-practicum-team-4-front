@@ -29,19 +29,19 @@ function SubmissionForm({
   handleClose,
   handleSubmission,
   isLoading,
-  postData,
+  postArtworkData,
   isDialogOpen,
   setIsDialogOpen,
 }) {
   const [errors, setErrors] = useState({});
-  const [imageFile, setImageFile] = useState(postData?.image_url || "");
+  const [imageFile, setImageFile] = useState(postArtworkData?.image_url || "");
   const [formData, setFormData] = useState({
     image_url: imageFile,
-    title: postData?.title || "",
-    media_tag: postData?.media_tag || "",
-    description: postData?.description || "",
-    social_link: postData?.social_link || "",
-    createdAt: postData?.createdAt || "",
+    title: postArtworkData?.title || "",
+    media_tag: postArtworkData?.media_tag || "",
+    description: postArtworkData?.description || "",
+    social_link: postArtworkData?.social_link || "",
+    createdAt: postArtworkData?.createdAt || "",
   });
 
   const formRules = {
@@ -92,11 +92,13 @@ function SubmissionForm({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setFormData((prevData) => ({
-      ...prevData,
+    const dataToSubmit = {
+      ...formData,
       createdAt: new Date().toISOString(),
-    }));
-    handleSubmission(formData);
+    };
+
+    console.log(dataToSubmit);
+    handleSubmission(dataToSubmit);
   };
 
   return (

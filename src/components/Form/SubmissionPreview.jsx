@@ -14,13 +14,15 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import { postSubmissionData } from "../../services/test";
 import ConfirmModal from "../Modal/ConfirmModal";
+import { postData } from "../../util";
+
+const baseUrl = import.meta.env.VITE_API_URL;
 
 function SubmissionPreview({
   handleClose,
   setStep,
-  postData,
+  postArtworkData,
   isLoading,
   setIsLoading,
   isDialogOpen,
@@ -33,24 +35,26 @@ function SubmissionPreview({
   const handleSubmissionSuccess = async () => {
     setIsLoading(true);
     try {
-      const apiFormData = new FormData();
+      const apiFormData = (formData) => {
+        return {
+          image_url: formData.image_url,
+          title: formData.title,
+          media_tag: formData.media_tag,
+          description: formData.description,
+          social_link: formData.social_link ? formData.social_link : null,
+          createdAt: formData.createdAt,
+        };
+      };
+      console.log(postArtworkData);
+      apiFormData(postArtworkData);
 
-      apiFormData.append("image_url", postData.image_url);
-      apiFormData.append("title", postData.title);
-      apiFormData.append("media_tag", postData.media_tag);
-      apiFormData.append("description", postData.description);
-      apiFormData.append(
-        "social_link",
-        postData.social_link ? postData.social_link : null
-      );
-      apiFormData.append("createdAt", postData.createdAt);
-
-      const response = await postSubmissionData(apiFormData);
+      const response = await postData(`${baseUrl}/api/artwork`, apiFormData);
 
       if (!response.data) {
         setIsLoading(false);
         throw new Error(response);
       }
+      console.log(response);
 
       handleClose();
       setAlertOpen(true);
@@ -139,7 +143,7 @@ function SubmissionPreview({
           <Box
             width="100%"
             component="img"
-            src={`${postData.image_url}`}
+            src={`${postArtworkData.image_url}`}
             alt={`Uploaded image`}
           />
         </Box>
@@ -151,7 +155,7 @@ function SubmissionPreview({
               label="Title of Artwork"
               fullWidth
               size="small"
-              value={postData.title}
+              value={postArtworkData.title}
               disabled
             />
           </Grid>
@@ -168,13 +172,13 @@ function SubmissionPreview({
               <Select
                 labelId="demo-simple-select-standard-label"
                 id="demo-simple-select-standard"
-                value={postData.media_tag}
+                value={postArtworkData.media_tag}
                 name="media_tag"
                 label="Media Type"
                 disabled
               >
-                <MenuItem value={postData.media_tag}>
-                  <em>{postData.media_tag}</em>
+                <MenuItem value={postArtworkData.media_tag}>
+                  <em>{postArtworkData.media_tag}</em>
                 </MenuItem>
               </Select>
             </FormControl>
@@ -189,7 +193,7 @@ function SubmissionPreview({
           fullWidth
           multiline
           rows={4}
-          value={postData.description}
+          value={postArtworkData.description}
           sx={{ mb: 3 }}
           disabled
         />
@@ -201,7 +205,7 @@ function SubmissionPreview({
           id="mediaLink"
           label="Social Media Link (optional)"
           fullWidth
-          value={postData.mediaLink ? postData.mediaLink : "None"}
+          value={postArtworkData.mediaLink ? postArtworkData.mediaLink : "None"}
           sx={{ mb: 2 }}
           disabled
         />

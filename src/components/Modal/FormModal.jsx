@@ -14,7 +14,7 @@ import SubmissionPreview from "../Form/SubmissionPreview";
 
 function FormModal({ shownModal, setShownModal }) {
   const [step, setStep] = useState(1);
-  const [postData, setPostData] = useState(null);
+  const [postArtworkData, setPostArtworkData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -25,13 +25,13 @@ function FormModal({ shownModal, setShownModal }) {
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const handleSubmission = (data) => {
-    setPostData(data);
+    setPostArtworkData(data);
     setStep(2);
   };
 
   const handleClose = () => {
     setStep(1);
-    setPostData(null);
+    setPostArtworkData(null);
     setShownModal(false);
     setIsDialogOpen(false);
   };
@@ -57,7 +57,7 @@ function FormModal({ shownModal, setShownModal }) {
               handleSubmission={handleSubmission}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
-              postData={postData}
+              postArtworkData={postArtworkData}
               handleClose={handleClose}
               setIsDialogOpen={setIsDialogOpen}
               isDialogOpen={isDialogOpen}
@@ -67,7 +67,7 @@ function FormModal({ shownModal, setShownModal }) {
             <SubmissionPreview
               setShownModal={setShownModal}
               setStep={setStep}
-              postData={postData}
+              postArtworkData={postArtworkData}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
               handleClose={handleClose}
