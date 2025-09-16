@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import formatDateForDisplay from "../util/date.jsx";
+import formatDateForDisplay from "../util/date.jsx";
 import {
   Box,
   Container,
@@ -21,14 +21,14 @@ import UserCard from "../components/usercard/usercard.jsx";
 export default function Home() {
 
   const [prompt, setPrompt]= useState(null);
-     const formatDateForDisplay = (dateString) => {
-     if (!dateString) return "";
-  //   // const date = new Date(dateString);
-  //   // console.log('Date from server:', date);
-  //   // console.log('Date after locale:', date.toLocaleDateString('en-US'));
-  //   // return date.toLocaleDateString('en-US');
-     return dateString;
-   };
+  //    const formatDateForDisplay = (dateString) => {
+  //    if (!dateString) return "";
+  // //   // const date = new Date(dateString);
+  // //   // console.log('Date from server:', date);
+  // //   // console.log('Date after locale:', date.toLocaleDateString('en-US'));
+  // //   // return date.toLocaleDateString('en-US');
+  //    return dateString;
+  //  };
 
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
