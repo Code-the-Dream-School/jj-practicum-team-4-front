@@ -11,7 +11,7 @@ import {
   Modal,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import hero from "../assets/hero3.png";
+import hero4 from "../assets/hero4.jpeg";
 import { CssBaseline } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import UserCard from "../components/usercard/usercard.jsx";
@@ -99,47 +99,57 @@ export default function Home() {
       <CssBaseline />
       <Container maxWidth="xl" disableGutters>
         <Box
-          sx={{
-            backgroundImage: `url(${hero})`,
+          sx={{  
             backgroundSize: "cover",
             backgroundPosition: "center",
             minHeight: "35em",
             position: "relative",
             display: "flex",
-            justifyContent: "flex-end",
+            flexDirection: { xs: 'column', md: 'row' },
+            justifyContent: "space-between",
             alignItems: "center",
+            px: { xs: 2, md: 6 },
+            py: { xs: 3, md: 0 },
           }}
         >
+          
+          
           <Box
             sx={{
-              textAlign: "center",
-              pb: 3,
-              width: "100%",
-              mx: 3,
+              flex: { xs: '1 1 auto', md: '0 0 50%' }, 
+              textAlign: { xs: "center", md: "left" },
+              px: { xs: 2, md: 4 },
+              // textAlign: "center",
+              // pb: 3,
+               width: "100%",
+              // mx: 3,
             }}
           >
             <Typography
               variant="h3"
-              align="center"
-              sx={{ mb: 8 }}
+              align="left"
+              // align="center"
+              sx={{ mb: 6}}
               margin-bottom="10px"
             >
               Turn Art Block Into Art Magic
             </Typography>
-            <Typography variant="h5" align="center" sx={{ mb: 10 }}>
+            <Typography variant="h5" align="left" sx={{ mb: 5}}>
               Discover fresh prompts every week. Share your creations. Get
               meaningful feedback. Build your artistic confidence.
             </Typography>
-            <Typography variant="h6" align="center" gutterBottom>
+            <Typography variant="h6" align="left" fontWeight={600} gutterBottom>
               WEEKLY CHALLENGE TOPIC
             </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="h6" align="left" fontWeight={600}  gutterBottom>
               DURATION :
             </Typography>
             <Stack
               direction="row"
               spacing={2}
-              justifyContent="center"
+              // align="left"
+               justifyContent={{ xs: "center", md: "flex-start" }}
+              // justifyContent="center"
               sx={{ mt: 2 }}
             >
               <Button variant="contained" component={Link} to="/sign-in">
@@ -150,10 +160,34 @@ export default function Home() {
               </Button>
             </Stack>
           </Box>
+          <Box
+            sx={{
+              flex: { xs: '0 0 auto', md: '0 0 45%' }, 
+              display:'flex' , 
+              justifyContent: 'center',
+              alignItems: 'center',
+              mb: { xs: 3, md: 0 },
+              order: { xs: 1, md: 2 },
+            }}
+          >
+            <Box
+              component="img"
+              src={hero4} 
+              alt="Artist painting illustration"
+              sx={{
+                width: '100%',
+                maxWidth: '400px',
+                height: 'auto',
+                objectFit: 'contain',
+                borderRadius: 2, 
+              }}
+            />
+          </Box>
         </Box>
-
+          
+        
         {/* Top Most Liked/Voted Artworks Section */}
-        <Box sx={{ p: 4, bgcolor: "grey.100", borderRadius: 2 }}>
+        <Box sx={{ p: 4, bgcolor: "grey.100",  backgroundSize: "cover",backgroundPosition: "center", }}>
           <Typography variant="h3" align="center" gutterBottom>
             Top Most Liked/Voted Artworks
           </Typography>
@@ -161,12 +195,18 @@ export default function Home() {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: `repeat(${sortedForDisplay.length}, 1fr)`,
+              gridTemplateColumns: {
+              xs: "1fr", // Single column on mobile
+              sm: "repeat(2, 1fr)", // Two columns on small screens
+              md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
+            },
+              // gridTemplateColumns: `repeat(${sortedForDisplay.length}, 1fr)`,
               justifyContent: "center",
               alignItems: "end",
               gap: { xs: 2, md: 6 },
               mt: 4,
-              minHeight: 320,
+              minHeight: { xs: 'auto', md: 320 }, // Auto height on mobile
+              px: { xs: 2, md: 0 },
             }}
           >
             {sortedForDisplay.map((art, idx) => {
@@ -174,6 +214,7 @@ export default function Home() {
               let width = 220,
                 height = 220,
                 boxShadow = 2;
+              if (window.innerWidth >= 960) { 
               if (idx === centerIndex) {
                 width = 320;
                 height = 320;
@@ -183,6 +224,7 @@ export default function Home() {
                 height = 260;
                 boxShadow = 4;
               }
+            }
               return (
                 <Box
                   key={art.id}
@@ -195,9 +237,10 @@ export default function Home() {
                 >
                   <Card
                     sx={{
-                      width,
-                      height,
-                      boxShadow,
+                      width: { xs: "100%", md: width },
+                      maxWidth: { xs: 300, md: width },
+                      height: { xs: 280, md: height },
+                      boxShadow: { xs: 3, md: boxShadow },
                       cursor: "pointer",
                       transition: "box-shadow 0.3s cubic-bezier(.4,0,.2,1)",
                       bgcolor: "grey.200",
@@ -205,6 +248,7 @@ export default function Home() {
                       flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "flex-end",
+                      mx: { xs: "auto", md: 0 },
                     }}
                     onClick={() => setSelected(art)}
                   >
@@ -214,7 +258,7 @@ export default function Home() {
                       alt={art.title}
                       sx={{
                         width: "100%",
-                        height: height - 100,
+                        height: { xs: 180, md: height - 100 },
                         objectFit: "cover",
                         borderRadius: 2,
                       }}
@@ -248,7 +292,8 @@ export default function Home() {
             >
               <Box
                 sx={{
-                  maxWidth: 400,
+                  // maxWidth: 400,
+                  maxWidth: { xs: "95%", md: 400 },
                   width: "90%",
                   borderRadius: 2,
                   display: "flex",
