@@ -105,6 +105,7 @@ export default function Gallery() {
             <Typography
               variant="h5"
               align="center"
+              fontWeight={600}
               sx={{ mb: 3, color: "#34495e" }}
             >
               DURATION {prompt ? `: ${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}` : ""}
@@ -112,6 +113,7 @@ export default function Gallery() {
             <Typography
               variant="h5"
               align="center"
+              fontWeight={600}
               sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
             >
              DESCRIPTION {prompt ? `: ${prompt.description}` : ""}
@@ -119,6 +121,7 @@ export default function Gallery() {
             <Typography
               variant="h5"
               align="center"
+              fontWeight={600}
               sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
             >
              RULES {prompt ? `: ${prompt.rules}` : ""}
