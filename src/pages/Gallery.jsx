@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import formatDateForDisplay from "../util/date.jsx";
 import { Icon, Modal } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import { CssBaseline } from "@mui/material";
@@ -31,15 +32,7 @@ export default function Gallery() {
   // TODO: Replace with actual authentication logic
   const isLoggedIn = true; // Set to true to simulate logged-in user
   const [prompt, setPrompt]= useState(null);
-     const formatDateForDisplay = (dateString) => {
-     if (!dateString) return "";
-  //   // const date = new Date(dateString);
-  //   // console.log('Date from server:', date);
-  //   // console.log('Date after locale:', date.toLocaleDateString('en-US'));
-  //   // return date.toLocaleDateString('en-US');
-     return dateString;
-   };
-
+  
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
     if (storedPrompt) {
