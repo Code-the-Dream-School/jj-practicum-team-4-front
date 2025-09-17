@@ -22,11 +22,44 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import { nanoid } from "nanoid";
+// import { nanoid } from "nanoid";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { data } from "react-router-dom";
 
-const mediaTypeOptions = ["mixed media", "waterColor", "oil paint", "pencil"];
+const mediaTypeOptions = {
+  type: String,
+  enum: [
+    "Tag1",
+    "Tag2",
+    "Tag3",
+    "Tag4",
+    "Tag5",
+    "Tag6",
+    "Tag7",
+    "Tag8",
+    "Tag9",
+    "Tag10",
+  ],
+  // enum: [
+  //   "oil paint",
+  //   "acrylic paint",
+  //   "watercolor",
+  //   "digital art",
+  //   "pencil",
+  //   "charcoal",
+  //   "ink",
+  //   "pastel",
+  //   "mixed media",
+  //   "photography",
+  //   "collage",
+  //   "sculpture",
+  //   "printmaking",
+  //   "gouache",
+  //   "marker",
+  // ],
+  default: "digital art",
+};
 
 function SubmissionForm({
   handleClose,
@@ -35,6 +68,8 @@ function SubmissionForm({
   postArtworkData,
   isDialogOpen,
   setIsDialogOpen,
+  prompt,
+  setIsLoading,
 }) {
   const { token } = useAuth();
   const decodeToken = jwtDecode(token);
@@ -51,13 +86,21 @@ function SubmissionForm({
     // social_link: postArtworkData?.social_link || "",
     // createdAt: postArtworkData?.createdAt || "",
   });
-  // const formRules = {
-  //   imageFile: { required: true },
-  //   title: { required: true },
-  //   media_tag: { required: true },
-  //   description: { required: true },
-  //   mediaLink: { required: false },
-  // };
+  if (!prompt) {
+    setIsLoading(true);
+  }
+  const { _id, description, end_date, rule, start_date, title } = prompt.prompt;
+  const formatted = (date) => {
+    const formatDate = new Date(date);
+    return formatDate
+      .toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+      .replace(",", "");
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (e.target.type === "file") {
@@ -84,28 +127,14 @@ function SubmissionForm({
     }
   };
 
-  // const handleBlur = (e) => {
-  //   const { name, value } = e.target;
-  //   const fieldRules = formRules[name];
-
-  //   if (fieldRules && fieldRules.required && isEmpty(value)) {
-  //     setErrors((prevErr) => ({
-  //       ...prevErr,
-  //       [name]: "This field is required",
-  //     }));
-  //   }
-  //   if (!isEmpty(value)) return;
-  // };
   const handleSubmit = (e) => {
     e.preventDefault();
     const dataToSubmit = {
       ...formData,
-      // createdAt: new Date().toISOString(),
-      prompt_id: nanoid(),
-      user_id: userId,
+      prompt_id: _id,
+      userArtworks: userId,
     };
 
-    console.log("submitted Data to the review form:", dataToSubmit);
     handleSubmission(dataToSubmit);
   };
 
@@ -145,29 +174,31 @@ function SubmissionForm({
       </Box>
       <Box sx={{ p: 3, textAlign: "center", bgcolor: "grey.50" }}>
         <Typography
-          variant="h6"
+          variant="h4"
+          fontWeight="bold"
           sx={{
-            mb: 2,
-            textTransform: "capitalize",
+            mb: 1,
+            textTransform: "uppercase",
             color: "text.primary",
           }}
         >
-          Weekly Challenge Topic
+          {title}
         </Typography>
-        <Typography variant="subtitle1" sx={{ mb: 2, color: "text.secondary" }}>
-          Duration: 00/00/0000 - 00/00/0000
+        <Typography variant="h6" sx={{ mb: 2, color: "text.secondary" }}>
+          {`${formatted(start_date)} - ${formatted(end_date)}`}
         </Typography>
+        <Divider />
         <Typography
-          variant="subtitle2"
+          variant="body1"
           sx={{
+            mt: 2,
             mx: "auto",
-            color: "text.secondary",
           }}
         >
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores ut
-          nisi, fuga obcaecati et tenetur corrupti facere eos nemo a natus,
-          maxime aperiam delectus in? Quibusdam illum earum consequuntur?
-          Officiis.
+          {description}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          {rule}
         </Typography>
       </Box>
 
@@ -291,7 +322,7 @@ function SubmissionForm({
                 <MenuItem value="">
                   <em>Select Media Type</em>
                 </MenuItem>
-                {mediaTypeOptions.map((type) => (
+                {mediaTypeOptions.enum.map((type) => (
                   <MenuItem
                     key={type}
                     value={type}

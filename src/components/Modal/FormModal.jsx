@@ -8,25 +8,43 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SubmissionForm from "../Form/SubmissionForm";
 import SubmissionPreview from "../Form/SubmissionPreview";
+import { getData } from "../../util";
+
+const baseUrl = import.meta.env.VITE_API_URL;
 
 function FormModal({ shownModal, setShownModal }) {
   const [step, setStep] = useState(1);
   const [postArtworkData, setPostArtworkData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // console.log(
-  //   "post Artwork data form parent component Form Modal:",
-  //   postArtworkData
-  // );
+  const [prompt, setPrompt] = useState(null);
   // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("error");
 
+  useEffect(() => {
+    getWeeklyPrompt();
+  }, []);
+
+  const getWeeklyPrompt = async () => {
+    setIsLoading(true);
+    try {
+      const response = await getData(`${baseUrl}/api/prompts/active`);
+      if (!response.success) {
+        throw new Error(response.message || "failed to get data");
+      }
+      setPrompt(response);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const handleSubmission = (data) => {
     setPostArtworkData(data);
     setStep(2);
@@ -64,6 +82,7 @@ function FormModal({ shownModal, setShownModal }) {
               handleClose={handleClose}
               setIsDialogOpen={setIsDialogOpen}
               isDialogOpen={isDialogOpen}
+              prompt={prompt}
             />
           )}
           {step === 2 && (
@@ -80,6 +99,7 @@ function FormModal({ shownModal, setShownModal }) {
               setAlertSeverity={setAlertSeverity}
               setAlertOpen={setAlertOpen}
               setAlertTitle={setAlertTitle}
+              prompt={prompt}
             />
           )}
         </Box>

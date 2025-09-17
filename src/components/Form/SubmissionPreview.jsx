@@ -48,23 +48,17 @@ function SubmissionPreview({
     apiFormData.append("media_tag", postArtworkData.media_tag);
     apiFormData.append("description", postArtworkData.description);
     apiFormData.append("like_counter", postArtworkData.like_counter);
-    // apiFormData.append("social_link", postArtworkData.social_link || "");
-    // apiFormData.append("createdAt", postArtworkData.createdAt);
 
     setIsLoading(true);
-    for (let pair of apiFormData.entries()) {
-      console.log(pair[0] + ":" + pair[1]);
-    }
     try {
       const response = await postData(`${baseUrl}/api/artwork`, apiFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          // "Content-Type": "multipart/form-data",
+          "Content-Type": "multipart/form-data",
         },
       });
-      console.log(apiFormData);
-
-      if (!response.data) {
+      console.log(response);
+      if (!response) {
         setIsLoading(false);
         throw new Error(response);
       }
