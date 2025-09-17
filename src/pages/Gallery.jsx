@@ -17,10 +17,7 @@ import {
   Box,
   Stack,
   Button,
-  Link,
 } from "@mui/material";
-import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
-import SubmissionForm from "../components/Form/SubmissionForm.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
 
@@ -159,28 +156,6 @@ export default function Gallery() {
                   shownModal={shownModal}
                   setShownModal={setShownModal}
                 />
-                {/* <Modal open={open}>
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      maxWidth: 800,
-                      width: "90%",
-                      bgcolor: "background.paper",
-                      boxShadow: 24,
-                      overflowY: "auto",
-                    }}
-                  >
-                    {step === 1 && (
-                      <SubmissionForm setOpen={setOpen} setStep={setStep} />
-                    )}
-                    {step === 2 && (
-                      <SubmissionPreview setOpen={setOpen} setStep={setStep} />
-                    )}
-                  </Box>
-                </Modal> */}
               </>
             )}
           </Container>

@@ -13,6 +13,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import {
   Button,
+  CircularProgress,
   Divider,
   FormHelperText,
   Grid,
@@ -41,6 +42,7 @@ const mediaTypeOptions = {
     "Tag9",
     "Tag10",
   ],
+  default: "Tag1",
   // enum: [
   //   "oil paint",
   //   "acrylic paint",
@@ -70,8 +72,10 @@ function SubmissionForm({
   setIsDialogOpen,
   prompt,
   setIsLoading,
+  formatted,
 }) {
   const { token } = useAuth();
+  const { _id, description, end_date, rule, start_date, title } = prompt;
   const decodeToken = jwtDecode(token);
   const userId = decodeToken.userId;
 
@@ -86,20 +90,6 @@ function SubmissionForm({
     // social_link: postArtworkData?.social_link || "",
     // createdAt: postArtworkData?.createdAt || "",
   });
-  if (!prompt) {
-    setIsLoading(true);
-  }
-  const { _id, description, end_date, rule, start_date, title } = prompt.prompt;
-  const formatted = (date) => {
-    const formatDate = new Date(date);
-    return formatDate
-      .toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-      .replace(",", "");
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -139,271 +129,201 @@ function SubmissionForm({
   };
 
   return (
-    <Box sx={{ maxHeight: "100vh", boxSizing: "border-box" }}>
+    <Box component="form" sx={{ p: 3 }}>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          bgcolor: "primary.main",
-          p: { xs: 1, md: 3 },
+          textAlign: "center",
+          maxWidth: "100%",
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            textTransform: "capitalize",
-            fontWeight: "bold",
-            color: "white",
-            textAlign: "center",
-            textShadow: "0 2px 4px rgba(0,0,0,0.3)",
-          }}
-        >
-          Upload Your Artwork
-        </Typography>
-        <IconButton aria-label="close" onClick={() => setIsDialogOpen(true)}>
-          <CloseIcon />
-        </IconButton>
-
-        <ConfirmModal
-          setIsDialogOpen={setIsDialogOpen}
-          isDialogOpen={isDialogOpen}
-          handleClose={handleClose}
-          message="Your form data will be lost if you close this window. Are you sure you want to continue?"
-        />
-      </Box>
-      <Box sx={{ p: 3, textAlign: "center", bgcolor: "grey.50" }}>
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          sx={{
-            mb: 1,
-            textTransform: "uppercase",
-            color: "text.primary",
-          }}
-        >
-          {title}
-        </Typography>
-        <Typography variant="h6" sx={{ mb: 2, color: "text.secondary" }}>
-          {`${formatted(start_date)} - ${formatted(end_date)}`}
-        </Typography>
-        <Divider />
-        <Typography
-          variant="body1"
-          sx={{
-            mt: 2,
-            mx: "auto",
-          }}
-        >
-          {description}
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          {rule}
-        </Typography>
-      </Box>
-
-      <Divider />
-
-      <Box component="form" sx={{ p: 3 }}>
         <Box
           sx={{
+            p: 8,
             textAlign: "center",
-            maxWidth: "100%",
+            borderRadius: 2,
+            bgcolor: "grey.50",
+            border: "2px dashed",
+            borderColor: errors.imageFile ? "red" : "grey.300",
+            transition: "border-color 0.2s ease",
           }}
         >
-          <Box
-            sx={{
-              p: 8,
-              textAlign: "center",
-              borderRadius: 2,
-              bgcolor: "grey.50",
-              border: "2px dashed",
-              borderColor: errors.imageFile ? "red" : "grey.300",
-              transition: "border-color 0.2s ease",
-            }}
-          >
-            {imageFile && (
-              <Box sx={{ mb: 2 }}>
-                <Box
-                  width="100%"
-                  component="img"
-                  src={URL.createObjectURL(formData.imageFile)}
-                  alt={`Uploaded image`}
-                />
-                <Box
-                  sx={{ display: "flex", justifyContent: "space-between" }}
-                ></Box>
-              </Box>
-            )}
-
-            <Button
-              color={
-                formData.imageFile
-                  ? errors.imageFile
-                    ? "primary"
-                    : "success"
-                  : "primary"
-              }
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              startIcon={
-                !imageFile ? (
-                  <CloudUploadIcon />
-                ) : (
-                  <DriveFileRenameOutlineIcon />
-                )
-              }
-              // onBlur={handleBlur}
-            >
-              {!formData.imageFile ? "Upload files" : `Edit files`}
-              <Input
-                sx={{
-                  display: "none",
-                }}
-                type="file"
-                required
-                name="imageFile"
-                onChange={handleChange}
+          {imageFile && (
+            <Box sx={{ mb: 2 }}>
+              <Box
+                width="100%"
+                component="img"
+                src={URL.createObjectURL(formData.imageFile)}
+                alt={`Uploaded image`}
               />
-            </Button>
-            <FormHelperText sx={{ mt: 2, textAlign: "center" }}>
-              {!formData.imageFile
-                ? "Only accepted JPG/PNG. Max 5MB."
-                : `File Name: ${formData.imageFile.name}`}
-            </FormHelperText>
-            {errors.imageFile && (
-              <FormHelperText error sx={{ mt: 2, textAlign: "center" }}>
-                {errors.imageFile}
-              </FormHelperText>
-            )}
-          </Box>
-        </Box>
-        <Grid container spacing={2} sx={{ my: 2 }}>
-          <Grid size={6}>
-            <TextField
-              error={!!errors.title}
-              name="title"
-              id="title"
-              label="Title of Artwork"
-              required
-              fullWidth
-              size="small"
-              value={formData.title}
-              onChange={handleChange}
-              // onBlur={handleBlur}
-              helperText={!formData.title.trim() && "Required"}
-            />
-          </Grid>
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between" }}
+              ></Box>
+            </Box>
+          )}
 
-          <Grid size={6}>
-            <FormControl
-              size="small"
+          <Button
+            color={
+              formData.imageFile
+                ? errors.imageFile
+                  ? "primary"
+                  : "success"
+                : "primary"
+            }
+            component="label"
+            role={undefined}
+            variant="contained"
+            tabIndex={-1}
+            startIcon={
+              !imageFile ? <CloudUploadIcon /> : <DriveFileRenameOutlineIcon />
+            }
+            // onBlur={handleBlur}
+          >
+            {!formData.imageFile ? "Upload files" : `Edit files`}
+            <Input
               sx={{
-                textTransform: "capitalize",
+                display: "none",
               }}
-              fullWidth
+              type="file"
               required
-              error={!!errors.media_tag}
-            >
-              <InputLabel id="demo-simple-select-standard-label">
-                Media Type
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={formData.media_tag}
-                onChange={handleChange}
-                // onBlur={handleBlur}
-                name="media_tag"
-                label="Media Type"
-              >
-                <MenuItem value="">
-                  <em>Select Media Type</em>
-                </MenuItem>
-                {mediaTypeOptions.enum.map((type) => (
-                  <MenuItem
-                    key={type}
-                    value={type}
-                    sx={{ textTransform: "capitalize" }}
-                  >
-                    {type}
-                  </MenuItem>
-                ))}
-              </Select>
-              {!formData.media_tag && (
-                <FormHelperText error={!!errors.media_tag}>
-                  Required
-                </FormHelperText>
-              )}
-            </FormControl>
-          </Grid>
+              name="imageFile"
+              onChange={handleChange}
+            />
+          </Button>
+          <FormHelperText sx={{ mt: 2, textAlign: "center" }}>
+            {!formData.imageFile
+              ? "Only accepted JPG/PNG. Max 5MB."
+              : `File Name: ${formData.imageFile.name}`}
+          </FormHelperText>
+          {errors.imageFile && (
+            <FormHelperText error sx={{ mt: 2, textAlign: "center" }}>
+              {errors.imageFile}
+            </FormHelperText>
+          )}
+        </Box>
+      </Box>
+      <Grid container spacing={2} sx={{ my: 2 }}>
+        <Grid size={6}>
+          <TextField
+            error={!!errors.title}
+            name="title"
+            id="title"
+            label="Title of Artwork"
+            required
+            fullWidth
+            size="small"
+            value={formData.title}
+            onChange={handleChange}
+            // onBlur={handleBlur}
+            helperText={!formData.title.trim() && "Required"}
+          />
         </Grid>
 
-        <TextField
-          error={!!errors.description}
-          name="description"
-          id="description"
-          label="Artwork Description"
-          required
-          fullWidth
-          multiline
-          rows={4}
-          onChange={handleChange}
-          // onBlur={handleBlur}
-          value={formData.description}
-          placeholder="Tell us about your artwork..."
-          sx={{ mb: 2 }}
-          helperText={!formData.description.trim() && "Required"}
-        />
-
-        <TextField
-          name="mediaLink"
-          size="small"
-          id="mediaLink"
-          label="Social Media Link (optional)"
-          fullWidth
-          onChange={handleChange}
-          value={formData.mediaLink}
-          sx={{ mb: 2 }}
-        />
-        <Box
-          sx={{ display: "flex", justifyContent: "space-around", mt: 2, mb: 1 }}
-        >
-          <Button
-            color="error"
-            variant="outlined"
-            sx={{ px: 4 }}
-            onClick={() => setIsDialogOpen(true)}
-          >
-            Cancel
-          </Button>
-          <Button
-            disabled={
-              !formData.title.trim() ||
-              !formData.imageFile ||
-              !formData.media_tag ||
-              !formData.description.trim() ||
-              errors.title ||
-              errors.imageFile ||
-              errors.media_tag ||
-              errors.description ||
-              isLoading
-            }
-            variant="contained"
-            size="large"
+        <Grid size={6}>
+          <FormControl
+            size="small"
             sx={{
-              px: 4,
-              py: 1.5,
               textTransform: "capitalize",
-              fontSize: "1.1rem",
             }}
-            onClick={handleSubmit}
+            fullWidth
+            required
+            error={!!errors.media_tag}
           >
-            {isLoading ? "Loading..." : "next"}
-          </Button>
-        </Box>
+            <InputLabel id="demo-simple-select-standard-label">
+              Media Type
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-standard-label"
+              id="demo-simple-select-standard"
+              value={formData.media_tag}
+              onChange={handleChange}
+              // onBlur={handleBlur}
+              name="media_tag"
+              label="Media Type"
+            >
+              <MenuItem value="">
+                <em>Select Media Type</em>
+              </MenuItem>
+              {mediaTypeOptions.enum.map((type) => (
+                <MenuItem
+                  key={type}
+                  value={type}
+                  sx={{ textTransform: "capitalize" }}
+                >
+                  {type}
+                </MenuItem>
+              ))}
+            </Select>
+            {!formData.media_tag && (
+              <FormHelperText error={!!errors.media_tag}>
+                Required
+              </FormHelperText>
+            )}
+          </FormControl>
+        </Grid>
+      </Grid>
+
+      <TextField
+        error={!!errors.description}
+        name="description"
+        id="description"
+        label="Artwork Description"
+        required
+        fullWidth
+        multiline
+        rows={4}
+        onChange={handleChange}
+        // onBlur={handleBlur}
+        value={formData.description}
+        placeholder="Tell us about your artwork..."
+        sx={{ mb: 2 }}
+        helperText={!formData.description.trim() && "Required"}
+      />
+
+      <TextField
+        name="mediaLink"
+        size="small"
+        id="mediaLink"
+        label="Social Media Link (optional)"
+        fullWidth
+        onChange={handleChange}
+        value={formData.mediaLink}
+        sx={{ mb: 2 }}
+      />
+      <Box
+        sx={{ display: "flex", justifyContent: "space-around", mt: 2, mb: 1 }}
+      >
+        <Button
+          color="error"
+          variant="outlined"
+          sx={{ px: 4 }}
+          onClick={() => setIsDialogOpen(true)}
+        >
+          Cancel
+        </Button>
+        <Button
+          disabled={
+            !formData.title.trim() ||
+            !formData.imageFile ||
+            !formData.media_tag ||
+            !formData.description.trim() ||
+            errors.title ||
+            errors.imageFile ||
+            errors.media_tag ||
+            errors.description ||
+            isLoading
+          }
+          variant="contained"
+          size="large"
+          sx={{
+            px: 4,
+            py: 1.5,
+            textTransform: "capitalize",
+            fontSize: "1.1rem",
+          }}
+          onClick={handleSubmit}
+        >
+          {isLoading ? <CircularProgress /> : "next"}
+        </Button>
       </Box>
     </Box>
   );
