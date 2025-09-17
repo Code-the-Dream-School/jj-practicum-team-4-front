@@ -47,12 +47,10 @@ function SubmissionForm({
     title: postArtworkData?.title || "",
     media_tag: postArtworkData?.media_tag || "",
     description: postArtworkData?.description || "",
-    link_counter: 0,
+    like_counter: 0,
     // social_link: postArtworkData?.social_link || "",
     // createdAt: postArtworkData?.createdAt || "",
   });
-
-  console.log("form data:", formData);
   // const formRules = {
   //   imageFile: { required: true },
   //   title: { required: true },
@@ -108,7 +106,7 @@ function SubmissionForm({
     };
 
     console.log("submitted Data to the review form:", dataToSubmit);
-    handleSubmission(dataToSubmit, imageFile);
+    handleSubmission(dataToSubmit);
   };
 
   return (

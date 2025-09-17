@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+// import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
@@ -41,28 +41,28 @@ function SubmissionPreview({
     // Append each field individually
     apiFormData.append("prompt_id", postArtworkData.prompt_id);
     apiFormData.append("user_id", postArtworkData.user_id);
-    apiFormData.append("image_url", postArtworkData.imageFile);
+
+    apiFormData.append("file", postArtworkData.imageFile);
+
     apiFormData.append("title", postArtworkData.title);
     apiFormData.append("media_tag", postArtworkData.media_tag);
     apiFormData.append("description", postArtworkData.description);
-    // apiFormData.append("social_link", postArtworkData.social_link || "");
     apiFormData.append("like_counter", postArtworkData.like_counter);
+    // apiFormData.append("social_link", postArtworkData.social_link || "");
     // apiFormData.append("createdAt", postArtworkData.createdAt);
 
+    setIsLoading(true);
     for (let pair of apiFormData.entries()) {
       console.log(pair[0] + ":" + pair[1]);
     }
-    setIsLoading(true);
-    // console.log(postArtworkData.imageFile.file);
-
     try {
       const response = await postData(`${baseUrl}/api/artwork`, apiFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+          // "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response);
+      console.log(apiFormData);
 
       if (!response.data) {
         setIsLoading(false);
