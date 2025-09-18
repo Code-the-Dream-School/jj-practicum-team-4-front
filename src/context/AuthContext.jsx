@@ -9,16 +9,16 @@ const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true,
   error: null,
 };
 
 // AuthProvider component that wraps the entire route
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-
   // Check if user is already logged in (from localStorage) when app loads
   const checkLoggedIn = async () => {
+    dispatch({ type: "AUTH_LOADING" });
     try {
       const storedUser = authService.getCurrentUser();
 
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         // check if token expired
         try {
           const decodedToken = jwtDecode(storedUser.token);
-          console.log(decodedToken);
+          // console.log(decodedToken);
           const currentTime = Date.now() / 1000;
 
           // if expired, logout user
@@ -36,20 +36,21 @@ export const AuthProvider = ({ children }) => {
             dispatch({ type: "LOGOUT" });
             return;
           }
-
           //if token is valid, set user as authenticated
-          console.log("token is valid, user authenticated", storedUser);
+          // console.log("token is valid, user authenticated", storedUser);
           dispatch({
             type: "LOGIN_SUCCESS",
-            payload: { user: storedUser.user, token: decodedToken },
+            payload: { user: storedUser.user, token: storedUser.token },
           });
         } catch (tokenError) {
           console.error("invalid token:", tokenError);
           localStorage.removeItem("user");
           dispatch({ type: "LOGIN_FAILURE" });
         }
+      } else {
+        dispatch({ type: "AUTH_CHECK_COMPLETE" });
       }
-    } catch (err) {
+    } catch (error) {
       console.error("Error reading from localStorage", error);
       localStorage.removeItem("user");
     }
@@ -101,7 +102,7 @@ export const AuthProvider = ({ children }) => {
         const decodeUserToken = jwtDecode(response.token);
         dispatch({
           type: "LOGIN_SUCCESS",
-          payload: { user: response.user, token: decodeUserToken },
+          payload: { user: response.user, token: response.token },
         });
         localStorage.setItem("user", JSON.stringify(response));
         console.log("logon successful in authcontext:", response);
