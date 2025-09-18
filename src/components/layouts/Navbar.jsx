@@ -26,6 +26,20 @@ const settings = ["Profile", "Logout"];
 
 function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
+
+  React.useEffect(() => {
+    if (user) {
+      console.log("Navbar user data:", user);
+      console.log(
+        "User picture URL:",
+        user.picture ||
+          user.avatar ||
+          user.profilePicture ||
+          "No picture URL found"
+      );
+    }
+  }, [user]);
+
   const [alertOpen, setAlertOpen] = React.useState(false);
   const [alertSeverity, setAlertSeverity] = React.useState("error");
   const [alertMessage, setAlertMessage] = React.useState(null);
@@ -42,10 +56,10 @@ function Navbar() {
       setAlertSeverity("info");
 
       setTimeout(() => {
-        (navigate("/sign-in"), setAlertOpen(false), setAlertMessage(null));
+        (navigate("/gallery"), setAlertOpen(false), setAlertMessage(null));
       }, 1000);
-    } catch (err) {
-      console.error("logout failed:", err);
+    } catch (error) {
+      console.error("logout failed:", error);
       setAlertOpen(true);
       setAlertMessage("Logout failed");
       setAlertSeverity("error");
@@ -162,9 +176,34 @@ function Navbar() {
                   onClick={handleOpenUserMenu}
                   sx={{ p: 0, order: { xs: 3, md: 0 } }}
                 >
-                  <Avatar>
-                    {!user ? "U" : user.fullName.charAt(0).toUpperCase()}
+                  <Avatar
+                    src={
+                      user &&
+                      (user.picture || user.avatar || user.profilePicture)
+                    }
+                    alt={user && (user.first_name || user.fullName || "User")}
+                    slotProps={{
+                      onError: (e) => {
+                        console.error(
+                          "Avatar image failed to load:",
+                          e.target.src
+                        );
+                        e.target.onerror = null; // Prevent infinite error loop
+                        e.target.style.display = "none"; // Hide the broken image
+                      },
+                      onLoad: () =>
+                        console.log("Avatar image loaded successfully"),
+                    }}
+                  >
+                    {!user
+                      ? "U"
+                      : user.first_name
+                        ? user.first_name.charAt(0).toUpperCase()
+                        : user.fullName
+                          ? user.fullName.charAt(0).toUpperCase()
+                          : "U"}
                   </Avatar>
+                  {/* Debug comment - Picture URL: {user?.picture || 'none'} */}
                 </IconButton>
               </Tooltip>
               <Menu
