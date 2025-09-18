@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+// import formatDateForDisplay from "../util/date.jsx";
 import {
   Box,
   Typography,
@@ -65,8 +66,9 @@ export default function ChallengePrompts() {
   // Format date for display (MM/DD/YYYY)
   const formatDateForDisplay = (dateString) => {
     if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US");
+    const date = new Date(dateString + "T00:00:00");
+    return date.toLocaleDateString('en-US');
+    // return dateString;
   };
   const showSuccess = (message) => {
     setSuccess(message);
@@ -99,7 +101,8 @@ export default function ChallengePrompts() {
   const formatPromptFromAPI = (p) => {
     return {
       id: p._id,
-      title: p.title,
+       title: p.title || p.challenge?.title, 
+      // title: p.title.replace(" (overwrite)", ""),
       description: p.description,
       rules: p.rule || p.rules || "",
       startDate: formatDate(p.start_date || p.challenge?.start_date),
@@ -120,6 +123,7 @@ export default function ChallengePrompts() {
       if (response?.success && response?.prompt) {
         const formatted = formatPromptFromAPI(response.prompt);
         setPrompts([formatted]);
+        localStorage.setItem("activePrompt", JSON.stringify(formatted));
       } else {
         setPrompts([]); // No active prompt
       }
