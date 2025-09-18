@@ -301,6 +301,7 @@ export const authService = {
     const googleAuthUrl =
       import.meta.env.VITE_GOOGLE_AUTH_URL ||
       `${api.defaults.baseURL}/auth/google`;
+    console.log(googleAuthUrl);
     logApiCall("redirect", googleAuthUrl);
     window.location.href = googleAuthUrl;
   },

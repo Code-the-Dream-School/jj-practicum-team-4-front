@@ -125,7 +125,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = () => {
     dispatch({ type: "LOGIN_REQUEST" });
     try {
       // This will redirect the user to google's oauth page
