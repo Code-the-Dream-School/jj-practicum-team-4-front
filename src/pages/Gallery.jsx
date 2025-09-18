@@ -93,7 +93,7 @@ export default function Gallery() {
               align="center"
               sx={{ mb: 3, color: "#2c3e50" }}
             >
-              WEEKLY CHALLENGE TOPIC {prompt ? `: ${prompt.title}` : ""}
+              {prompt ? `${prompt.title}` : ""}
             </Typography>
             <Typography
               variant="h5"
