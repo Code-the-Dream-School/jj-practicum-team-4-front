@@ -16,8 +16,10 @@
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
     "axios": "^1.11.0",
+    "axios-mock-adapter": "^2.1.0",
     "install": "^0.13.0",
     "jwt-decode": "^4.0.0",
+    "nanoid": "^5.1.5",
     "npm": "^11.5.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -31,6 +33,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "json-server": "^1.0.0-beta.3",
     "prettier": "3.6.2",
     "vite": "^7.0.6"
   }

@@ -1,6 +1,5 @@
 import axios from "axios";
 
-const baseUrl = import.meta.env.VITE_API_URL;
 // note: not used, but could be used with GET with params
 const getData = async (url, data, config = {}) => {
   try {
@@ -96,4 +95,23 @@ const isEmpty = (value) => {
   );
 };
 
-export { getData, getAllData, postData, patchData, putData, deleteData, isEmpty };
+const isFileValid = (file) => {
+  if (!file.type.startsWith("image/")) {
+    return { error: "please select an image file" };
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    return { error: "File is too large! Must not exceed 5MB" };
+  }
+  return { valid: true };
+};
+
+export {
+  getData,
+  getAllData,
+  postData,
+  patchData,
+  putData,
+  deleteData,
+  isEmpty,
+  isFileValid,
+};

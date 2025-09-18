@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         // check if token expired
         try {
           const decodedToken = jwtDecode(storedUser.token);
-          console.log(decodedToken);
+          // console.log(decodedToken);
           const currentTime = Date.now() / 1000;
 
           // if expired, logout user
@@ -37,10 +37,10 @@ export const AuthProvider = ({ children }) => {
             return;
           }
           //if token is valid, set user as authenticated
-          console.log("token is valid, user authenticated", storedUser);
+          // console.log("token is valid, user authenticated", storedUser);
           dispatch({
             type: "LOGIN_SUCCESS",
-            payload: { user: storedUser.user, token: decodedToken },
+            payload: { user: storedUser.user, token: storedUser.token },
           });
         } catch (tokenError) {
           console.error("invalid token:", tokenError);
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         dispatch({ type: "AUTH_CHECK_COMPLETE" });
       }
-    } catch (err) {
+    } catch (error) {
       console.error("Error reading from localStorage", error);
       localStorage.removeItem("user");
     }
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
         const decodeUserToken = jwtDecode(response.token);
         dispatch({
           type: "LOGIN_SUCCESS",
-          payload: { user: response.user, token: decodeUserToken },
+          payload: { user: response.user, token: response.token },
         });
         localStorage.setItem("user", JSON.stringify(response));
         console.log("logon successful in authcontext:", response);
