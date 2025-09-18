@@ -26,7 +26,6 @@ function AuthForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -57,7 +56,8 @@ function AuthForm() {
 
       // redirect to home page
       setTimeout(() => navigate("/gallery"), 1500);
-    } catch (err) {
+    } catch (error) {
+      console.log(error);
       setAlertMessage("Invalid email or password");
       setAlertOpen(true);
     }
@@ -187,12 +187,18 @@ function AuthForm() {
               }}
               onClick={handleGoogleLogin}
             >
-              <Avatar
-                alt="Google Icon"
-                src="src/assets/images/googleIcon.png"
-                sx={{ width: 24, height: 24, mr: 1 }}
-              />
-              {isLoading ? <CircularProgress /> : "Continue with Google"}
+              {isLoading ? (
+                <CircularProgress />
+              ) : (
+                <>
+                  <Avatar
+                    alt="Google Icon"
+                    src="src/assets/images/googleIcon.png"
+                    sx={{ width: 24, height: 24, mr: 1 }}
+                  />
+                  Continue with Google
+                </>
+              )}
             </Button>
           </Box>
         </Container>
