@@ -1,11 +1,11 @@
 // Authentication reducer to handle state transitions for auth-related actions
 const authReducer = (state, action) => {
   switch (action.type) {
-    case "AUTH_LOADING":
-      return {
-        ...state,
-        isLoading: true,
-      };
+    // case "AUTH_LOADING":
+    //   return {
+    //     ...state,
+    //     isLoading: true,
+    //   };
     case "AUTH_CHECK_COMPLETE":
       return {
         ...state,

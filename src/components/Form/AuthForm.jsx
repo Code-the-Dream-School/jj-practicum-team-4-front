@@ -15,6 +15,7 @@ import {
   Avatar,
   Snackbar,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
@@ -45,7 +46,6 @@ function AuthForm() {
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
-    console.log(`submitted - email: ${email}, password: ${password}`);
     setAlertMessage("");
     setAlertOpen(false);
 
@@ -54,7 +54,6 @@ function AuthForm() {
       setAlertOpen(true);
       setAlertSeverity("success");
       setAlertMessage("Login successful!");
-      console.log("login success:");
 
       // redirect to home page
       setTimeout(() => navigate("/gallery"), 1500);
@@ -172,7 +171,7 @@ function AuthForm() {
               size="large"
               sx={{ textTransform: "capitalize", mt: 3 }}
             >
-              {isLoading ? "Logging in..." : "sign in"}
+              {isLoading ? <CircularProgress /> : "sign in"}
             </Button>
           </Box>
           <Divider sx={{ color: "grey" }}>or</Divider>
@@ -193,7 +192,7 @@ function AuthForm() {
                 src="src/assets/images/googleIcon.png"
                 sx={{ width: 24, height: 24, mr: 1 }}
               />
-              {isLoading ? "Loading..." : "Continue with Google"}
+              {isLoading ? <CircularProgress /> : "Continue with Google"}
             </Button>
           </Box>
         </Container>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -114,7 +115,7 @@ api.interceptors.request.use(
       "/auth/login",
       "/auth/register",
       "/auth/logout",
-      "/auth/refresh-token",
+      "/auth/refresh",
     ];
     const isPrivilegedOperation = sensitiveOperations.some((op) =>
       config.url?.includes(op)
@@ -187,7 +188,7 @@ api.interceptors.response.use(
 
       try {
         // Call refresh token endpoint
-        const res = await api.post("/auth/refresh-token");
+        const res = await api.post("/auth/refresh");
 
         if (res.status === 200) {
           // Token refreshed successfully
@@ -251,19 +252,34 @@ export const authService = {
     try {
       // Ensure we're using absolute URL with the proper auth endpoint
       const response = await api.post("/auth/login", { email, password });
-
-      if (response.data && response.data.token) {
+      if (response.data && response.data.user) {
+        const decodeToken = jwtDecode(response.data.token);
+        const userData = {
+          userId: decodeToken.userId,
+          email: decodeToken.email,
+          firstName: decodeToken.firstName,
+          lastName: decodeToken.lastName,
+          fullName: decodeToken.fullName,
+          admin: decodeToken.admin,
+        };
         // Store user data and token in localStorage
-        localStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("userInfo", JSON.stringify(userData));
+        localStorage.setItem("loginTimestamp", Date.now().toString());
       } else if (response.data) {
         // If we get a response but no token, log it clearly
         console.warn("Login successful but no token received:", response.data);
-        localStorage.setItem("user", JSON.stringify(response.data));
       }
       return response.data;
     } catch (error) {
-      // logApiCall("error", "/auth/login", { email }, false, error);
-      throw error;
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("loginTimeStamp");
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Login failed. Please try again.";
+      console.error("Login error:", errorMessage);
+      throw { message: errorMessage, originalError: error };
     }
   },
 
@@ -282,31 +298,35 @@ export const authService = {
 
   // Google OAuth login (redirects to backend Google auth route)
   loginWithGoogle: () => {
-    try {
-      const googleAuthUrl =
-        import.meta.env.VITE_GOOGLE_AUTH_URL ||
-        `${api.defaults.baseURL}/auth/google`;
+    // try {
+    const googleAuthUrl =
+      import.meta.env.VITE_GOOGLE_AUTH_URL ||
+      `${api.defaults.baseURL}/auth/google`;
 
-      if (!googleAuthUrl) {
-        throw new Error("Google auth URL not configured");
-      }
-
-      logApiCall("redirect", googleAuthUrl);
-      window.location.href = googleAuthUrl;
-    } catch (error) {
-      console.error("Failed to initiate Google login:", error);
-    }
+    // if (!googleAuthUrl) {
+    //   throw new Error("Google auth URL not configured");
+    // }
+    logApiCall("redirect", googleAuthUrl);
+    window.location.href = googleAuthUrl;
+    // } catch (error) {
+    // console.error("Failed to initiate Google login:", error);
+    // }
   },
 
   // Logout user
   logout: async () => {
     try {
       const res = await api.get("/auth/logout");
-      localStorage.removeItem("user");
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("loginTimeStamp");
       return res;
     } catch (error) {
-      localStorage.removeItem("user");
-      throw error;
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("loginTimeStamp");
+      const errorMessage =
+        error.response?.data?.message || error.message || "Logout failed";
+      console.error("Logout error:", errorMessage);
+      throw { message: errorMessage, originalError: error };
     }
   },
 
@@ -324,15 +344,29 @@ export const authService = {
   },
 
   // Get the current user from localStorage
-  getCurrentUser: () => {
+  getCurrentUser: async () => {
     try {
-      const user = localStorage.getItem("user");
-      if (user) {
-        return JSON.parse(user);
+      const userInfo = localStorage.getItem("userInfo");
+      const loginTimestamp = localStorage.getItem("loginTimestamp");
+      // const response = await api.get("/auth/user");
+      if (userInfo) {
+        const now = Date.now();
+        const loginTime = parseInt(loginTimestamp || "0");
+        const isRecent = now - loginTime < 24 * 60 * 60 * 1000;
+
+        if (isRecent) {
+          return {
+            isAuthenticated: true,
+            user: JSON.parse(userInfo),
+          };
+        }
       }
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("loginTimeStamp");
       return null;
     } catch (error) {
-      logApiCall("error", "getCurrentUser", {}, false, error);
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("loginTimeStamp");
       return null;
     }
   },

@@ -19,69 +19,69 @@ export const AuthProvider = ({ children }) => {
   // Check if user is already logged in (from localStorage) when app loads
   useEffect(() => {
     checkLoggedIn();
-    checkAuthStatus();
-    handleAuthCallback();
+    // Listen for session expired events (from token refresh failures)
+    //   const handleSessionExpired = () => {
+    //     console.warn("Session expired event received");
+    //     dispatch({ type: "SESSION_EXPIRED" });
+    //   };
+
+    //   window.addEventListener("auth:sessionExpired", handleSessionExpired);
+
+    //   return () => {
+    //     window.removeEventListener("auth:sessionExpired", handleSessionExpired);
+    //   };
+    // }, []);
+    // checkAuthStatus();
+    // handleAuthCallback();
   }, []);
 
-  const checkAuthStatus = async () => {
-    dispatch({ type: "AUTH_LOADING" });
-    try {
-      const response = await authService.checkAuth();
-      if (response.ok) {
-        console.log(response);
-      }
-    } catch (error) {
-      console.error("Auth status check failed:", error);
-    } finally {
-      dispatch({ type: "AUTH_CHECK_COMPLETE" });
-    }
-  };
+  // const checkAuthStatus = async () => {
+  //   dispatch({ type: "AUTH_LOADING" });
+  //   try {
+  //     const response = await authService.checkAuth();
+  //     if (response.ok) {
+  //       console.log(response);
+  //     }
+  //   } catch (error) {
+  //     console.error("Auth status check failed:", error);
+  //   } finally {
+  //     dispatch({ type: "AUTH_CHECK_COMPLETE" });
+  //   }
+  // };
 
-  const handleAuthCallback = () => {
-    const urlParams = new URLSearchParams();
-    console.log(urlParams.toString());
-    const authError = urlParams.get("error");
-    const authMessage = urlParams.get("message");
-    console.log(authError);
-    console.log(authMessage);
-  };
+  // const handleAuthCallback = () => {
+  //   const urlParams = new URLSearchParams();
+  //   const authError = urlParams.get("error");
+  //   const authMessage = urlParams.get("message");
+  // };
 
   const checkLoggedIn = async () => {
-    dispatch({ type: "AUTH_LOADING" });
+    dispatch({ type: "LOGIN_REQUEST" });
     try {
-      const storedUser = authService.getCurrentUser();
+      // first check if we have user info in localStorage
+      const storedUserInfo = localStorage.getItem("userInfo");
+      const storedToken = localStorage.getItem("token");
+      if (storedUserInfo && storedToken) {
+        // we have stored user data, set authenticated state
+        const userData = JSON.parse(storedUserInfo);
 
-      if (storedUser && storedUser.token) {
-        // check if token expired
-        try {
-          const decodedToken = jwtDecode(storedUser.token);
-          console.log(decodedToken);
-          const currentTime = Date.now() / 1000;
-
-          // if expired, logout user
-          if (decodedToken.exp && decodedToken.exp < currentTime) {
-            console.log("token expired, logging out user");
-            localStorage.removeItem("user");
-            dispatch({ type: "LOGOUT" });
-            return;
-          }
-          //if token is valid, set user as authenticated
-          console.log("token is valid, user authenticated", storedUser);
-          dispatch({
-            type: "LOGIN_SUCCESS",
-            payload: { user: storedUser.user, token: decodedToken },
-          });
-        } catch (tokenError) {
-          console.error("invalid token:", tokenError);
-          localStorage.removeItem("user");
-          dispatch({ type: "LOGIN_FAILURE" });
-        }
+        // Log stored user data
+        console.log(userData);
+        dispatch({ type: "LOGIN_SUCCESS", payload: { user: userData.user } });
+        return;
+      }
+      // if no stored data, verify with the server if the user is authenticated
+      // using httpOnly cookies that are automatically include in the request
+      const userData = await authService.getCurrentUser();
+      // console.log(userData);
+      if (userData && userData.isAuthenticated) {
+        dispatch({ type: "LOGIN_SUCCESS", payload: { user: userData.user } });
       } else {
-        dispatch({ type: "AUTH_CHECK_COMPLETE" });
+        dispatch({ type: "LOGOUT" });
       }
     } catch (error) {
       console.error("Error reading from localStorage", error);
-      localStorage.removeItem("user");
+      dispatch({ type: "LOGOUT" });
     }
   };
 
@@ -89,18 +89,17 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     dispatch({ type: "LOGIN_REQUEST" });
     try {
-      console.log("Sending registration data:", userData);
       // Use the authService which is properly configured with credentials
-      const res = await authService.register(userData);
-      if (res && res.token) {
-        console.log("AuthContext File: Registration successful", res);
+      const response = await authService.register(userData);
+      if (response && response.user) {
+        console.log("AuthContext File: Registration successful", response);
         dispatch({
           type: "LOGIN_SUCCESS",
-          payload: { user: res.user, token: res.token },
+          payload: { user: response.user },
         });
-        return res;
+        return response;
       } else {
-        throw new Error("Registration failed. no token received");
+        throw new Error("Registration failed. no data received");
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -118,28 +117,24 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     dispatch({ type: "LOGIN_REQUEST" });
     try {
-      console.log("logging...");
-      // Use the authService which is properly configured with credentials
       const response = await authService.login(email, password);
-      if (response && response.token) {
-        const decodeUserToken = jwtDecode(response.token);
+      if (response && response.user) {
         dispatch({
           type: "LOGIN_SUCCESS",
-          payload: { user: response.user, token: decodeUserToken },
+          payload: { user: response.user },
         });
-        localStorage.setItem("user", JSON.stringify(response));
-        console.log("logon successful in authcontext:", response);
         return response;
       } else {
-        throw new Error("Login failed");
+        throw new Error("Login failed - no user data received");
       }
     } catch (error) {
       console.error("Login error:", error);
       dispatch({
         type: "LOGIN_FAILURE",
-        payload: "Login failed. Please check your email and password",
+        payload:
+          error.response?.data?.message ||
+          "Login failed. Please check your email and password",
       });
-      localStorage.removeItem("user");
       throw error;
     }
   };
@@ -159,15 +154,17 @@ export const AuthProvider = ({ children }) => {
       // Even if there's an error with the API call, the authService will still handle localStorage
       dispatch({ type: "LOGOUT" });
       localStorage.removeItem("user");
+      localStorage.removeItem("userInfo");
     }
   };
 
   const loginWithGoogle = async () => {
     dispatch({ type: "LOGIN_REQUEST" });
     try {
-      const response = authService.loginWithGoogle();
-      dispatch({ type: "LOGIN_SUCCESS" });
-      console.log(response);
+      // This will redirect the user to google's oauth page
+      authService.loginWithGoogle();
+      // the rest of the auth will be handled when redirected back
+      // no need dispatch any action here
       return true;
     } catch (error) {
       console.error("Google login error:", error);
