@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import formatDateForDisplay from "../util/date.jsx";
 import { Icon, Modal } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import { CssBaseline } from "@mui/material";
@@ -17,19 +18,26 @@ import {
   Box,
   Stack,
   Button,
-  Link,
 } from "@mui/material";
-import SubmissionPreview from "../components/Form/SubmissionPreview.jsx";
-import SubmissionForm from "../components/Form/SubmissionForm.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import FormModal from "../components/Modal/FormModal.jsx";
 
 export default function Gallery() {
   const { isAuthenticated } = useAuth();
-  const [step, setStep] = useState(1);
-  const [open, setOpen] = useState(false);
+  const [shownModal, setShownModal] = useState(false);
   const [selected, setSelected] = useState(null);
   // TODO: Replace with actual authentication logic
   const isLoggedIn = true; // Set to true to simulate logged-in user
+  const [prompt, setPrompt]= useState(null);
+  
+  useEffect(() => {
+    const storedPrompt = localStorage.getItem("activePrompt");
+    if (storedPrompt) {
+      setPrompt(JSON.parse(storedPrompt));
+    }
+
+  }, []);
+
   // Placeholder artwork data
   const [artworks] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
@@ -67,7 +75,7 @@ export default function Gallery() {
   return (
     <>
       <CssBaseline />
-      <Container maxWidth="xl" disableGutters>
+      <Container disableGutters>
         <Box
           sx={{
             backgroundColor: "#f5f5f7",
@@ -82,21 +90,31 @@ export default function Gallery() {
               align="center"
               sx={{ mb: 3, color: "#2c3e50" }}
             >
-              WEEKLY CHALLENGE TOPIC
+              {prompt ? `${prompt.title}` : ""}
             </Typography>
             <Typography
               variant="h5"
               align="center"
+              fontWeight={600}
               sx={{ mb: 3, color: "#34495e" }}
             >
-              DURATION: [Your duration here]
+              DURATION {prompt ? `: ${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}` : ""}
             </Typography>
             <Typography
-              variant="body1"
+              variant="h5"
               align="center"
+              fontWeight={600}
               sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
             >
-              INSTRUCTION/EXPLANATION: [Your detailed instructions here]
+             DESCRIPTION {prompt ? `: ${prompt.description}` : ""}
+            </Typography>
+            <Typography
+              variant="h5"
+              align="center"
+              fontWeight={600}
+              sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
+            >
+             RULES {prompt ? `: ${prompt.rules}` : ""}
             </Typography>
             <Stack
               direction="row"
@@ -152,35 +170,15 @@ export default function Gallery() {
               <>
                 <Button
                   variant="contained"
-                  component={Link}
-                  to="/upload-artwork"
                   sx={{ mt: 4, backgroundColor: "#C86D6D" }}
-                  onClick={() => setOpen(true)}
+                  onClick={() => setShownModal(true)}
                 >
                   UPLOAD YOUR ARTWORK
                 </Button>
-                <Modal open={open}>
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      maxWidth: 800,
-                      width: "90%",
-                      bgcolor: "background.paper",
-                      boxShadow: 24,
-                      overflowY: "auto",
-                    }}
-                  >
-                    {step === 1 && (
-                      <SubmissionForm setOpen={setOpen} setStep={setStep} />
-                    )}
-                    {step === 2 && (
-                      <SubmissionPreview setOpen={setOpen} setStep={setStep} />
-                    )}
-                  </Box>
-                </Modal>
+                <FormModal
+                  shownModal={shownModal}
+                  setShownModal={setShownModal}
+                />
               </>
             )}
           </Container>
@@ -211,10 +209,10 @@ export default function Gallery() {
         >
           {artworks.map((art) => (
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
+              // item
+              // xs={12}
+              // sm={6}
+              // md={4}
               key={art.id}
               sx={{ display: "flex", justifyContent: "center" }}
             >

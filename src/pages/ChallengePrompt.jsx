@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+// import formatDateForDisplay from "../util/date.jsx";
 import {
   Box,
   Typography,
@@ -14,7 +15,7 @@ import {
   Paper,
   MenuItem,
   Stack,
-  CircularProgress ,
+  CircularProgress,
   Alert,
   Dialog,
   DialogTitle,
@@ -26,8 +27,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { getData, postData, patchData, deleteData } from "../util";
-
-
 
 const statusOptions = ["ACTIVE", "CLOSED"];
 
@@ -55,11 +54,10 @@ export default function ChallengePrompts() {
   const ALL_URL = `${BASE_URL}/api/prompts/all`;
   const PROMPTS_URL = `${BASE_URL}/api/prompts`;
 
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-// Format date from ISO string to YYYY-MM-DD
+  // Format date from ISO string to YYYY-MM-DD
   const formatDate = (dateString) => {
     if (!dateString) return "";
     return new Date(dateString).toISOString().slice(0, 10);
@@ -68,8 +66,11 @@ export default function ChallengePrompts() {
   // Format date for display (MM/DD/YYYY)
   const formatDateForDisplay = (dateString) => {
     if (!dateString) return "";
-    const date = new Date(dateString);
+
+    const date = new Date(dateString + "T00:00:00");
     return date.toLocaleDateString('en-US');
+    // return dateString;
+
   };
   const showSuccess = (message) => {
     setSuccess(message);
@@ -88,17 +89,22 @@ export default function ChallengePrompts() {
       description: formData.description,
       rules: formData.rules,
       challenge: {
-        start_date: formData.startDate ? new Date(formData.startDate).toISOString() : null,
-        end_date: formData.endDate ? new Date(formData.endDate).toISOString() : null,
+        start_date: formData.startDate
+          ? new Date(formData.startDate).toISOString()
+          : null,
+        end_date: formData.endDate
+          ? new Date(formData.endDate).toISOString()
+          : null,
       },
-      is_active: formData.status === "ACTIVE"
+      is_active: formData.status === "ACTIVE",
     };
   };
 
   const formatPromptFromAPI = (p) => {
     return {
       id: p._id,
-      title: p.title,
+       title: p.title || p.challenge?.title, 
+      // title: p.title.replace(" (overwrite)", ""),
       description: p.description,
       rules: p.rule || p.rules || "",
       startDate: formatDate(p.start_date || p.challenge?.start_date),
@@ -107,19 +113,19 @@ export default function ChallengePrompts() {
     };
   };
 
-
   // Fetch active prompt from backend
   const fetchActivePrompt = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await getData(ACTIVE_URL);
       console.log("API response:", response);
 
       if (response?.success && response?.prompt) {
         const formatted = formatPromptFromAPI(response.prompt);
         setPrompts([formatted]);
+        localStorage.setItem("activePrompt", JSON.stringify(formatted));
       } else {
         setPrompts([]); // No active prompt
       }
@@ -136,7 +142,7 @@ export default function ChallengePrompts() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await getData(ALL_URL);
       console.log("All prompts response:", response);
 
@@ -158,7 +164,7 @@ export default function ChallengePrompts() {
   useEffect(() => {
     fetchActivePrompt();
   }, []);
-  
+
   const handleCreate = () => {
     setIsCreating(true);
     setEditingId(null);
@@ -174,67 +180,75 @@ export default function ChallengePrompts() {
     setSuccess(null);
   };
 
-  const handleSave = async() => {
-    if (!form.title || !form.description || !form.rules || !form.startDate || !form.endDate) {
+  const handleSave = async () => {
+    if (
+      !form.title ||
+      !form.description ||
+      !form.rules ||
+      !form.startDate ||
+      !form.endDate
+    ) {
       setError("Please fill in all required fields.");
       return;
     }
     setSaving(true);
     setError(null);
 
-
     try {
-      
-
       const apiData = formatFormForAPI(form);
       console.log("Sending data:", apiData);
 
-    if (editingId) {
-      const response = await patchData(`${PROMPTS_URL}/${editingId}`, apiData);
+      if (editingId) {
+        const response = await patchData(
+          `${PROMPTS_URL}/${editingId}`,
+          apiData
+        );
         console.log("Update response:", response);
-        
+
         if (response?.success && response?.prompt) {
           const formatted = formatPromptFromAPI(response.prompt);
-      setPrompts((prev) =>
-        prev.map((p) => (p.id === editingId ? formatted : p)),
-      );
-       setEditingId(null); 
-    } else {
+          setPrompts((prev) =>
+            prev.map((p) => (p.id === editingId ? formatted : p))
+          );
+          setEditingId(null);
+        } else {
           showError(response?.message || "Failed to update challenge prompt");
         }
-      // setEditingId(null);
-    } else {
-      const response = await postData(PROMPTS_URL, apiData);
+        // setEditingId(null);
+      } else {
+        const response = await postData(PROMPTS_URL, apiData);
         console.log("Create response:", response);
-        
+
         if (response?.success && response?.prompt) {
           showSuccess("Challenge prompt created successfully!");
           const formatted = formatPromptFromAPI(response.prompt);
           setPrompts((prev) => [...prev, formatted]);
           setIsCreating(false);
-        
-      // setPrompts((prev) => [...prev, { ...form, id: Date.now() }]);
-      
-    } else {
+
+          // setPrompts((prev) => [...prev, { ...form, id: Date.now() }]);
+        } else {
           showError(response?.message || "Failed to create challenge prompt");
         }
       }
-      
+
       // Reset form on success
       if (response?.success) {
-    setForm({
-      title: "",
-      description: "",
-      rules: "",
-      startDate: "",
-      endDate: "",
-      status: "ACTIVE",
-    });
-  }
+        setForm({
+          title: "",
+          description: "",
+          rules: "",
+          startDate: "",
+          endDate: "",
+          status: "ACTIVE",
+        });
+      }
     } catch (error) {
       console.error("Error saving prompt:", error);
-      const errorMessage = error?.response?.data?.message || 
-                          (editingId ? "Failed to update challenge prompt" : "Failed to create challenge prompt");
+      const errorMessage =
+        error?.response?.data?.message ||
+        (editingId
+          ? "Failed to update challenge prompt"
+          : "Failed to create challenge prompt");
       showError(errorMessage);
       // setError("Failed to save prompt. Please try again.");
     } finally {
@@ -253,36 +267,37 @@ export default function ChallengePrompts() {
     setPromptToDelete(prompt);
     setDeleteConfirmOpen(true);
   };
-  const handleDeleteConfirm = async(id) => {
+  const handleDeleteConfirm = async (id) => {
     // if (!window.confirm("Are you sure you want to delete this challenge prompt?")) {
     //   return;
     // }
     if (!promptToDelete) return;
-     setSaving(true);
-     setError(null);
+    setSaving(true);
+    setError(null);
     try {
       // setError(null);
       const response = await deleteData(`${PROMPTS_URL}/${promptToDelete.id}`);
       console.log("Delete response:", response);
-      
+
       if (response?.success) {
-         showSuccess("Challenge prompt deleted successfully!");
-    setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete.id));
+        showSuccess("Challenge prompt deleted successfully!");
+        setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete.id));
       } else {
         showError(response?.message || "Failed to delete challenge prompt");
       }
-      } catch (error) {
+    } catch (error) {
       console.error("Error deleting prompt:", error);
       // setError("Failed to delete prompt. Please try again.");
-      const errorMessage = error?.response?.data?.message || "Failed to delete challenge prompt";
+      const errorMessage =
+        error?.response?.data?.message || "Failed to delete challenge prompt";
       showError(errorMessage);
-    }finally {
+    } finally {
       setSaving(false);
       setDeleteConfirmOpen(false);
       setPromptToDelete(null);
     }
   };
-    const handleDeleteCancel = () => {
+  const handleDeleteCancel = () => {
     setDeleteConfirmOpen(false);
     setPromptToDelete(null);
   };
@@ -306,19 +321,25 @@ export default function ChallengePrompts() {
     fetchActivePrompt();
   };
 
-
   const handleShowAll = () => {
     fetchAllPrompts();
   };
 
   if (loading) {
     return (
-      <Box sx={{ p: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+      <Box
+        sx={{
+          p: 4,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: 400,
+        }}
+      >
         <CircularProgress />
       </Box>
     );
   }
-
 
   return (
     <Box sx={{ p: 4 }}>
@@ -334,7 +355,11 @@ export default function ChallengePrompts() {
         </Alert>
       )}
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
+        <Alert
+          severity="success"
+          sx={{ mb: 2 }}
+          onClose={() => setSuccess(null)}
+        >
           {success}
         </Alert>
       )}
@@ -343,17 +368,12 @@ export default function ChallengePrompts() {
         <Button variant="contained" onClick={handleCreate} disabled={saving}>
           Create New Challenge
         </Button>
-        <Button 
-          variant="contained" 
-          onClick={handleShowAll}
-          disabled={saving}
-        >
+        <Button variant="contained" onClick={handleShowAll} disabled={saving}>
           Show All Prompts
         </Button>
         <Button variant="outlined" onClick={handleRefresh} disabled={saving}>
           Refresh
         </Button>
-        
       </Stack>
       {(isCreating || editingId) && (
         <Paper sx={{ p: 3, mb: 3 }}>
@@ -370,7 +390,11 @@ export default function ChallengePrompts() {
               required
               disabled={saving}
               error={!form.title.trim() && (isCreating || editingId)}
-              helperText={!form.title.trim() && (isCreating || editingId) ? "Title is required" : ""}
+              helperText={
+                !form.title.trim() && (isCreating || editingId)
+                  ? "Title is required"
+                  : ""
+              }
             />
             <TextField
               label="Description"
@@ -383,9 +407,13 @@ export default function ChallengePrompts() {
               required
               disabled={saving}
               error={!form.description.trim() && (isCreating || editingId)}
-              helperText={!form.description.trim() && (isCreating || editingId) ? "Description is required" : ""}
+              helperText={
+                !form.description.trim() && (isCreating || editingId)
+                  ? "Description is required"
+                  : ""
+              }
             />
-            
+
             <TextField
               label="Rules"
               name="rules"
@@ -397,7 +425,11 @@ export default function ChallengePrompts() {
               required
               disabled={saving}
               error={!form.rules.trim() && (isCreating || editingId)}
-              helperText={!form.rules.trim() && (isCreating || editingId) ? "Rules are required" : ""}
+              helperText={
+                !form.rules.trim() && (isCreating || editingId)
+                  ? "Rules are required"
+                  : ""
+              }
             />
             <Stack direction="row" spacing={2}>
               <TextField
@@ -410,10 +442,13 @@ export default function ChallengePrompts() {
                 required
                 disabled={saving}
                 error={!form.startDate && (isCreating || editingId)}
-                helperText={!form.startDate && (isCreating || editingId) ? "Start date is required" : ""}
+                helperText={
+                  !form.startDate && (isCreating || editingId)
+                    ? "Start date is required"
+                    : ""
+                }
               />
-                
-              
+
               <TextField
                 label="End Date"
                 name="endDate"
@@ -424,9 +459,13 @@ export default function ChallengePrompts() {
                 required
                 disabled={saving}
                 error={!form.endDate && (isCreating || editingId)}
-                helperText={!form.endDate && (isCreating || editingId) ? "End date is required" : ""}
+                helperText={
+                  !form.endDate && (isCreating || editingId)
+                    ? "End date is required"
+                    : ""
+                }
               />
-              
+
               <TextField
                 select
                 label="Status"
@@ -447,11 +486,20 @@ export default function ChallengePrompts() {
             <Stack direction="row" spacing={2}>
               <Button
                 variant="contained"
-                startIcon={saving ? <CircularProgress size={16} /> :<SaveIcon />}
+                startIcon={
+                  saving ? <CircularProgress size={16} /> : <SaveIcon />
+                }
                 onClick={handleSave}
-                disabled={!form.title || !form.description || !form.rules|| !form.startDate || !form.endDate || saving}
+                disabled={
+                  !form.title ||
+                  !form.description ||
+                  !form.rules ||
+                  !form.startDate ||
+                  !form.endDate ||
+                  saving
+                }
               >
-                {saving ? "Saving..." :editingId ? "Update" : "Save"}
+                {saving ? "Saving..." : editingId ? "Update" : "Save"}
               </Button>
               <Button
                 variant="outlined"
@@ -497,17 +545,24 @@ export default function ChallengePrompts() {
                     {prompt.startDate.replace(/-/g, "/")} -{" "}
                     {prompt.endDate.replace(/-/g, "/")}
                   </TableCell> */}
-                  <TableCell>{formatDateForDisplay(prompt.startDate)} - {formatDateForDisplay(prompt.endDate)}</TableCell>
+                  <TableCell>
+                    {formatDateForDisplay(prompt.startDate)} -{" "}
+                    {formatDateForDisplay(prompt.endDate)}
+                  </TableCell>
                   <TableCell>{prompt.title}</TableCell>
                   <TableCell>{prompt.description}</TableCell>
                   <TableCell>{prompt.rules}</TableCell>
                   {/* <TableCell>{prompt.status}</TableCell> */}
                   <TableCell>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: prompt.status === "ACTIVE" ? "success.main" : "text.secondary",
-                        fontWeight: prompt.status === "ACTIVE" ? "bold" : "normal"
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color:
+                          prompt.status === "ACTIVE"
+                            ? "success.main"
+                            : "text.secondary",
+                        fontWeight:
+                          prompt.status === "ACTIVE" ? "bold" : "normal",
                       }}
                     >
                       {prompt.status}
@@ -515,7 +570,10 @@ export default function ChallengePrompts() {
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1}>
-                      <IconButton onClick={() => handleEdit(prompt)} disabled={saving}>
+                      <IconButton
+                        onClick={() => handleEdit(prompt)}
+                        disabled={saving}
+                      >
                         <EditIcon />
                       </IconButton>
                       <IconButton
@@ -545,17 +603,17 @@ export default function ChallengePrompts() {
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to delete the challenge prompt {promptToDelete?.title}? 
-            This action cannot be undone.
+            Are you sure you want to delete the challenge prompt{" "}
+            {promptToDelete?.title}? This action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDeleteCancel} disabled={saving}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleDeleteConfirm} 
-            color="error" 
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
             variant="contained"
             disabled={saving}
             startIcon={saving ? <CircularProgress size={16} /> : null}
