@@ -66,9 +66,11 @@ export default function ChallengePrompts() {
   // Format date for display (MM/DD/YYYY)
   const formatDateForDisplay = (dateString) => {
     if (!dateString) return "";
+
     const date = new Date(dateString + "T00:00:00");
     return date.toLocaleDateString('en-US');
     // return dateString;
+
   };
   const showSuccess = (message) => {
     setSuccess(message);
