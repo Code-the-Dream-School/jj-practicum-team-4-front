@@ -92,7 +92,7 @@ let csrfToken = null;
 // Function to get a CSRF token from the server
 const fetchCsrfToken = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/auth/protected`, {
+    const response = await axios.get(`${baseUrl}/auth/csrf-token`, {
       withCredentials: true,
     });
     if (response.data && response.data.csrfToken) {
@@ -217,33 +217,33 @@ api.interceptors.response.use(
 );
 
 // Add a request interceptor to include auth token if it exists
-api.interceptors.request.use(
-  (config) => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (user && user.token) {
-      config.headers["Authorization"] = `Bearer ${user.token}`;
-      // logApiCall("request", config.url, {}, true);
-    }
-    return config;
-  },
-  (error) => {
-    // logApiCall("request", error.config?.url, {}, false, error);
-    console.log(error);
-    return Promise.reject(error);
-  }
-);
+// api.interceptors.request.use(
+//   (config) => {
+//     const user = JSON.parse(localStorage.getItem("user") || "{}");
+//     if (user && user.token) {
+//       config.headers["Authorization"] = `Bearer ${user.token}`;
+//       // logApiCall("request", config.url, {}, true);
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     // logApiCall("request", error.config?.url, {}, false, error);
+//     console.log(error);
+//     return Promise.reject(error);
+//   }
+// );
 
 // Add a response interceptor for logging
-api.interceptors.response.use(
-  (response) => {
-    // logApiCall("response", response.config.url, {}, true);
-    return response;
-  },
-  (error) => {
-    // logApiCall("response", error.config?.url, {}, false, error);
-    return Promise.reject(error);
-  }
-);
+// api.interceptors.response.use(
+//   (response) => {
+//     // logApiCall("response", response.config.url, {}, true);
+//     return response;
+//   },
+//   (error) => {
+//     // logApiCall("response", error.config?.url, {}, false, error);
+//     return Promise.reject(error);
+//   }
+// );
 
 // Authentication services
 export const authService = {
@@ -298,19 +298,11 @@ export const authService = {
 
   // Google OAuth login (redirects to backend Google auth route)
   loginWithGoogle: () => {
-    // try {
     const googleAuthUrl =
       import.meta.env.VITE_GOOGLE_AUTH_URL ||
       `${api.defaults.baseURL}/auth/google`;
-
-    // if (!googleAuthUrl) {
-    //   throw new Error("Google auth URL not configured");
-    // }
     logApiCall("redirect", googleAuthUrl);
     window.location.href = googleAuthUrl;
-    // } catch (error) {
-    // console.error("Failed to initiate Google login:", error);
-    // }
   },
 
   // Logout user
@@ -333,7 +325,7 @@ export const authService = {
   // Check if user is authenticated (can be used to validate session/token)
   checkAuth: async () => {
     try {
-      // logApiCall("call", "/auth/protected");
+      logApiCall("call", "/auth/protected");
       const response = await api.get("/auth/protected");
       logApiCall("success", "/auth/protected");
       return response.data;
@@ -372,17 +364,13 @@ export const authService = {
   },
 
   // Get the authorization token
-  getToken: () => {
+  // We no longer need to get tokens directly since they're stored in httpOnly cookies
+  isAuthenticated: async () => {
     try {
-      const user = localStorage.getItem("user");
-      if (user) {
-        const userData = JSON.parse(user);
-        return userData.token;
-      }
-      return null;
+      const response = await api.get("/auth/me");
+      return response.status === 200;
     } catch (error) {
-      logApiCall("error", "getToken", {}, false, error);
-      return null;
+      return false;
     }
   },
 };

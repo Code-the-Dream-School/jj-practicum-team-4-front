@@ -19,41 +19,7 @@ export const AuthProvider = ({ children }) => {
   // Check if user is already logged in (from localStorage) when app loads
   useEffect(() => {
     checkLoggedIn();
-    // Listen for session expired events (from token refresh failures)
-    //   const handleSessionExpired = () => {
-    //     console.warn("Session expired event received");
-    //     dispatch({ type: "SESSION_EXPIRED" });
-    //   };
-
-    //   window.addEventListener("auth:sessionExpired", handleSessionExpired);
-
-    //   return () => {
-    //     window.removeEventListener("auth:sessionExpired", handleSessionExpired);
-    //   };
-    // }, []);
-    // checkAuthStatus();
-    // handleAuthCallback();
   }, []);
-
-  // const checkAuthStatus = async () => {
-  //   dispatch({ type: "AUTH_LOADING" });
-  //   try {
-  //     const response = await authService.checkAuth();
-  //     if (response.ok) {
-  //       console.log(response);
-  //     }
-  //   } catch (error) {
-  //     console.error("Auth status check failed:", error);
-  //   } finally {
-  //     dispatch({ type: "AUTH_CHECK_COMPLETE" });
-  //   }
-  // };
-
-  // const handleAuthCallback = () => {
-  //   const urlParams = new URLSearchParams();
-  //   const authError = urlParams.get("error");
-  //   const authMessage = urlParams.get("message");
-  // };
 
   const checkLoggedIn = async () => {
     dispatch({ type: "LOGIN_REQUEST" });
@@ -61,12 +27,13 @@ export const AuthProvider = ({ children }) => {
       // first check if we have user info in localStorage
       const storedUserInfo = localStorage.getItem("userInfo");
       const storedToken = localStorage.getItem("token");
+      console.log(storedToken);
       if (storedUserInfo && storedToken) {
         // we have stored user data, set authenticated state
         const userData = JSON.parse(storedUserInfo);
 
         // Log stored user data
-        console.log(userData);
+        console.log("Loading user from localStorage:", userData);
         dispatch({ type: "LOGIN_SUCCESS", payload: { user: userData.user } });
         return;
       }
