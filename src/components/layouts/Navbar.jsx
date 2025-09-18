@@ -251,14 +251,10 @@ function Navbar() {
       <Snackbar
         open={alertOpen}
         autoHideDuration={6000}
-        // onClose={handleCloseAlert}
+        onClose={() => setAlertOpen(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert
-          // onClose={handleCloseAlert}
-          severity={alertSeverity}
-          sx={{ width: "100%" }}
-        >
+        <Alert severity={alertSeverity} sx={{ width: "100%" }}>
           Logout successfully
         </Alert>
       </Snackbar>

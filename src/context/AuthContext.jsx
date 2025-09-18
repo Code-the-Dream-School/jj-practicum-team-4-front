@@ -27,14 +27,13 @@ export const AuthProvider = ({ children }) => {
       // first check if we have user info in localStorage
       const storedUserInfo = localStorage.getItem("userInfo");
       const storedToken = localStorage.getItem("token");
-      console.log(storedToken);
       if (storedUserInfo && storedToken) {
         // we have stored user data, set authenticated state
         const userData = JSON.parse(storedUserInfo);
 
         // Log stored user data
         console.log("Loading user from localStorage:", userData);
-        dispatch({ type: "LOGIN_SUCCESS", payload: { user: userData.user } });
+        dispatch({ type: "LOGIN_SUCCESS", payload: { user: userData } });
         return;
       }
       // if no stored data, verify with the server if the user is authenticated
@@ -42,7 +41,7 @@ export const AuthProvider = ({ children }) => {
       const userData = await authService.getCurrentUser();
       // console.log(userData);
       if (userData && userData.isAuthenticated) {
-        dispatch({ type: "LOGIN_SUCCESS", payload: { user: userData.user } });
+        dispatch({ type: "LOGIN_SUCCESS", payload: { user: userData } });
       } else {
         dispatch({ type: "LOGOUT" });
       }
