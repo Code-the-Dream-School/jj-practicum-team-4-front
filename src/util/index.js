@@ -1,6 +1,5 @@
 import axios from "axios";
 
-const baseUrl = import.meta.env.VITE_API_URL;
 // note: not used, but could be used with GET with params
 const getData = async (url, data, config = {}) => {
   try {
