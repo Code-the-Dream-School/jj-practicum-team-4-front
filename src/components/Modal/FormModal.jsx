@@ -53,6 +53,7 @@ function FormModal({ shownModal, setShownModal }) {
       if (!response.success) {
         throw new Error(response.message || "failed to get data");
       }
+      console.log(response);
       setPrompt(response.prompt);
     } catch (error) {
       console.log(error.message);

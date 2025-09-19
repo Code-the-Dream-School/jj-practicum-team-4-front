@@ -28,54 +28,29 @@ import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import { data } from "react-router-dom";
 
-const mediaTypeOptions = {
-  type: String,
-  enum: [
-    "Tag1",
-    "Tag2",
-    "Tag3",
-    "Tag4",
-    "Tag5",
-    "Tag6",
-    "Tag7",
-    "Tag8",
-    "Tag9",
-    "Tag10",
-  ],
-  default: "Tag1",
-  // enum: [
-  //   "oil paint",
-  //   "acrylic paint",
-  //   "watercolor",
-  //   "digital art",
-  //   "pencil",
-  //   "charcoal",
-  //   "ink",
-  //   "pastel",
-  //   "mixed media",
-  //   "photography",
-  //   "collage",
-  //   "sculpture",
-  //   "printmaking",
-  //   "gouache",
-  //   "marker",
-  // ],
-  default: "digital art",
-};
+const mediaTypeOptions = [
+  "Tag1",
+  "Tag2",
+  "Tag3",
+  "Tag4",
+  "Tag5",
+  "Tag6",
+  "Tag7",
+  "Tag8",
+  "Tag9",
+  "Tag10",
+];
 
 function SubmissionForm({
-  handleClose,
   handleSubmission,
   isLoading,
   postArtworkData,
-  isDialogOpen,
   setIsDialogOpen,
   prompt,
-  setIsLoading,
-  formatted,
 }) {
   const { token } = useAuth();
   const { _id, description, end_date, rule, start_date, title } = prompt;
+  console.log(prompt);
   const decodeToken = jwtDecode(token);
   const userId = decodeToken.userId;
 
