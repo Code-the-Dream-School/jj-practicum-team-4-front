@@ -26,6 +26,7 @@ function FormModal({ shownModal, setShownModal }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [prompt, setPrompt] = useState(null);
+  const [challenge, setChallenge] = useState(null);
   // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
@@ -50,10 +51,12 @@ function FormModal({ shownModal, setShownModal }) {
     setIsLoading(true);
     try {
       const response = await getData(`${baseUrl}/api/prompts/active`);
-      if (!response.success) {
+      if (!response) {
         throw new Error(response.message || "failed to get data");
       }
+      console.log(response.prompt);
       setPrompt(response.prompt);
+      setChallenge(response.challenge);
     } catch (error) {
       console.log(error.message);
     } finally {
@@ -145,7 +148,7 @@ function FormModal({ shownModal, setShownModal }) {
                     variant="h6"
                     sx={{ mb: 2, color: "text.secondary" }}
                   >
-                    {`${formatted(prompt.start_date)} - ${formatted(prompt.end_date)}`}
+                    {`${formatted(challenge.start_date)} - ${formatted(challenge.end_date)}`}
                   </Typography>
                   <Divider />
                   <Typography
@@ -158,7 +161,7 @@ function FormModal({ shownModal, setShownModal }) {
                     {prompt.description}
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
-                    {prompt.rule}
+                    {prompt.rules}
                   </Typography>
                 </Box>
               </>
