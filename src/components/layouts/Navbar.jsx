@@ -53,7 +53,7 @@ function Navbar() {
       setAnchorElUser(null);
       setAlertMessage("Logout Successfully!");
       setAlertOpen(true);
-      setAlertSeverity("info");
+      setAlertSeverity("success");
 
       setTimeout(() => {
         (navigate("/gallery"), setAlertOpen(false), setAlertMessage(null));

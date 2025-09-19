@@ -73,7 +73,7 @@ export default function Gallery() {
           console.error("Error processing authentication data:", err);
         }
       } else {
-        setShowAuthSuccess(true);
+        const response = setShowAuthSuccess(false);
       }
 
       // Clean up the URL to remove the query parameters
@@ -325,7 +325,7 @@ export default function Gallery() {
             severity="success"
             sx={{ width: "100%" }}
           >
-            Logout successfully
+            Successfully logged in with Google!
           </Alert>
         </Snackbar>
       </Container>

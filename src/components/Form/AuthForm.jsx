@@ -32,7 +32,7 @@ function AuthForm() {
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const navigate = useNavigate();
-  const { login, isLoading, loginWithGoogle, clearError } = useAuth();
+  const { login, isLoading, loginWithGoogle } = useAuth();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
