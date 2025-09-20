@@ -74,18 +74,29 @@ const putData = async (url, data, config = {}) => {
   }
 };
 
-const deleteData = async (url, config = {}) => {
-  try {
-    const res = await axios.delete(url, {
-      ...config,
-      withCredentials: true,
-    });
-    return res.data;
-  } catch (error) {
-    console.log(error, `error - deleteData in ${url} route`);
-    throw error;
-  }
+const deleteData = async (url, params = {}, headers = {}) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    params,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      ...headers,
+    },
+  }; const res = await axios.delete(url, config);
+  const data = res.data;
+  return data;
 };
+// try {
+//   const res = await axios.delete(url, {
+//     ...config,
+//     withCredentials: true,
+//   });
+//   return res.data;
+// } catch (error) {
+//   console.log(error, `error - deleteData in ${url} route`);
+//   throw error;
+// }
+// };
 
 const isEmpty = (value) => {
   return (

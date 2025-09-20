@@ -18,25 +18,56 @@ import {
   Box,
   Stack,
   Button,
+  IconButton,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
+import { getData, postData, patchData, deleteData } from "../util";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function Gallery() {
+  const { token } = useAuth();
   const { isAuthenticated } = useAuth();
   const [shownModal, setShownModal] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [selected, setSelected] = useState(null);
   // TODO: Replace with actual authentication logic
   const isLoggedIn = true; // Set to true to simulate logged-in user
   const [prompt, setPrompt]= useState(null);
+
+  const BASE_URL = import.meta.env.VITE_API_URL;
+  const DELETEARTWORK_URL = `${BASE_URL}/api/artwork`;
+
+  const handleDeleteClick = (artworkId) => {
+    deleteArtwork(artworkId);
+    //setDeleteConfirmOpen(true);
+  };
   
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
     if (storedPrompt) {
-      setPrompt(JSON.parse(storedPrompt));
+      const p = JSON.parse(storedPrompt);
+      setPrompt(p);
+      // Fetch artworks when component mounts
+      // fetchAllArtWorks(p.id);
+      
     }
 
   }, []);
+  const deleteArtwork = async (artworkId) => {
+    try {
+      const response = await deleteData(`${DELETEARTWORK_URL}/${artworkId}`);
+      if(response.success){ 
+        console.log("Artwork deleted successfully");
+        // TODO fetch all artworks again to show the latest
+        fetchAllArtWorks(prompt.id);
+      } else {
+        console.error("Failed to delete artwork:", response.message);
+      }
+    } catch (error) {
+      console.error("Error deleting artwork:", error);
+    }
+  };
 
   // Placeholder artwork data
   const [artworks] = useState([
@@ -75,7 +106,7 @@ export default function Gallery() {
   return (
     <>
       <CssBaseline />
-      <Container disableGutters>
+      <Container maxWidth="xl" disableGutters>
         <Box
           sx={{
             backgroundColor: "#f5f5f7",
@@ -233,6 +264,13 @@ export default function Gallery() {
                     <Typography variant="body2" sx={{ ml: 2 }}>
                       Likes: {art.likes}
                     </Typography>
+                    <IconButton
+                        onClick={() => handleDeleteClick(art.id)}
+                        sx={{ bgcolor: "#E6B6B6" }}
+                        disabled={saving}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
                   </Box>
                 </CardContent>
               </Card>
