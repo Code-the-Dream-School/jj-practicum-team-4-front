@@ -3,43 +3,66 @@ import {
   Card,
   CardContent,
   CardMedia,
+  CircularProgress,
   Container,
   CssBaseline,
   Grid,
   Modal,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import sampleImage from "../assets/images.jpeg";
 import UserCard from "../components/usercard/usercard";
+import { getAllData, getData } from "../util";
+
+const baseUrl = import.meta.env.VITE_API_URL;
 
 export default function BestOfArtwork() {
   const [selected, setSelected] = useState(null);
-  const [artworks] = useState([
-    { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
-    { id: 2, title: "Dreamscape", image: sampleImage, likes: 8 },
-    {
-      id: 3,
-      title: "Abstract Flow",
-      image: sampleImage,
-      likes: 3,
-      user: "Alex Lee",
-    },
-    {
-      id: 4,
-      title: "Ocean Waves",
-      image: sampleImage,
-      likes: 6,
-      user: "Sam Green",
-    },
-    {
-      id: 5,
-      title: "Nature Walk",
-      image: sampleImage,
-      likes: 2,
-      user: "Chris Blue",
-    },
-  ]);
+  const [winners, setWinners] = useState(null);
+  useEffect(() => {
+    getWinnersData();
+    // getAllPrompt();
+  }, []);
+
+  const getWinnersData = async () => {
+    try {
+      const response = await getAllData(`${baseUrl}/api/challenge/winners`);
+      if (!response) {
+        throw new Error("Failed to fetch winners data");
+      }
+      console.log(response);
+      setWinners(response);
+    } catch (error) {
+      console.log("Failed to fetch data", error);
+    }
+  };
+
+  // const getAllPrompt = async () => {
+  //   try {
+  //     const response = await getAllData(`${baseUrl}/api/prompts/all`);
+  //     if (!response) {
+  //       throw new Error("Failed to fetch all prompt data");
+  //     }
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.log("Failed to fetch");
+  //   }
+  // };
+
+  if (!winners)
+    return (
+      <Box
+        sx={{
+          mt: 20,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   return (
     <>
       <CssBaseline />
@@ -50,18 +73,17 @@ export default function BestOfArtwork() {
         <Typography
           sx={{ pt: 3 }}
           variant="h5"
-          textTransform="uppercase"
+          textTransform="capitalize"
           align="center"
         >
-          last week's challenge topic
+          Featured Masterpieces
         </Typography>
         <Typography
-          variant="subtitle1"
+          variant="h6"
           align="center"
           sx={{ mx: "auto", maxWidth: 600 }}
         >
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam,
-          ipsum.
+          Outstanding submissions that earned community recognition!
         </Typography>
         <Grid
           container
@@ -70,13 +92,13 @@ export default function BestOfArtwork() {
           alignItems="center"
           sx={{ mt: 8, mx: 5 }}
         >
-          {artworks.map((art) => (
+          {winners.map((art) => (
             <Grid item xs={12} sm={6} md={4} key={art.id}>
               <Card onClick={() => setSelected(art)}>
                 <CardMedia
                   component="img"
                   height="250"
-                  image={art.image}
+                  image={art.image_url}
                   alt={art.title}
                 />
                 <CardContent>
@@ -87,7 +109,7 @@ export default function BestOfArtwork() {
                   >
                     <Typography variant="h6">{art.title}</Typography>
                     <Typography variant="body2" sx={{ ml: 2 }}>
-                      Likes: {art.likes}
+                      Likes: {art.like_counter}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -96,7 +118,7 @@ export default function BestOfArtwork() {
           ))}
         </Grid>
         <Modal
-          open={!!selected}
+          open={selected}
           aria-labelledby="modal-artwork-detail"
           disableRestoreFocus
           sx={{
@@ -108,10 +130,10 @@ export default function BestOfArtwork() {
           <Box>
             {selected && (
               <UserCard
-                username={selected.user}
+                username={selected.user?.first_name}
                 title={selected.title}
                 description={selected.description || ""}
-                image={selected.image}
+                image={selected.image_url}
                 isOpen={true}
                 onClose={() => setSelected(null)}
               />
