@@ -298,11 +298,7 @@ export const authService = {
 
   // Google OAuth login (redirects to backend Google auth route)
   loginWithGoogle: () => {
-    const googleAuthUrl =
-      import.meta.env.VITE_GOOGLE_AUTH_URL ||
-      `${api.defaults.baseURL}/auth/google`;
-    console.log(googleAuthUrl);
-    logApiCall("redirect", googleAuthUrl);
+    const googleAuthUrl = `${baseUrl}/auth/google`;
     window.location.href = googleAuthUrl;
   },
 
@@ -326,12 +322,9 @@ export const authService = {
   // Check if user is authenticated (can be used to validate session/token)
   checkAuth: async () => {
     try {
-      logApiCall("call", "/auth/protected");
       const response = await api.get("/auth/protected");
-      logApiCall("success", "/auth/protected");
       return response.data;
     } catch (error) {
-      logApiCall("error", "/auth/protected", {}, false, error);
       throw error;
     }
   },

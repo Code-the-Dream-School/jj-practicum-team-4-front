@@ -126,20 +126,7 @@ export const AuthProvider = ({ children }) => {
 
   const loginWithGoogle = () => {
     dispatch({ type: "LOGIN_REQUEST" });
-    try {
-      // This will redirect the user to google's oauth page
-      authService.loginWithGoogle();
-      // the rest of the auth will be handled when redirected back
-      // no need dispatch any action here
-      return true;
-    } catch (error) {
-      console.error("Google login error:", error);
-      dispatch({
-        type: "LOGIN_FAILURE",
-        payload: "Failed to initiate Google login",
-      });
-      return false;
-    }
+    authService.loginWithGoogle();
   };
 
   const clearError = () => {
