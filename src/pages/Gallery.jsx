@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import formatDateForDisplay from "../util/date.jsx";
 import { Icon, Modal } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
@@ -24,7 +24,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
-import { authService } from "../services/api.js";
+import FormModal from "../components/Modal/FormModal.jsx";
 
 export default function Gallery() {
   const { isAuthenticated } = useAuth();
@@ -115,7 +115,7 @@ export default function Gallery() {
   return (
     <>
       <CssBaseline />
-      <Container disableGutters>
+      <Container maxWidth="xl" disableGutters>
         <Box
           sx={{
             backgroundColor: "#f5f5f7",
@@ -252,18 +252,18 @@ export default function Gallery() {
         >
           {artworks.map((art) => (
             <Grid
-              // item
-              // xs={12}
-              // sm={6}
-              // md={4}
+              item
+              xs={12}
+              sm={6}
+              md={4}
               key={art.id}
               sx={{ display: "flex", justifyContent: "center" }}
             >
               <Card onClick={() => setSelected(art)}>
                 <CardMedia
                   component="img"
-                  height="200"
-                  image={art.image}
+                  // height="200"
+                  image={art.image_url}
                   alt={art.title}
                 />
                 <CardContent>
@@ -295,10 +295,10 @@ export default function Gallery() {
           <Box>
             {selected && (
               <UserCard
-                username={selected.user}
+                user={selected.user}
                 title={selected.title}
-                description={selected.description || ""}
-                image={selected.image}
+                description={selected.media_tag || selected.description}
+                image={selected.image_url}
                 isOpen={true}
                 onClose={() => setSelected(null)}
               />

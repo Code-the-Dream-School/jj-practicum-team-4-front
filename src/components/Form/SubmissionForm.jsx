@@ -1,10 +1,8 @@
 import { useState } from "react";
 // file import
-import { isEmpty, isFileValid } from "../../util";
-import ConfirmModal from "../Modal/ConfirmModal";
+import { isFileValid } from "../../util";
 
 // MUI import
-import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
@@ -14,70 +12,42 @@ import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutli
 import {
   Button,
   CircularProgress,
-  Divider,
   FormHelperText,
   Grid,
-  IconButton,
   Input,
   MenuItem,
   Select,
-  Typography,
 } from "@mui/material";
-// import { nanoid } from "nanoid";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
-import { data } from "react-router-dom";
 
-const mediaTypeOptions = {
-  type: String,
-  enum: [
-    "Tag1",
-    "Tag2",
-    "Tag3",
-    "Tag4",
-    "Tag5",
-    "Tag6",
-    "Tag7",
-    "Tag8",
-    "Tag9",
-    "Tag10",
-  ],
-  default: "Tag1",
-  // enum: [
-  //   "oil paint",
-  //   "acrylic paint",
-  //   "watercolor",
-  //   "digital art",
-  //   "pencil",
-  //   "charcoal",
-  //   "ink",
-  //   "pastel",
-  //   "mixed media",
-  //   "photography",
-  //   "collage",
-  //   "sculpture",
-  //   "printmaking",
-  //   "gouache",
-  //   "marker",
-  // ],
-  default: "digital art",
-};
+const mediaTypeOptions = [
+  "Tag1",
+  "Tag2",
+  "Tag3",
+  "Tag4",
+  "Tag5",
+  "Tag6",
+  "Tag7",
+  "Tag8",
+  "Tag9",
+  "Tag10",
+];
 
 function SubmissionForm({
-  handleClose,
   handleSubmission,
   isLoading,
   postArtworkData,
-  isDialogOpen,
   setIsDialogOpen,
   prompt,
-  setIsLoading,
-  formatted,
 }) {
   const { token } = useAuth();
-  const { _id, description, end_date, rule, start_date, title } = prompt;
-  const decodeToken = jwtDecode(token);
-  const userId = decodeToken.userId;
+  const promptData = prompt;
+  if (token) {
+    const decodeToken = jwtDecode(token);
+    const userId = decodeToken.userId;
+    return userId;
+  }
 
   const [errors, setErrors] = useState({});
   const [imageFile, setImageFile] = useState(postArtworkData?.imageFile || "");
@@ -121,7 +91,7 @@ function SubmissionForm({
     e.preventDefault();
     const dataToSubmit = {
       ...formData,
-      prompt_id: _id,
+      prompt_id: promptData.id,
       userArtworks: userId,
     };
 
@@ -176,7 +146,6 @@ function SubmissionForm({
             startIcon={
               !imageFile ? <CloudUploadIcon /> : <DriveFileRenameOutlineIcon />
             }
-            // onBlur={handleBlur}
           >
             {!formData.imageFile ? "Upload files" : `Edit files`}
             <Input
@@ -213,7 +182,6 @@ function SubmissionForm({
             size="small"
             value={formData.title}
             onChange={handleChange}
-            // onBlur={handleBlur}
             helperText={!formData.title.trim() && "Required"}
           />
         </Grid>
@@ -236,14 +204,14 @@ function SubmissionForm({
               id="demo-simple-select-standard"
               value={formData.media_tag}
               onChange={handleChange}
-              // onBlur={handleBlur}
+              defaultValue="tag1"
               name="media_tag"
               label="Media Type"
             >
               <MenuItem value="">
                 <em>Select Media Type</em>
               </MenuItem>
-              {mediaTypeOptions.enum.map((type) => (
+              {mediaTypeOptions.map((type) => (
                 <MenuItem
                   key={type}
                   value={type}
@@ -272,7 +240,6 @@ function SubmissionForm({
         multiline
         rows={4}
         onChange={handleChange}
-        // onBlur={handleBlur}
         value={formData.description}
         placeholder="Tell us about your artwork..."
         sx={{ mb: 2 }}
