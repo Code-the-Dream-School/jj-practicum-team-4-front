@@ -8,14 +8,11 @@ import FormControl from "@mui/material/FormControl";
 import {
   Button,
   CircularProgress,
-  Divider,
   Grid,
-  IconButton,
   MenuItem,
   Select,
   Typography,
 } from "@mui/material";
-import ConfirmModal from "../Modal/ConfirmModal";
 import { postData } from "../../util";
 import { useAuth } from "../../context/AuthContext";
 
@@ -27,20 +24,15 @@ function SubmissionPreview({
   postArtworkData,
   isLoading,
   setIsLoading,
-  isDialogOpen,
-  setIsDialogOpen,
   setAlertMessage,
   setAlertSeverity,
   setAlertOpen,
   setAlertTitle,
-  prompt,
-  formatted,
 }) {
   const { token } = useAuth();
   const handleSubmissionSuccess = async () => {
     const apiFormData = new FormData();
 
-    // Append each field individually
     apiFormData.append("prompt_id", postArtworkData.prompt_id);
     apiFormData.append("user_id", postArtworkData.user_id);
 
@@ -70,9 +62,11 @@ function SubmissionPreview({
       setAlertTitle("Uploaded Successfully");
       setAlertMessage("Your artwork successfully uploaded. Great work!");
       setAlertSeverity("success");
-      setIsLoading(false);
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
-      // console.log(error.message);
       setAlertOpen(true);
       setAlertTitle(error.message);
       setAlertMessage(
@@ -142,18 +136,6 @@ function SubmissionPreview({
         rows={4}
         value={postArtworkData.description}
         sx={{ mb: 3 }}
-        disabled
-      />
-
-      {/* Social Media Link Field */}
-      <TextField
-        size="small"
-        name="mediaLink"
-        id="mediaLink"
-        label="Social Media Link (optional)"
-        fullWidth
-        value={postArtworkData.mediaLink ? postArtworkData.mediaLink : "None"}
-        sx={{ mb: 2 }}
         disabled
       />
 
