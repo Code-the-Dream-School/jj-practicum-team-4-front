@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Chip,
   CircularProgress,
   Container,
   CssBaseline,
@@ -13,15 +14,14 @@ import {
 import { useEffect, useState } from "react";
 import UserCard from "../components/usercard/usercard";
 import { getAllData } from "../util";
-
-const baseUrl = import.meta.env.VITE_API_URL;
-
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 export default function BestOfArtwork() {
   const [selected, setSelected] = useState(null);
   const [winners, setWinners] = useState(null);
+  const baseUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     getWinnersData();
-    getAllPrompt();
+    // getAllPrompt();
   }, []);
 
   const getWinnersData = async () => {
@@ -64,8 +64,8 @@ export default function BestOfArtwork() {
     );
   return (
     <>
-      <CssBaseline />
-      <Container maxWidth="xl" disableGutters sx={{ py: { sm: 5 } }}>
+      {/* <CssBaseline /> */}
+      <Container maxWidth="xl" sx={{ py: { sm: 5 } }}>
         <Typography variant="h3" align="center" gutterBottom>
           Best of Artwork
         </Typography>
@@ -88,15 +88,26 @@ export default function BestOfArtwork() {
           container
           spacing={4}
           justifyContent="center"
-          alignItems="center"
-          sx={{ mt: 8, mx: 5 }}
+          sx={{ width: "100%", mt: 5 }}
         >
           {winners.map((art) => (
-            <Grid container key={art.id}>
-              <Card onClick={() => setSelected(art)}>
+            <Grid item xl={3} key={art.id}>
+              <Card
+                onClick={() => setSelected(art)}
+                sx={{
+                  borderRadius: 0,
+                  cursor: "pointer",
+                  transition:
+                    "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: 3,
+                  },
+                }}
+              >
                 <CardMedia
                   component="img"
-                  height="250"
+                  height="350"
                   image={art.image_url}
                   alt={art.title}
                 />
@@ -106,9 +117,28 @@ export default function BestOfArtwork() {
                     alignItems="center"
                     justifyContent="space-between"
                   >
-                    <Typography variant="h6">{art.title}</Typography>
-                    <Typography variant="body2" sx={{ ml: 2 }}>
-                      Likes: {art.like_counter}
+                    <Box>
+                      <Typography variant="h6">{art.title}</Typography>
+                      <Chip
+                        color="primary"
+                        variant="outlined"
+                        label={art.media_tag}
+                        size="small"
+                        sx={{ mt: 0.5 }}
+                      />
+                    </Box>
+                    <Typography
+                      component="div"
+                      variant="body2"
+                      sx={{
+                        ml: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <ThumbUpAltIcon color="action" />
+                      {art.like_counter}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -116,30 +146,32 @@ export default function BestOfArtwork() {
             </Grid>
           ))}
         </Grid>
-        <Modal
-          open={selected}
-          aria-labelledby="modal-artwork-detail"
-          disableRestoreFocus
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Box>
-            {selected && (
-              <UserCard
-                username={selected.user?.first_name}
-                title={selected.title}
-                description={selected.description || ""}
-                image={selected.image_url}
-                isOpen={true}
-                onClose={() => setSelected(null)}
-              />
-            )}
-          </Box>
-        </Modal>
       </Container>
+      <Modal
+        open={selected}
+        aria-labelledby="modal-artwork-detail"
+        disableRestoreFocus
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Box>
+          {selected && (
+            <UserCard
+              user={selected?.user}
+              title={selected.title}
+              description={selected.description || ""}
+              image={selected.image_url}
+              isOpen={true}
+              onClose={() => setSelected(null)}
+              isLiked={true}
+              like_counter={selected.like_counter}
+            />
+          )}
+        </Box>
+      </Modal>
     </>
   );
 }
