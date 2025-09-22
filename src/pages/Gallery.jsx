@@ -26,7 +26,7 @@ import {
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
 import { jwtDecode } from "jwt-decode";
-import { getData } from "../util/index.js";
+import { postData } from "../util/index.js";
 
 export default function Gallery() {
   const [shownModal, setShownModal] = useState(false);
@@ -39,15 +39,29 @@ export default function Gallery() {
   const baseUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     handleGoogleAuthSuccess();
-  }, [authProcessed]);
+  }, [authProcessed, navigate]);
 
-  const handleGoogleAuthSuccess = () => {
+  const handleGoogleAuthSuccess = async () => {
     const searchParams = new URLSearchParams(location.search);
     const authStatus = searchParams.get("auth");
     const token = searchParams.get("token");
     const userDataParam = searchParams.get("userData");
-    const code = searchParams.get("code");
+    // const code = searchParams.get("code");
 
+    // if (code) {
+    //   try {
+    //     const response = await postData(`${baseUrl}/auth/google/callback`, {
+    //       code,
+    //     });
+    //     if (response) {
+    //       console.log(response);
+    //     }
+    //     navigate("/gallery");
+    //   } catch (error) {
+    //     console.error("Google Login failed", error);
+    //     navigate("/sign-in");
+    //   }
+    // }
     // Check if this is a Google auth success redirect
     if (authStatus === "success" && token && userDataParam && !authProcessed) {
       setIsProcessing(true);

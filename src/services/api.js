@@ -40,8 +40,8 @@ api.interceptors.response.use(
       localStorage.removeItem("user");
 
       // Optional: redirect to login if not already there
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+      if (window.location.pathname !== "/sign-in") {
+        window.location.href = "/sign-in";
       }
     }
     return Promise.reject(error);
@@ -54,35 +54,6 @@ export const authService = {
   loginWithGoogle: () => {
     console.log("Redirecting to Google OAuth");
     window.location.href = `${baseUrl}/auth/google`;
-  },
-
-  handleGoogleCallback: async () => {
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get("code");
-      const state = urlParams.get("state");
-
-      if (!code) {
-        throw new Error("No authorization code received from Google");
-      }
-
-      // Let the backend handle the callback processing
-      const response = await api.get(
-        `/auth/google/callback?code=${code}&state=${state || ""}`
-      );
-      if (response.data?.token && response.data?.user) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-        return response.data;
-      }
-    } catch (error) {
-      console.error("Google callback error:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Google authentication failed";
-      throw new Error(errorMessage);
-    }
   },
 
   // Login with email and password
@@ -130,6 +101,27 @@ export const authService = {
     }
   },
 
+  verifyToken: async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+
+      const response = await api.get("/auth/protected");
+      return response.data; // Returns {message: "...", first_name: "..."}
+    } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        throw new Error("Token expired or invalid");
+      }
+
+      console.error("Token verification error:", error);
+      throw new Error("Token verification failed");
+    }
+  },
+
   // Logout user
   logout: async () => {
     try {
@@ -157,43 +149,99 @@ export const authService = {
     }
   },
 
-  // Get the current user from localStorage
   getCurrentUser: async () => {
     try {
-      const userInfo = localStorage.getItem("user");
-      const loginTimestamp = localStorage.getItem("loginTimestamp");
-      // const response = await api.get("/auth/user");
-      if (userInfo) {
-        const now = Date.now();
-        const loginTime = parseInt(loginTimestamp || "0");
-        const isRecent = now - loginTime < 24 * 60 * 60 * 1000;
-
-        if (isRecent) {
-          return {
-            isAuthenticated: true,
-            user: JSON.parse(userInfo),
-          };
-        }
+      const response = await api.get("/auth/user");
+      console.log(response.data.user);
+      if (response.data.user) {
+        // Update stored user data with latest info
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        return response.data.user;
+      } else {
+        throw new Error("No user data received");
       }
-      localStorage.removeItem("user");
-      localStorage.removeItem("loginTimeStamp");
-      return null;
     } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        throw new Error("Authentication required");
+      }
+
+      console.error("Get current user error:", error);
+      throw new Error("Failed to fetch user data");
+    }
+  },
+
+  refreshToken: async (refreshToken) => {
+    try {
+      const response = await api.post("/auth/refresh", { refreshToken });
+
+      if (response.data?.token) {
+        localStorage.setItem("token", response.data.token);
+        return response.data;
+      } else {
+        throw new Error("No new token received");
+      }
+    } catch (error) {
+      if (error.response?.status === 401 || error.response?.status === 400) {
+        // Refresh token is invalid/expired
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        throw new Error("Session expired - please login again");
+      }
+
+      console.error("Token refresh error:", error);
+      throw new Error("Token refresh failed");
+    }
+  },
+
+  updateUserAdmin: async (userId, isAdmin) => {
+    try {
+      const response = await api.patch(`/auth/user/${userId}`, {
+        is_admin: isAdmin,
+      });
+
+      return response.data; // Returns updated user object
+    } catch (error) {
+      let errorMessage;
+      if (error.response?.status === 401) {
+        errorMessage = "Authentication required";
+      } else if (error.response?.status === 403) {
+        errorMessage = "Admin access required";
+      } else if (error.response?.status === 404) {
+        errorMessage = "User not found";
+      } else {
+        errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to update user";
+      }
+
+      console.error("Update user admin error:", errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+  // Get stored user data
+  getStoredUser: () => {
+    try {
+      const user = localStorage.getItem("user");
+      return user ? JSON.parse(user) : null;
+    } catch (error) {
+      console.error("Error parsing stored user data:", error);
       localStorage.removeItem("user");
-      localStorage.removeItem("loginTimeStamp");
       return null;
     }
   },
 
-  // Get the authorization token
-  // We no longer need to get tokens directly since they're stored in httpOnly cookies
-  isAuthenticated: async () => {
-    try {
-      const response = await api.get("/auth/me");
-      return response.status === 200;
-    } catch (error) {
-      return false;
-    }
+  // Get stored token
+  getStoredToken: () => {
+    return localStorage.getItem("token");
+  },
+
+  // Clear all auth data
+  clearAuthData: () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   },
 };
 
