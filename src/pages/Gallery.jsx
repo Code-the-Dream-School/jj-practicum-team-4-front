@@ -34,8 +34,12 @@ export default function Gallery() {
   // TODO: Replace with actual authentication logic
   const isLoggedIn = true; // Set to true to simulate logged-in user
   const [prompt, setPrompt]= useState(null);
+  const [artworks, setArtworks] = useState([]);
 
   const BASE_URL = import.meta.env.VITE_API_URL;
+  const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
+
+ 
   const DELETEARTWORK_URL = `${BASE_URL}/api/artwork`;
 
   const handleDeleteClick = (artworkId) => {
@@ -49,11 +53,25 @@ export default function Gallery() {
       const p = JSON.parse(storedPrompt);
       setPrompt(p);
       // Fetch artworks when component mounts
-      // fetchAllArtWorks(p.id);
-      
+      fetchAllArtWorks(p.id);
     }
-
+    
   }, []);
+
+  const fetchAllArtWorks = async (promptId) => {
+  
+    if (!promptId) return;
+    try {
+      const response = await getData(ARTWORK_URL.replace(":id", promptId));
+      if (response && response.items && response.items.length > 0) {
+        setArtworks(response.items);
+      } else {
+        setArtworks([]);
+      }
+    } catch (error) {
+      console.error("Error fetching artworks:", error);
+    }
+  };
   const deleteArtwork = async (artworkId) => {
     try {
       const response = await deleteData(`${DELETEARTWORK_URL}/${artworkId}`);
@@ -70,7 +88,7 @@ export default function Gallery() {
   };
 
   // Placeholder artwork data
-  const [artworks] = useState([
+  const [artworks1] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
     { id: 2, title: "Dreamscape", image: sampleImage, likes: 8 },
     {
@@ -234,43 +252,100 @@ export default function Gallery() {
         </Box>
         <Grid
           container
-          spacing={4}
+           spacing={4}
+          // spacing={2}
+          // alignItems="stretch"
           justifyContent="center"
           sx={{ width: "100%" }}
         >
           {artworks.map((art) => (
             <Grid
               // item
-              // xs={12}
-              // sm={6}
-              // md={4}
+              xs={12}
+              sm={6}
+              md={4}
               key={art.id}
               sx={{ display: "flex", justifyContent: "center" }}
             >
-              <Card onClick={() => setSelected(art)}>
+              <Card onClick={() => setSelected(art)}
+                sx={{
+                    width: "320px !important",        
+                    height: "300px !important",       
+                    maxWidth: "320px !important",
+                    minWidth: "320px !important", 
+                    maxHeight: "300px !important",
+                    minHeight: "300px !important",
+                    display: "flex",
+                    flexDirection: "column",
+                    cursor: "pointer",
+                    borderRadius: 2,
+                    boxShadow: 3,
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                    overflow: "hidden",
+                    "&:hover": {
+                    transform: "translateY(-4px) scale(1.02)",
+                    boxShadow: 6,
+                    },
+                  }}>
                 <CardMedia
                   component="img"
-                  height="200"
-                  image={art.image}
+                  // height="200"
+                  image={art.image_url}
                   alt={art.title}
+                  sx={{
+                      height: "200px !important",      
+                      minHeight: "200px !important",
+                      maxHeight: "200px !important",
+                      objectFit: "cover",
+                      flexShrink: 0,
+                     }}
                 />
-                <CardContent>
+                <CardContent 
+                sx={{
+                    height: "100px !important",      
+                    minHeight: "100px !important",
+                    maxHeight: "100px !important",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    overflow: "hidden",
+                    padding: "16px !important",
+                   }}>
                   <Box
                     display="flex"
                     alignItems="center"
                     justifyContent="space-between"
+                    sx={{ 
+                       height: "100%",
+                       width: "100%"
+                       }}
+
                   >
-                    <Typography variant="h6">{art.title}</Typography>
-                    <Typography variant="body2" sx={{ ml: 2 }}>
-                      Likes: {art.likes}
+                    <Typography variant="h6" 
+                    sx={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        flex: 1,
+                        minWidth: 0, // Important for text truncation
+                        fontSize: "1.1rem",
+                        fontWeight: 700,
+                        }}>
+                       {art.title}</Typography>
+                    {/* <Stack direction="row" spacing={1}> */}
+                    <Typography variant="body2" 
+                      sx={{ ml: 2, flexShrink: 0 }}>
+                      Likes: {art.like_counter}
                     </Typography>
                     <IconButton
                         onClick={() => handleDeleteClick(art.id)}
-                        sx={{ bgcolor: "#E6B6B6" }}
+                        // sx={{ bgcolor: "#E6B6B6" }}
                         disabled={saving}
                       >
                         <DeleteIcon />
                       </IconButton>
+                  {/* </Stack> */}
                   </Box>
                 </CardContent>
               </Card>
@@ -290,10 +365,10 @@ export default function Gallery() {
           <Box>
             {selected && (
               <UserCard
-                username={selected.user}
+                user={selected.user}
                 title={selected.title}
-                description={selected.description || ""}
-                image={selected.image}
+                description={selected.media_tag || selected.description}
+                image={selected.image_url}
                 isOpen={true}
                 onClose={() => setSelected(null)}
               />

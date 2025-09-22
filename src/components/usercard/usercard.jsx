@@ -15,13 +15,13 @@ import {
 } from "./UserCard.styles";
 
 export default function UserCard({
-  username = "User Name",
-  title = "Artwork Title",
-  description = "Artwork description goes here...",
-  socialLink = "",
-  image = sampleImage,
+  user ,
+  title ,
+  description,
+  socialLink ,
+  image ,
   isOpen = true,
-  onClose = () => {},
+  onClose ,
 }) {
   const [liked, setLiked] = useState(false);
 
@@ -61,24 +61,54 @@ export default function UserCard({
         </IconButton>
         {/* Image or placeholder */}
         {image ? (
-          <StyledCardMedia component="img" image={image} alt={username} />
+          <StyledCardMedia component="img" image={image} alt={title} />
         ) : (
           <PlaceholderBox>Image Placeholder</PlaceholderBox>
         )}
 
         {/* Content */}
         <StyledCardContent  >
-          <Typography gutterBottom variant="h6">
-            {username}
+          <Typography gutterBottom variant="h4"component="div"
+            sx={{ 
+              fontWeight: 700,
+              lineHeight: 1.2,
+              textAlign: 'center !important',
+              color: 'text.primary',
+              width: '100%',
+              margin: '0 auto',
+            }}>
+            {user.first_name || "Unknown User"}
           </Typography>
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="h5" color="text.secondary"component="div"
+            sx={{ 
+              fontWeight:500,
+              lineHeight: 1.3,
+              textAlign: 'center !important',
+              // fontWeight: 500,
+              width: '100%',
+              margin: '0 auto',
+            }}>
             {title}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" component="div"
+            sx={{ 
+              fontWeight:500,
+              lineHeight: 1.3,
+              textAlign: 'center !important',
+              width: '100%',
+              margin: '0 auto',
+            }}>
             {description}
           </Typography>
           {socialLink && (
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" color="text.secondary" component="div"
+            sx={{  
+              lineHeight: 1.3,
+              textAlign: 'center !important',
+              fontWeight: 500,
+              width: '100%',
+              margin: '0 auto',
+            }}>
               Social Media Link:{" "}
               <a
                 href={getSocialUrl(socialLink)}
@@ -98,9 +128,13 @@ export default function UserCard({
             onClick={handleLike}
             disabled={liked}
             color={liked ? "primary" : "default"}
+            sx={{ fontSize: "1.5rem" }}
           >
-            <ThumbUpIcon />
+            <ThumbUpIcon  sx={{ fontSize: "1.5rem" }}/>
           </IconButton>
+          <Typography variant="body2" sx={{ ml: 1 }}>
+            {liked ? "Liked!" : "Like"}
+          </Typography>
         </CenteredActions>
       </StyledCard>
     </StyledBox>
