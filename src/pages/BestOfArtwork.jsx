@@ -44,6 +44,7 @@ export default function BestOfArtwork() {
       if (!response) {
         throw new Error("Failed to fetch all prompt data");
       }
+
       setPrevPrompt(response?.items[0]);
     } catch (error) {
       console.log("Failed to fetch");
@@ -63,6 +64,21 @@ export default function BestOfArtwork() {
         <CircularProgress />
       </Box>
     );
+
+  if (!prevPrompt) {
+    return (
+      <Box
+        sx={{
+          mt: 20,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <>
       {/* <CssBaseline /> */}
