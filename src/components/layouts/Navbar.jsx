@@ -33,7 +33,6 @@ const pages = [
 const settings = ["Profile", "Logout"];
 
 function Navbar() {
-  const [userInfo, setUserInfo] = useState(null);
   const [alertOpen, setAlertOpen] = React.useState(false);
   const [alertSeverity, setAlertSeverity] = React.useState("error");
   const [alertMessage, setAlertMessage] = React.useState(null);
@@ -41,13 +40,13 @@ function Navbar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { user, isAuthenticated, logout, isLoading } = useAuth();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (user) {
-      setUserInfo(user.user);
-    }
-  }, [user]);
 
-  console.log(isLoading);
+  // useEffect(() => {
+  //   if (user) {
+  //     setUserInfo(user.user);
+  //   }
+  // }, [user]);
+
   if (isLoading) {
     return (
       <Stack spacing={2} direction="row">
@@ -148,7 +147,7 @@ function Navbar() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.slice(0, !userInfo?.admin ? 4 : 5).map((page) => (
+              {pages.slice(0, !user?.admin ? 4 : 5).map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography
                     color="primary"
@@ -167,7 +166,7 @@ function Navbar() {
             </Menu>
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.slice(0, !userInfo?.admin ? 4 : 5).map((page) => (
+            {pages.slice(0, !user?.admin ? 4 : 5).map((page) => (
               <Button
                 component={Link}
                 to={page === "home" ? "/" : page.replaceAll(" ", "-")}
@@ -188,10 +187,7 @@ function Navbar() {
                 >
                   <Avatar
                     src={
-                      userInfo &&
-                      (userInfo.picture ||
-                        userInfo.avatar ||
-                        userInfo.profilePic)
+                      user && (user.picture || user.avatar || user.profilePic)
                     }
                     alt={user && (user.first_name || user.fullName || "User")}
                     slotProps={{

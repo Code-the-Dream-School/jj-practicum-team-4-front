@@ -17,11 +17,11 @@ api.interceptors.request.use(
     const token = localStorage.getItem("token");
     if (token) {
       // Note: /auth/protected uses 'token' header, others use 'Authorization'
-      if (config.url === "/auth/protected") {
-        config.headers.token = token;
-      } else {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+      // if (config.url === "/auth/protected") {
+      // config.headers.token = token;
+      // } else {
+      config.headers.Authorization = `Bearer ${token}`;
+      // }
     }
     return config;
   },
@@ -136,16 +136,6 @@ export const authService = {
         error.response?.data?.message || error.message || "Logout failed";
       console.error("Logout error:", errorMessage);
       throw { message: errorMessage, originalError: error };
-    }
-  },
-
-  // Check if user is authenticated (can be used to validate session/token)
-  checkAuth: async () => {
-    try {
-      const response = await api.get("/auth/protected");
-      return response.data;
-    } catch (error) {
-      throw error;
     }
   },
 
