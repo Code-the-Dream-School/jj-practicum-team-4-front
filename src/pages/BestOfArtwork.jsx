@@ -6,6 +6,7 @@ import {
   Chip,
   CircularProgress,
   Container,
+  Divider,
   Grid,
   Modal,
   Typography,
@@ -18,10 +19,11 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 export default function BestOfArtwork() {
   const [selected, setSelected] = useState(null);
   const [winners, setWinners] = useState(null);
+  const [prevPrompt, setPrevPrompt] = useState(null);
   const baseUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     getWinnersData();
-    // getAllPrompt();
+    getAllPrompt();
   }, []);
 
   const getWinnersData = async () => {
@@ -30,7 +32,6 @@ export default function BestOfArtwork() {
       if (!response) {
         throw new Error("Failed to fetch winners data");
       }
-      console.log(response);
       setWinners(response);
     } catch (error) {
       console.log("Failed to fetch data", error);
@@ -43,7 +44,7 @@ export default function BestOfArtwork() {
       if (!response) {
         throw new Error("Failed to fetch all prompt data");
       }
-      console.log(response);
+      setPrevPrompt(response?.items[0]);
     } catch (error) {
       console.log("Failed to fetch");
     }
@@ -65,41 +66,42 @@ export default function BestOfArtwork() {
   return (
     <>
       {/* <CssBaseline /> */}
-      <Container maxWidth="xl" sx={{ py: { sm: 5 } }}>
+      <Container maxWidth="xl" sx={{ py: 5 }}>
         <Typography
           component="div"
           sx={{
+            mt: 5,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
           }}
           variant="h3"
           align="center"
-          gutterBottom
         >
           Best of Artwork{" "}
           <EmojiEventsIcon color="warning" sx={{ height: 50, width: 50 }} />
         </Typography>
         <Typography
-          sx={{ pt: 3 }}
-          variant="h5"
-          textTransform="capitalize"
-          align="center"
-        >
-          Featured Masterpieces
-        </Typography>
-        <Typography
           variant="h6"
           align="center"
           sx={{ mx: "auto", maxWidth: 600 }}
+          color="text.secondary"
         >
           Outstanding submissions that earned community recognition!
         </Typography>
+        <Divider sx={{ my: 12 }}>
+          <Box>
+            <Typography variant="h4" textTransform="uppercase">
+              {prevPrompt.title}
+            </Typography>
+            <Typography variant="body1">{prevPrompt.description}</Typography>
+          </Box>
+        </Divider>
         <Grid
           container
           spacing={4}
           justifyContent="center"
-          sx={{ width: "100%", mt: 5 }}
+          sx={{ width: "100%", my: 5 }}
         >
           {winners.map((art) => (
             <Grid item xl={3} key={art.id}>
