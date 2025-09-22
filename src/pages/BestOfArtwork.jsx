@@ -11,9 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import sampleImage from "../assets/images.jpeg";
 import UserCard from "../components/usercard/usercard";
-import { getAllData, getData } from "../util";
+import { getAllData } from "../util";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -22,7 +21,7 @@ export default function BestOfArtwork() {
   const [winners, setWinners] = useState(null);
   useEffect(() => {
     getWinnersData();
-    // getAllPrompt();
+    getAllPrompt();
   }, []);
 
   const getWinnersData = async () => {
@@ -38,17 +37,17 @@ export default function BestOfArtwork() {
     }
   };
 
-  // const getAllPrompt = async () => {
-  //   try {
-  //     const response = await getAllData(`${baseUrl}/api/prompts/all`);
-  //     if (!response) {
-  //       throw new Error("Failed to fetch all prompt data");
-  //     }
-  //     console.log(response);
-  //   } catch (error) {
-  //     console.log("Failed to fetch");
-  //   }
-  // };
+  const getAllPrompt = async () => {
+    try {
+      const response = await getAllData(`${baseUrl}/api/prompts/all`);
+      if (!response) {
+        throw new Error("Failed to fetch all prompt data");
+      }
+      console.log(response);
+    } catch (error) {
+      console.log("Failed to fetch");
+    }
+  };
 
   if (!winners)
     return (
@@ -66,7 +65,7 @@ export default function BestOfArtwork() {
   return (
     <>
       <CssBaseline />
-      <Container maxWidth="xl" disableGutters sx={{ py: 5 }}>
+      <Container maxWidth="xl" disableGutters sx={{ py: { sm: 5 } }}>
         <Typography variant="h3" align="center" gutterBottom>
           Best of Artwork
         </Typography>
@@ -93,7 +92,7 @@ export default function BestOfArtwork() {
           sx={{ mt: 8, mx: 5 }}
         >
           {winners.map((art) => (
-            <Grid item xs={12} sm={6} md={4} key={art.id}>
+            <Grid container key={art.id}>
               <Card onClick={() => setSelected(art)}>
                 <CardMedia
                   component="img"
