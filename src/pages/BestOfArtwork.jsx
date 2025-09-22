@@ -6,6 +6,7 @@ import {
   Chip,
   CircularProgress,
   Container,
+  CssBaseline,
   Divider,
   Grid,
   Modal,
@@ -81,7 +82,7 @@ export default function BestOfArtwork() {
   }
   return (
     <>
-      {/* <CssBaseline /> */}
+      <CssBaseline />
       <Container maxWidth="xl" sx={{ py: 5 }}>
         <Typography
           component="div"
