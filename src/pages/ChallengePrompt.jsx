@@ -51,7 +51,7 @@ export default function ChallengePrompts() {
   // const URL = `${import.meta.env.VITE_API_URL}prompts/active`;
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
-  const ALL_URL = `${BASE_URL}/api/prompts/all`;
+  const ALL_URL = `${BASE_URL}/api/prompt/all`;
   const PROMPTS_URL = `${BASE_URL}/api/prompts`;
 
   const handleChange = (e) => {
@@ -100,15 +100,14 @@ export default function ChallengePrompts() {
     };
   };
 
-  const formatPromptFromAPI = (p) => {
+  const formatPromptFromAPI = (p, c) => {
     return {
-      id: p._id,
-       title: p.title || p.challenge?.title, 
-      // title: p.title.replace(" (overwrite)", ""),
+      id: p.id,
+      title: p.title, 
       description: p.description,
       rules: p.rule || p.rules || "",
-      startDate: formatDate(p.start_date || p.challenge?.start_date),
-      endDate: formatDate(p.end_date || p.challenge?.end_date),
+      startDate: formatDate(c.start_date || p.challenge?.start_date),
+      endDate: formatDate(c.end_date || p.challenge?.end_date),
       status: p.is_active ? "ACTIVE" : "CLOSED",
     };
   };
@@ -122,8 +121,8 @@ export default function ChallengePrompts() {
       const response = await getData(ACTIVE_URL);
       console.log("API response:", response);
 
-      if (response?.success && response?.prompt) {
-        const formatted = formatPromptFromAPI(response.prompt);
+      if (response && response?.prompt && response?.challenge) {
+        const formatted = formatPromptFromAPI(response.prompt, response.challenge);
         setPrompts([formatted]);
         localStorage.setItem("activePrompt", JSON.stringify(formatted));
       } else {
