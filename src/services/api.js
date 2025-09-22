@@ -142,7 +142,6 @@ export const authService = {
   getCurrentUser: async () => {
     try {
       const response = await api.get("/auth/user");
-      console.log(response.data.user);
       if (response.data.user) {
         // Update stored user data with latest info
         localStorage.setItem("user", JSON.stringify(response.data.user));
