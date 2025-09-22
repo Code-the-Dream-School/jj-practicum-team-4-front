@@ -25,59 +25,56 @@ import {
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
+import { jwtDecode } from "jwt-decode";
+import { getData } from "../util/index.js";
 
 export default function Gallery() {
-  const { isAuthenticated } = useAuth();
   const [shownModal, setShownModal] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [showAuthSuccess, setShowAuthSuccess] = useState(false);
-
+  const [authProcessed, setAuthProcessed] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  const baseUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
-    // Check if the URL has auth=success query parameter
+    handleGoogleAuthSuccess();
+  }, [authProcessed]);
+
+  const handleGoogleAuthSuccess = () => {
     const searchParams = new URLSearchParams(location.search);
-    if (searchParams.get("auth") === "success") {
-      // Get token and user data from URL if available
-      const token = searchParams.get("token");
-      const userDataParam = searchParams.get("userData");
+    const authStatus = searchParams.get("auth");
+    const token = searchParams.get("token");
+    const userDataParam = searchParams.get("userData");
+    const code = searchParams.get("code");
 
-      if (token && userDataParam) {
-        try {
-          // Parse the user data
-          const userData = JSON.parse(decodeURIComponent(userDataParam));
+    // Check if this is a Google auth success redirect
+    if (authStatus === "success" && token && userDataParam && !authProcessed) {
+      setIsProcessing(true);
+      try {
+        // Decode tha user data from URL param
+        const userData = JSON.parse(decodeURIComponent(userDataParam));
+        console.log("google auth success detected");
+        console.log("token from google auth", token);
+        console.log("user data from google auth,", userData);
 
-          // Log the received user data for debugging
-          console.log("Received user data from Google auth:", userData);
+        localStorage.setItem("token", token);
+        const userInfo = jwtDecode(token);
 
-          // Store token and user data in localStorage
-          localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(userInfo));
+        console.log("user info", JSON.stringify(userInfo));
 
-          // Make sure picture field is explicitly included in stored userInfo
-          const userInfoToStore = {
-            ...userData,
-            picture: userData.picture || null,
-            fullName: userData.fullName || "",
-          };
-
-          localStorage.setItem("userInfo", JSON.stringify(userInfoToStore));
-
-          // Show success notification
-          setShowAuthSuccess(true);
-
-          // Reload to refresh authentication state
-          // setTimeout(() => window.location.reload(), 1000);
-        } catch (err) {
-          console.error("Error processing authentication data:", err);
-        }
-      } else {
-        const response = setShowAuthSuccess(false);
+        // Clean URL and reload to trigger auth context update
+        window.history.replaceState({}, document.title, "/gallery");
+        window.location.reload();
+      } catch (error) {
+        console.log(error);
+        window.history.replaceState({}, document.title, "/");
       }
-
-      // Clean up the URL to remove the query parameters
-      window.history.replaceState({}, document.title, location.pathname);
+      setAuthProcessed(true);
+      setIsProcessing(false);
     }
-  }, [location, navigate]);
+  };
 
   const [artworks] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
@@ -306,13 +303,13 @@ export default function Gallery() {
           </Box>
         </Modal>
         <Snackbar
-          open={showAuthSuccess}
+          open={authProcessed}
           autoHideDuration={6000}
-          onClose={() => setShowAuthSuccess(false)}
+          onClose={() => setAuthProcessed(false)}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
           <Alert
-            onClose={() => setShowAuthSuccess(false)}
+            onClose={() => setAuthProcessed(false)}
             severity="success"
             sx={{ width: "100%" }}
           >

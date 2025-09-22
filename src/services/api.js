@@ -11,275 +11,109 @@ const api = axios.create({
   },
 });
 
-// Create a logging function to track API calls with enhanced error details
-const logApiCall = (
-  type,
-  endpoint,
-  data = {},
-  success = true,
-  error = null
-) => {
-  const timestamp = new Date().toISOString();
-  const logData = {
-    timestamp,
-    type,
-    endpoint,
-    success,
-  };
-
-  // Add detailed error information if available
-  if (!success && error) {
-    logData.error = {
-      message: error.message || "Unknown error",
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-    };
-
-    // Log CORS errors specifically
-    if (error.message === "Network Error") {
-      console.error("==== CORS ERROR DETECTED ====");
-      console.error(`Failed request to: ${endpoint}`);
-      console.error(
-        "This may be a CORS issue. Check that your backend CORS configuration allows:"
-      );
-      console.error(`- Origin: ${window.location.origin}`);
-      console.error("- Methods: The request method being used");
-      console.error("- Headers: Including Authorization and Content-Type");
-      console.error("==== END CORS ERROR INFO ====");
-    }
-  }
-
-  // Don't log sensitive data like passwords
-  const safeData = { ...data };
-  if (safeData.password) safeData.password = "********";
-
-  // Use appropriate console method based on success/failure
-  const logMethod = success ? console.log : console.error;
-  logMethod(
-    `🔄 API ${type.toUpperCase()} | ${endpoint} | Success: ${success}`,
-    logData,
-    safeData
-  );
-
-  // Store recent errors in localStorage for debugging (up to 10)
-  if (!success) {
-    try {
-      const storedErrors = JSON.parse(
-        localStorage.getItem("api_errors") || "[]"
-      );
-      storedErrors.unshift({
-        ...logData,
-        timestamp,
-        url: endpoint,
-      });
-
-      // Keep only the 10 most recent errors
-      if (storedErrors.length > 10) {
-        storedErrors.length = 10;
-      }
-
-      localStorage.setItem("api_errors", JSON.stringify(storedErrors));
-    } catch (e) {
-      console.error("Error storing API error in localStorage", e);
-    }
-  }
-};
-
-// Implement CSRF protection for sensitive operations
-let csrfToken = null;
-
-// Function to get a CSRF token from the server
-const fetchCsrfToken = async () => {
-  try {
-    const response = await axios.get(`${baseUrl}/auth/csrf-token`, {
-      withCredentials: true,
-    });
-    if (response.data && response.data.csrfToken) {
-      csrfToken = response.data.csrfToken;
-      return csrfToken;
-    }
-    console.error("Failed to get CSRF token");
-    return null;
-  } catch (error) {
-    console.error("Error fetching CSRF token:", error);
-    return null;
-  }
-};
-
-// Add CSRF token to requests that need it
+// Request interceptor to add JWT token
 api.interceptors.request.use(
-  async (config) => {
-    // List of methods that modify state and require CSRF protection
-    const sensitiveOperations = [
-      "/auth/login",
-      "/auth/register",
-      "/auth/logout",
-      "/auth/refresh",
-    ];
-    const isPrivilegedOperation = sensitiveOperations.some((op) =>
-      config.url?.includes(op)
-    );
-    const isModifyingMethod = ["post", "put", "patch", "delete"].includes(
-      config.method?.toLowerCase()
-    );
-
-    // Only add CSRF token for sensitive operations
-    if (isModifyingMethod && isPrivilegedOperation) {
-      // Get token if we don't have one
-      if (!csrfToken) {
-        csrfToken = await fetchCsrfToken();
-      }
-
-      if (csrfToken) {
-        config.headers["X-CSRF-Token"] = csrfToken;
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // Note: /auth/protected uses 'token' header, others use 'Authorization'
+      if (config.url === "/auth/protected") {
+        config.headers.token = token;
       } else {
-        console.warn("No CSRF token available for protected operation");
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;
   },
   (error) => {
-    console.log("Request error:", error);
+    console.error("Request interceptor error:", error);
     return Promise.reject(error);
   }
 );
-
-// Add a response interceptor for handling token refresh
-let isRefreshing = false;
-let failedQueue = [];
-
-const processQueue = (error, token = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve();
-    }
-  });
-
-  failedQueue = [];
-};
-
+// Response interceptor to handle token expiration
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid - clear storage
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
 
-    // If the error is 401 and we haven't already tried to refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        // If we're already refreshing, wait for the refresh to complete
-        return new Promise(function (resolve, reject) {
-          failedQueue.push({ resolve, reject });
-        })
-          .then(() => {
-            return api(originalRequest);
-          })
-          .catch((err) => {
-            return Promise.reject(err);
-          });
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        // Call refresh token endpoint
-        const res = await api.post("/auth/refresh");
-
-        if (res.status === 200) {
-          // Token refreshed successfully
-          processQueue(null);
-          return api(originalRequest);
-        } else {
-          // Handle token refresh failure
-          // This might happen if the refresh token is invalid or expired
-          // In that case, we should log the user out
-          processQueue(new Error("Token refresh failed"));
-          window.dispatchEvent(new CustomEvent("auth:sessionExpired"));
-          return Promise.reject(error);
-        }
-      } catch (refreshError) {
-        processQueue(refreshError);
-        // If refresh token fails, dispatch session expired event
-        window.dispatchEvent(new CustomEvent("auth:sessionExpired"));
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
+      // Optional: redirect to login if not already there
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
       }
     }
-
     return Promise.reject(error);
   }
 );
-
-// Add a request interceptor to include auth token if it exists
-// api.interceptors.request.use(
-//   (config) => {
-//     const user = JSON.parse(localStorage.getItem("user") || "{}");
-//     if (user && user.token) {
-//       config.headers["Authorization"] = `Bearer ${user.token}`;
-//       // logApiCall("request", config.url, {}, true);
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     // logApiCall("request", error.config?.url, {}, false, error);
-//     console.log(error);
-//     return Promise.reject(error);
-//   }
-// );
-
-// Add a response interceptor for logging
-// api.interceptors.response.use(
-//   (response) => {
-//     // logApiCall("response", response.config.url, {}, true);
-//     return response;
-//   },
-//   (error) => {
-//     // logApiCall("response", error.config?.url, {}, false, error);
-//     return Promise.reject(error);
-//   }
-// );
 
 // Authentication services
 export const authService = {
+  // Google OAuth login (redirects to backend Google auth route)
+  loginWithGoogle: () => {
+    console.log("Redirecting to Google OAuth");
+    window.location.href = `${baseUrl}/auth/google`;
+  },
+
+  handleGoogleCallback: async () => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get("code");
+      const state = urlParams.get("state");
+
+      if (!code) {
+        throw new Error("No authorization code received from Google");
+      }
+
+      // Let the backend handle the callback processing
+      const response = await api.get(
+        `/auth/google/callback?code=${code}&state=${state || ""}`
+      );
+      if (response.data?.token && response.data?.user) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Google callback error:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Google authentication failed";
+      throw new Error(errorMessage);
+    }
+  },
+
   // Login with email and password
   login: async (email, password) => {
     try {
       // Ensure we're using absolute URL with the proper auth endpoint
       const response = await api.post("/auth/login", { email, password });
-      if (response.data && response.data.user) {
-        const decodeToken = jwtDecode(response.data.token);
-        const userData = {
-          userId: decodeToken.userId,
-          email: decodeToken.email,
-          firstName: decodeToken.firstName,
-          lastName: decodeToken.lastName,
-          fullName: decodeToken.fullName,
-          admin: decodeToken.admin,
-        };
-        // Store user data and token in localStorage
-        localStorage.setItem("userInfo", JSON.stringify(userData));
-        localStorage.setItem("loginTimestamp", Date.now().toString());
-      } else if (response.data) {
-        // If we get a response but no token, log it clearly
-        console.warn("Login successful but no token received:", response.data);
+      if (response.data?.token && response.data?.user) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        return response.data;
+      } else {
+        throw new Error("Login failed - invalid response");
       }
-      return response.data;
     } catch (error) {
-      localStorage.removeItem("userInfo");
-      localStorage.removeItem("loginTimeStamp");
+      // Clear any existing data on failure
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
 
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Login failed. Please try again.";
+      let errorMessage;
+      if (error.response?.status === 401) {
+        errorMessage = "Invalid email or password";
+      } else if (error.response?.status === 400) {
+        errorMessage = "Please provide both email and password";
+      } else {
+        errorMessage =
+          error.response?.data?.message || error.message || "Login failed";
+      }
+
       console.error("Login error:", errorMessage);
-      throw { message: errorMessage, originalError: error };
+      throw new Error(errorMessage);
     }
   },
 
@@ -296,21 +130,15 @@ export const authService = {
     }
   },
 
-  // Google OAuth login (redirects to backend Google auth route)
-  loginWithGoogle: () => {
-    const googleAuthUrl = `${baseUrl}/auth/google`;
-    window.location.href = googleAuthUrl;
-  },
-
   // Logout user
   logout: async () => {
     try {
       const res = await api.get("/auth/logout");
-      localStorage.removeItem("userInfo");
+      localStorage.removeItem("user");
       localStorage.removeItem("loginTimeStamp");
       return res;
     } catch (error) {
-      localStorage.removeItem("userInfo");
+      localStorage.removeItem("user");
       localStorage.removeItem("loginTimeStamp");
       const errorMessage =
         error.response?.data?.message || error.message || "Logout failed";
@@ -332,7 +160,7 @@ export const authService = {
   // Get the current user from localStorage
   getCurrentUser: async () => {
     try {
-      const userInfo = localStorage.getItem("userInfo");
+      const userInfo = localStorage.getItem("user");
       const loginTimestamp = localStorage.getItem("loginTimestamp");
       // const response = await api.get("/auth/user");
       if (userInfo) {
@@ -347,11 +175,11 @@ export const authService = {
           };
         }
       }
-      localStorage.removeItem("userInfo");
+      localStorage.removeItem("user");
       localStorage.removeItem("loginTimeStamp");
       return null;
     } catch (error) {
-      localStorage.removeItem("userInfo");
+      localStorage.removeItem("user");
       localStorage.removeItem("loginTimeStamp");
       return null;
     }

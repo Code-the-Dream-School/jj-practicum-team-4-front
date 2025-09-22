@@ -13,7 +13,15 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Alert, Snackbar } from "@mui/material";
+import {
+  Alert,
+  CircularProgress,
+  Skeleton,
+  Snackbar,
+  Stack,
+} from "@mui/material";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const pages = [
   "home",
@@ -25,27 +33,29 @@ const pages = [
 const settings = ["Profile", "Logout"];
 
 function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
-
-  React.useEffect(() => {
-    if (user) {
-      console.log("Navbar user data:", user);
-      console.log(
-        "User picture URL:",
-        user.picture ||
-          user.avatar ||
-          user.profilePicture ||
-          "No picture URL found"
-      );
-    }
-  }, [user]);
-
+  const [userInfo, setUserInfo] = useState(null);
   const [alertOpen, setAlertOpen] = React.useState(false);
   const [alertSeverity, setAlertSeverity] = React.useState("error");
   const [alertMessage, setAlertMessage] = React.useState(null);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const { user, isAuthenticated, logout, isLoading } = useAuth();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      setUserInfo(user.user);
+    }
+  }, [user]);
+
+  console.log(isLoading);
+  if (isLoading) {
+    return (
+      <Stack spacing={2} direction="row">
+        <Skeleton variant="rectangular" width="100%" height={60} />
+        <Skeleton variant="circular" width={60} height={60} />
+      </Stack>
+    );
+  }
 
   const handleLogout = async () => {
     try {
@@ -56,7 +66,7 @@ function Navbar() {
       setAlertSeverity("success");
 
       setTimeout(() => {
-        (navigate("/gallery"), setAlertOpen(false), setAlertMessage(null));
+        (navigate("/"), setAlertOpen(false), setAlertMessage(null));
       }, 1000);
     } catch (error) {
       console.error("logout failed:", error);
@@ -138,7 +148,7 @@ function Navbar() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.slice(0, isAuthenticated ? 5 : 4).map((page) => (
+              {pages.slice(0, !userInfo?.admin ? 4 : 5).map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography
                     color="primary"
@@ -157,7 +167,7 @@ function Navbar() {
             </Menu>
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.slice(0, isAuthenticated ? 5 : 4).map((page) => (
+            {pages.slice(0, !userInfo?.admin ? 4 : 5).map((page) => (
               <Button
                 component={Link}
                 to={page === "home" ? "/" : page.replaceAll(" ", "-")}
@@ -178,8 +188,10 @@ function Navbar() {
                 >
                   <Avatar
                     src={
-                      user &&
-                      (user.picture || user.avatar || user.profilePicture)
+                      userInfo &&
+                      (userInfo.picture ||
+                        userInfo.avatar ||
+                        userInfo.profilePic)
                     }
                     alt={user && (user.first_name || user.fullName || "User")}
                     slotProps={{
