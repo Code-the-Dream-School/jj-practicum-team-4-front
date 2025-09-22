@@ -103,48 +103,61 @@ export default function Home() {
               flex: { xs: "1 1 auto", md: "0 0 50%" },
               textAlign: { xs: "center", md: "left" },
               px: { xs: 2, md: 4 },
-              // textAlign: "center",
-              // pb: 3,
+              textAlign: "center",
               width: "100%",
-              // mx: 3,
             }}
           >
             <Typography
-              variant="h3"
+              variant="h2"
               align="left"
-              // align="center"
-              sx={{ mb: 6 }}
+              fontWeight="bold"
+              sx={{ my: 3 }}
               margin-bottom="10px"
+              textAlign="center"
             >
               Turn Art Block Into Art Magic
             </Typography>
-            <Typography variant="h5" align="left" sx={{ mb: 5 }}>
+            <Typography variant="h6" align="center" sx={{ mb: 3 }}>
               Discover fresh prompts every week. Share your creations. Get
               meaningful feedback. Build your artistic confidence.
             </Typography>
-
-            <Typography variant="h6" align="left" fontWeight={600} gutterBottom>
-              WEEKLY CHALLENGE TOPIC {prompt ? `: ${prompt.title}` : ""}
-            </Typography>
-            <Typography variant="h6" align="left" fontWeight={600} gutterBottom>
-              DURATION{" "}
-              {prompt
-                ? `: ${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}`
-                : ""}
-            </Typography>
+            {/* challenge prompt display */}
+            {prompt && (
+              <Box
+                sx={{
+                  border: "1px dashed",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  borderRadius: 2,
+                  p: 1,
+                  mb: 5,
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  fontWeight={600}
+                  textTransform="uppercase"
+                >
+                  {prompt.title}
+                </Typography>
+                <Typography variant="h6" fontWeight={600}>
+                  {formatDateForDisplay(prompt.startDate)} -{" "}
+                  {formatDateForDisplay(prompt.endDate)}
+                </Typography>
+              </Box>
+            )}
             <Stack
               direction="row"
               spacing={2}
-              // align="left"
-              justifyContent={{ xs: "center", md: "flex-start" }}
-              // justifyContent="center"
+              justifyContent="center"
               sx={{ mt: 2 }}
             >
               <Button variant="contained" component={Link} to="/sign-in">
-                Join This Week Challenge
+                join the community
               </Button>
               <Button variant="outlined" component={Link} to="/gallery">
-                See weekly challenge artworks →
+                Explore Weekly Artworks →
               </Button>
             </Stack>
           </Box>
@@ -188,19 +201,33 @@ export default function Home() {
 
           <Box
             sx={{
-              display: "grid",
+              display: "flex",
+              width: "fit-content",
               gridTemplateColumns: {
                 xs: "1fr", // Single column on mobile
                 sm: "repeat(2, 1fr)", // Two columns on small screens
-                md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
+                // md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
+                md:
+                  sortedForDisplay.length === 1
+                    ? "1fr"
+                    : sortedForDisplay.length === 2
+                      ? "repeat(2, 1fr)"
+                      : sortedForDisplay.length === 3
+                        ? "repeat(3, 1fr)"
+                        : sortedForDisplay.length === 4
+                          ? "repeat(4, 1fr)"
+                          : "repeat(5, 1fr)",
               },
+              justifyItems: "center",
               // gridTemplateColumns: `repeat(${sortedForDisplay.length}, 1fr)`,
               justifyContent: "center",
               alignItems: "end",
-              gap: { xs: 2, md: 6 },
+              // gap: { xs: 2, md: 6 },
+              gap: 1,
               mt: 4,
               minHeight: { xs: "auto", md: 320 }, // Auto height on mobile
               px: { xs: 2, md: 0 },
+              flexWrap: "wrap",
             }}
           >
             {sortedForDisplay.map((art, idx) => {
