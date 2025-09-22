@@ -145,18 +145,6 @@ function SubmissionPreview({
         disabled
       />
 
-      {/* Social Media Link Field */}
-      <TextField
-        size="small"
-        name="mediaLink"
-        id="mediaLink"
-        label="Social Media Link (optional)"
-        fullWidth
-        value={postArtworkData.mediaLink ? postArtworkData.mediaLink : "None"}
-        sx={{ mb: 2 }}
-        disabled
-      />
-
       {/* Action Button */}
       <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
         <Button
