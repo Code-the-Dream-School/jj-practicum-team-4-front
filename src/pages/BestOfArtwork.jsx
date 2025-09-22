@@ -6,7 +6,6 @@ import {
   Chip,
   CircularProgress,
   Container,
-  CssBaseline,
   Grid,
   Modal,
   Typography,
@@ -15,6 +14,7 @@ import { useEffect, useState } from "react";
 import UserCard from "../components/usercard/usercard";
 import { getAllData } from "../util";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 export default function BestOfArtwork() {
   const [selected, setSelected] = useState(null);
   const [winners, setWinners] = useState(null);
@@ -66,8 +66,19 @@ export default function BestOfArtwork() {
     <>
       {/* <CssBaseline /> */}
       <Container maxWidth="xl" sx={{ py: { sm: 5 } }}>
-        <Typography variant="h3" align="center" gutterBottom>
-          Best of Artwork
+        <Typography
+          component="div"
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          variant="h3"
+          align="center"
+          gutterBottom
+        >
+          Best of Artwork{" "}
+          <EmojiEventsIcon color="warning" sx={{ height: 50, width: 50 }} />
         </Typography>
         <Typography
           sx={{ pt: 3 }}
