@@ -76,7 +76,7 @@ export default function Home() {
   console.log(artworks);
   // Sort by likes and get top 5
   const topArtworks = [...artworks]
-    .sort((a, b) => b.likes - a.likes)
+    .sort((a, b) => b.like_counter - a.like_counter)
     .slice(0, 5);
   // Ensure most liked artwork is always in the center visually
   const centerIndex = Math.floor(topArtworks.length / 2);
