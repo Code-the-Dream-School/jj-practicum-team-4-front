@@ -3,7 +3,6 @@ import formatDateForDisplay from "../util/date.jsx";
 import { Icon, Modal } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import { CssBaseline } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import UserCard from "../components/usercard/usercard.jsx";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -19,78 +18,49 @@ import {
   Box,
   Stack,
   Button,
-  Link,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
-import { jwtDecode } from "jwt-decode";
-import { postData } from "../util/index.js";
+import { getData, postData, patchData, deleteData } from "../util";
 
 export default function Gallery() {
+  const { isAuthenticated } = useAuth();
   const [shownModal, setShownModal] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [authProcessed, setAuthProcessed] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+  // TODO: Replace with actual authentication logic
+  const isLoggedIn = true; // Set to true to simulate logged-in user
+  const [prompt, setPrompt] = useState(null);
+  const [artworks, setArtworks] = useState([]);
 
-  const baseUrl = import.meta.env.VITE_API_URL;
+  const BASE_URL = import.meta.env.VITE_API_URL;
+  const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
+
   useEffect(() => {
-    handleGoogleAuthSuccess();
-  }, [authProcessed, navigate]);
+    const storedPrompt = localStorage.getItem("activePrompt");
+    if (storedPrompt) {
+      const p = JSON.parse(storedPrompt);
+      setPrompt(p);
+      // Fetch artworks when component mounts
+      fetchAllArtWorks(p.id);
+    }
+  }, []);
 
-  const handleGoogleAuthSuccess = async () => {
-    const searchParams = new URLSearchParams(location.search);
-    const authStatus = searchParams.get("auth");
-    const token = searchParams.get("token");
-    const userDataParam = searchParams.get("userData");
-    // const code = searchParams.get("code");
-
-    // if (code) {
-    //   try {
-    //     const response = await postData(`${baseUrl}/auth/google/callback`, {
-    //       code,
-    //     });
-    //     if (response) {
-    //       console.log(response);
-    //     }
-    //     navigate("/gallery");
-    //   } catch (error) {
-    //     console.error("Google Login failed", error);
-    //     navigate("/sign-in");
-    //   }
-    // }
-    // Check if this is a Google auth success redirect
-    if (authStatus === "success" && token && userDataParam && !authProcessed) {
-      setIsProcessing(true);
-      try {
-        // Decode tha user data from URL param
-        const userData = JSON.parse(decodeURIComponent(userDataParam));
-        console.log("google auth success detected");
-        console.log("token from google auth", token);
-        console.log("user data from google auth,", userData);
-
-        localStorage.setItem("token", token);
-        const userInfo = jwtDecode(token);
-
-        localStorage.setItem("user", JSON.stringify(userInfo));
-        console.log("user info", JSON.stringify(userInfo));
-
-        // Clean URL and reload to trigger auth context update
-        window.history.replaceState({}, document.title, "/gallery");
-        window.location.reload();
-      } catch (error) {
-        console.log(error);
-        window.history.replaceState({}, document.title, "/");
+  const fetchAllArtWorks = async (promptId) => {
+    if (!promptId) return;
+    try {
+      const response = await getData(ARTWORK_URL.replace(":id", promptId));
+      if (response && response.items && response.items.length > 0) {
+        setArtworks(response.items);
+      } else {
+        setArtworks([]);
       }
-      setAuthProcessed(true);
-      setIsProcessing(false);
+    } catch (error) {
+      console.error("Error fetching artworks:", error);
     }
   };
 
-  const [artworks] = useState([
+  // Placeholder artwork data
+  const [artworks1] = useState([
     { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
     { id: 2, title: "Dreamscape", image: sampleImage, likes: 8 },
     {
@@ -258,6 +228,8 @@ export default function Gallery() {
         <Grid
           container
           spacing={4}
+          // spacing={2}
+          // alignItems="stretch"
           justifyContent="center"
           sx={{ width: "100%" }}
         >
@@ -270,22 +242,79 @@ export default function Gallery() {
               key={art.id}
               sx={{ display: "flex", justifyContent: "center" }}
             >
-              <Card onClick={() => setSelected(art)}>
+              <Card
+                onClick={() => setSelected(art)}
+                sx={{
+                  width: "320px !important",
+                  height: "300px !important",
+                  maxWidth: "320px !important",
+                  minWidth: "320px !important",
+                  maxHeight: "300px !important",
+                  minHeight: "300px !important",
+                  display: "flex",
+                  flexDirection: "column",
+                  cursor: "pointer",
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  overflow: "hidden",
+                  "&:hover": {
+                    transform: "translateY(-4px) scale(1.02)",
+                    boxShadow: 6,
+                  },
+                }}
+              >
                 <CardMedia
                   component="img"
                   // height="200"
                   image={art.image_url}
                   alt={art.title}
+                  sx={{
+                    height: "200px !important",
+                    minHeight: "200px !important",
+                    maxHeight: "200px !important",
+                    objectFit: "cover",
+                    flexShrink: 0,
+                  }}
                 />
-                <CardContent>
+                <CardContent
+                  sx={{
+                    height: "100px !important",
+                    minHeight: "100px !important",
+                    maxHeight: "100px !important",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    overflow: "hidden",
+                    padding: "16px !important",
+                  }}
+                >
                   <Box
                     display="flex"
                     alignItems="center"
                     justifyContent="space-between"
+                    sx={{
+                      height: "100%",
+                      width: "100%",
+                    }}
                   >
-                    <Typography variant="h6">{art.title}</Typography>
-                    <Typography variant="body2" sx={{ ml: 2 }}>
-                      Likes: {art.likes}
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        flex: 1,
+                        minWidth: 0, // Important for text truncation
+                        fontSize: "1.1rem",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {art.title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ ml: 2, flexShrink: 0 }}>
+                      Likes: {art.like_counter}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -316,20 +345,6 @@ export default function Gallery() {
             )}
           </Box>
         </Modal>
-        <Snackbar
-          open={authProcessed}
-          autoHideDuration={6000}
-          onClose={() => setAuthProcessed(false)}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <Alert
-            onClose={() => setAuthProcessed(false)}
-            severity="success"
-            sx={{ width: "100%" }}
-          >
-            Successfully logged in with Google!
-          </Alert>
-        </Snackbar>
       </Container>
     </>
   );
