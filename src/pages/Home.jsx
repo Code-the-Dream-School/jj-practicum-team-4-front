@@ -21,6 +21,7 @@ import { getData } from "../util/index.js";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
+import RecommendIcon from "@mui/icons-material/Recommend";
 
 export default function Home() {
   const [selected, setSelected] = useState(null);
@@ -210,32 +211,18 @@ export default function Home() {
           <Box
             sx={{
               display: "grid",
-              width: "fit-content",
               gridTemplateColumns: {
                 xs: "1fr", // Single column on mobile
                 sm: "repeat(2, 1fr)", // Two columns on small screens
-                // md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
-                md:
-                  sortedForDisplay.length === 1
-                    ? "1fr"
-                    : sortedForDisplay.length === 2
-                      ? "repeat(2, 1fr)"
-                      : sortedForDisplay.length === 3
-                        ? "repeat(3, 1fr)"
-                        : sortedForDisplay.length === 4
-                          ? "repeat(4, 1fr)"
-                          : "repeat(5, 1fr)",
+                md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
               },
-              justifyItems: "center",
               // gridTemplateColumns: `repeat(${sortedForDisplay.length}, 1fr)`,
               justifyContent: "center",
               alignItems: "end",
-              // gap: { xs: 2, md: 6 },
-              gap: 1,
+              gap: { xs: 2, md: 6 },
               mt: 4,
               minHeight: { xs: "auto", md: 320 }, // Auto height on mobile
               px: { xs: 2, md: 0 },
-              flexWrap: "wrap",
             }}
           >
             {sortedForDisplay.map((art, idx) => {
@@ -279,7 +266,7 @@ export default function Home() {
                       justifyContent: "flex-end",
                       mx: { xs: "auto", md: 0 },
                     }}
-                    // onClick={() => setSelected(art)}
+                    onClick={() => setSelected(art)}
                   >
                     <CardMedia
                       component="img"
@@ -296,13 +283,24 @@ export default function Home() {
                       sx={{ textAlign: "center", width: "100%", pt: 2 }}
                     >
                       <Typography variant="subtitle2" color="text.secondary">
-                        {art.username}
+                        {art.user.first_name}
                       </Typography>
                       <Typography variant="body1" fontWeight={600}>
                         {art.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Likes: {art.like_counter}
+                      <Typography
+                        component="div"
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          gap: 1,
+                        }}
+                        variant="body2"
+                        color="text.secondary"
+                      >
+                        <RecommendIcon />
+                        {art.like_counter}
                       </Typography>
                     </CardContent>
                   </Card>
