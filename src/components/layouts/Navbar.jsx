@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const pages = [
   "home",
@@ -38,14 +39,24 @@ function Navbar() {
   const [alertMessage, setAlertMessage] = React.useState(null);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { user, isAuthenticated, logout, isLoading, token } = useAuth();
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (user) {
-  //     setUserInfo(user.user);
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    if (token && isAuthenticated) {
+      try {
+        const decodeToken = jwtDecode(token);
+        setIsAdmin(!!decodeToken.admin);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setIsAdmin(false);
+      }
+    } else {
+      // Reset admin status when not authenticated
+      setIsAdmin(false);
+    }
+  }, [token, isAuthenticated]);
 
   if (isLoading) {
     return (
@@ -60,6 +71,7 @@ function Navbar() {
     try {
       await logout();
       setAnchorElUser(null);
+      setIsAdmin(false);
       setAlertMessage("Logout Successfully!");
       setAlertOpen(true);
       setAlertSeverity("success");
@@ -95,6 +107,13 @@ function Navbar() {
     setAnchorElNav(null);
   };
 
+  const getPages = () => {
+    if (!isAuthenticated) {
+      return pages.slice(0, 4);
+    }
+    return isAdmin ? pages : pages.slice(0, 4);
+  };
+  const visiblePages = getPages();
   return (
     <>
       <AppBar>
@@ -147,7 +166,7 @@ function Navbar() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.slice(0, !user?.admin ? 4 : 5).map((page) => (
+              {visiblePages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography
                     color="primary"
@@ -166,7 +185,7 @@ function Navbar() {
             </Menu>
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.slice(0, !user?.admin ? 4 : 5).map((page) => (
+            {visiblePages.map((page) => (
               <Button
                 component={Link}
                 to={page === "home" ? "/" : page.replaceAll(" ", "-")}

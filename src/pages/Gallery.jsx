@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import formatDateForDisplay from "../util/date.jsx";
-import { Icon, Modal } from "@mui/material";
-import sampleImage from "../assets/images.jpeg";
+import { Modal } from "@mui/material";
 import { CssBaseline } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import UserCard from "../components/usercard/usercard.jsx";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -16,24 +16,34 @@ import {
   CardContent,
   Typography,
   Box,
+  Link,
+  Snackbar,
+  Alert,
   Stack,
   Button,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
+import { jwtDecode } from "jwt-decode";
 import { getData, postData, patchData, deleteData } from "../util";
 
 export default function Gallery() {
-  const { isAuthenticated } = useAuth();
   const [shownModal, setShownModal] = useState(false);
   const [selected, setSelected] = useState(null);
-  // TODO: Replace with actual authentication logic
-  const isLoggedIn = true; // Set to true to simulate logged-in user
   const [prompt, setPrompt] = useState(null);
   const [artworks, setArtworks] = useState([]);
 
+  const [authProcessed, setAuthProcessed] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
+
+  useEffect(() => {
+    handleGoogleAuthSuccess();
+  }, [authProcessed, navigate]);
 
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
@@ -44,6 +54,37 @@ export default function Gallery() {
       fetchAllArtWorks(p.id);
     }
   }, []);
+
+  const handleGoogleAuthSuccess = async () => {
+    const searchParams = new URLSearchParams(location.search);
+    const authStatus = searchParams.get("auth");
+    const token = searchParams.get("token");
+    const userDataParam = searchParams.get("userData");
+    if (authStatus === "success" && token && userDataParam && !authProcessed) {
+      setIsProcessing(true);
+      try {
+        // Decode tha user data from URL param
+        const userData = JSON.parse(decodeURIComponent(userDataParam));
+        console.log("google auth success detected");
+        console.log("token from google auth", token);
+        console.log("user data from google auth,", userData);
+
+        localStorage.setItem("token", token);
+        const userInfo = jwtDecode(token);
+
+        localStorage.setItem("user", JSON.stringify(userInfo));
+        console.log("user info", JSON.stringify(userInfo));
+        // Clean URL and reload to trigger auth context update
+        window.history.replaceState({}, document.title, "/gallery");
+        window.location.reload();
+      } catch (error) {
+        console.log(error);
+        window.history.replaceState({}, document.title, "/");
+      }
+      setAuthProcessed(true);
+      setIsProcessing(false);
+    }
+  };
 
   const fetchAllArtWorks = async (promptId) => {
     if (!promptId) return;
@@ -58,40 +99,6 @@ export default function Gallery() {
       console.error("Error fetching artworks:", error);
     }
   };
-
-  // Placeholder artwork data
-  const [artworks1] = useState([
-    { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
-    { id: 2, title: "Dreamscape", image: sampleImage, likes: 8 },
-    {
-      id: 3,
-      title: "Abstract Flow",
-      image: sampleImage,
-      likes: 3,
-      user: "Alex Lee",
-    },
-    {
-      id: 4,
-      title: "Ocean Waves",
-      image: sampleImage,
-      likes: 6,
-      user: "Sam Green",
-    },
-    {
-      id: 5,
-      title: "Nature Walk",
-      image: sampleImage,
-      likes: 2,
-      user: "Chris Blue",
-    },
-    {
-      id: 6,
-      title: "City Lights",
-      image: sampleImage,
-      likes: 9,
-      user: "Pat Red",
-    },
-  ]);
 
   return (
     <>
@@ -345,6 +352,20 @@ export default function Gallery() {
             )}
           </Box>
         </Modal>
+        <Snackbar
+          open={authProcessed}
+          autoHideDuration={6000}
+          onClose={() => setAuthProcessed(false)}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => setAuthProcessed(false)}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Successfully logged in with Google!
+          </Alert>
+        </Snackbar>
       </Container>
     </>
   );
