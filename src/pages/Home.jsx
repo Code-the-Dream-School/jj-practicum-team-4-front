@@ -121,7 +121,7 @@ export default function Home() {
             >
               Turn Art Block Into Art Magic
             </Typography>
-            <Typography variant="h6" align="center" sx={{ mb: 7 }}>
+            <Typography variant="h6" align="center" sx={{ mb: 3 }}>
               Discover fresh prompts every week. Share your creations. Get
               meaningful feedback. Build your artistic confidence.
             </Typography>
@@ -170,6 +170,7 @@ export default function Home() {
         <Box
           sx={{
             p: 4,
+            // bgcolor: "grey.100",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
