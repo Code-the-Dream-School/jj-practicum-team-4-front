@@ -355,6 +355,7 @@ export default function Gallery() {
                       sx={{ ml: 2, flexShrink: 0 }}>
                       Likes: {art.like_counter}
                     </Typography>
+                    {isAuthenticated && (
                     <IconButton
                         onClick={(e) => {
                            e.stopPropagation();
@@ -365,6 +366,7 @@ export default function Gallery() {
                       >
                         <DeleteIcon />
                       </IconButton>
+                    )}
                   {/* </Stack> */}
                   </Box>
                 </CardContent>
