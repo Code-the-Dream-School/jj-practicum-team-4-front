@@ -235,7 +235,7 @@ export default function Home() {
               justifyContent: "center",
               alignItems: "end",
               rowGap: { xs: 5, xl: 0 },
-              columnGap: { xl: 2, lg: 0 },
+              columnGap: { xl: 3, lg: 0 },
               mt: 4,
               minHeight: { xs: "auto", md: 320 }, // Auto height on mobile
               // px: { xs: 2, md: 0 },
@@ -248,12 +248,12 @@ export default function Home() {
                 boxShadow = 2;
               if (window.innerWidth >= 960) {
                 if (idx === centerIndex) {
-                  width = 330;
-                  height = 330;
+                  width = 310;
+                  height = 310;
                   boxShadow = 6;
                 } else if (idx === centerIndex - 1 || idx === centerIndex + 1) {
-                  width = 290;
-                  height = 290;
+                  width = 280;
+                  height = 280;
                   boxShadow = 4;
                 }
               }
