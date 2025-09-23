@@ -45,7 +45,6 @@ export default function BestOfArtwork() {
       if (!response) {
         throw new Error("Failed to fetch all prompt data");
       }
-
       setPrevPrompt(response?.items[0]);
     } catch (error) {
       console.log("Failed to fetch");
@@ -101,10 +100,11 @@ export default function BestOfArtwork() {
         <Typography
           variant="h6"
           align="center"
-          sx={{ mx: "auto", maxWidth: 600 }}
+          sx={{ mx: "auto", maxWidth: 700 }}
           color="text.secondary"
         >
-          Outstanding submissions that earned community recognition!
+          Top submissions from last week’s challenge, recognized by the
+          community!
         </Typography>
         <Divider sx={{ my: 12 }}>
           <Box>
