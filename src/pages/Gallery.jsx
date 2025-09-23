@@ -19,6 +19,11 @@ import {
   Stack,
   Button,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
@@ -26,8 +31,8 @@ import { getData, postData, patchData, deleteData } from "../util";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function Gallery() {
-  const { token } = useAuth();
-  const { isAuthenticated } = useAuth();
+  
+  const { token ,isAuthenticated } = useAuth();
   const [shownModal, setShownModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -35,6 +40,8 @@ export default function Gallery() {
   const isLoggedIn = true; // Set to true to simulate logged-in user
   const [prompt, setPrompt]= useState(null);
   const [artworks, setArtworks] = useState([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedArtworkId, setSelectedArtworkId] = useState(null);
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
@@ -42,10 +49,7 @@ export default function Gallery() {
  
   const DELETEARTWORK_URL = `${BASE_URL}/api/artwork`;
 
-  const handleDeleteClick = (artworkId) => {
-    deleteArtwork(artworkId);
-    //setDeleteConfirmOpen(true);
-  };
+  
   
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
@@ -74,17 +78,30 @@ export default function Gallery() {
   };
   const deleteArtwork = async (artworkId) => {
     try {
-      const response = await deleteData(`${DELETEARTWORK_URL}/${artworkId}`);
-      if(response.success){ 
-        console.log("Artwork deleted successfully");
-        // TODO fetch all artworks again to show the latest
-        fetchAllArtWorks(prompt.id);
-      } else {
-        console.error("Failed to delete artwork:", response.message);
-      }
+      await deleteData(`${DELETEARTWORK_URL}/${artworkId}`);
+      console.log("Artwork deleted successfully", artworkId);
+      // Refetch all artworks again to show the latest
+      fetchAllArtWorks(prompt.id);
     } catch (error) {
       console.error("Error deleting artwork:", error);
     }
+  };
+  const handleDeleteClick = (artworkId) => {
+    setSelectedArtworkId(artworkId);
+    setConfirmOpen(true);   // show dialog
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedArtworkId) {
+      await deleteArtwork(selectedArtworkId);
+    }
+    setConfirmOpen(false);
+    setSelectedArtworkId(null);
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setSelectedArtworkId(null);
   };
 
   // Placeholder artwork data
@@ -339,7 +356,10 @@ export default function Gallery() {
                       Likes: {art.like_counter}
                     </Typography>
                     <IconButton
-                        onClick={() => handleDeleteClick(art.id)}
+                        onClick={(e) => {
+                           e.stopPropagation();
+                          handleDeleteClick(art.id);
+                        }}
                         // sx={{ bgcolor: "#E6B6B6" }}
                         disabled={saving}
                       >
@@ -352,6 +372,20 @@ export default function Gallery() {
             </Grid>
           ))}
         </Grid>
+        <Dialog open={confirmOpen} onClose={handleCancelDelete}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this artwork? 
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete}>Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
         <Modal
           open={!!selected}
           aria-labelledby="modal-artwork-detail"
