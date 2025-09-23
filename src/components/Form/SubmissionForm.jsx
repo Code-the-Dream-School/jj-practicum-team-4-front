@@ -22,16 +22,21 @@ import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
 const mediaTypeOptions = [
-  "Tag1",
-  "Tag2",
-  "Tag3",
-  "Tag4",
-  "Tag5",
-  "Tag6",
-  "Tag7",
-  "Tag8",
-  "Tag9",
-  "Tag10",
+  "Oil Paint",
+  "Acrylic Paint",
+  "Watercolor",
+  "Digital Art",
+  "Pencil",
+  "Charcoal",
+  "Ink",
+  "Pastel",
+  "Mixed Media",
+  "Photography",
+  "Collage",
+  "Sculpture",
+  "Printmaking",
+  "Gouache",
+  "Marker",
 ];
 
 function SubmissionForm({
@@ -198,7 +203,7 @@ function SubmissionForm({
               id="demo-simple-select-standard"
               value={formData.media_tag}
               onChange={handleChange}
-              defaultValue="tag1"
+              defaultValue="digital art"
               name="media_tag"
               label="Media Type"
             >
@@ -238,17 +243,6 @@ function SubmissionForm({
         placeholder="Tell us about your artwork..."
         sx={{ mb: 2 }}
         helperText={!formData.description.trim() && "Required"}
-      />
-
-      <TextField
-        name="mediaLink"
-        size="small"
-        id="mediaLink"
-        label="Social Media Link (optional)"
-        fullWidth
-        onChange={handleChange}
-        value={formData.mediaLink}
-        sx={{ mb: 2 }}
       />
       <Box
         sx={{ display: "flex", justifyContent: "space-around", mt: 2, mb: 1 }}
