@@ -11,6 +11,7 @@ import {
   CardContent,
   Modal,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import hero4 from "../assets/hero4.jpeg";
@@ -57,7 +58,20 @@ export default function Home() {
     }
   };
 
-  if (!artworks) return "loading...";
+  if (!artworks) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center",
+          mt: 10,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   console.log(artworks);
   // Sort by likes and get top 5
@@ -214,30 +228,32 @@ export default function Home() {
               gridTemplateColumns: {
                 xs: "1fr", // Single column on mobile
                 sm: "repeat(2, 1fr)", // Two columns on small screens
-                md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
+                lg: "repeat(3, 1fr)",
+                xl: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
               },
               // gridTemplateColumns: `repeat(${sortedForDisplay.length}, 1fr)`,
               justifyContent: "center",
               alignItems: "end",
-              gap: { xs: 2, md: 6 },
+              rowGap: { xs: 5, xl: 0 },
+              columnGap: { xl: 2, lg: 0 },
               mt: 4,
               minHeight: { xs: "auto", md: 320 }, // Auto height on mobile
-              px: { xs: 2, md: 0 },
+              // px: { xs: 2, md: 0 },
             }}
           >
             {sortedForDisplay.map((art, idx) => {
               // Card sizes: center is largest, sides are smaller, but spacing is always equal
-              let width = 220,
-                height = 220,
+              let width = 265,
+                height = 265,
                 boxShadow = 2;
               if (window.innerWidth >= 960) {
                 if (idx === centerIndex) {
-                  width = 320;
-                  height = 320;
+                  width = 330;
+                  height = 330;
                   boxShadow = 6;
                 } else if (idx === centerIndex - 1 || idx === centerIndex + 1) {
-                  width = 260;
-                  height = 260;
+                  width = 290;
+                  height = 290;
                   boxShadow = 4;
                 }
               }
@@ -258,13 +274,17 @@ export default function Home() {
                       height: { xs: 280, md: height },
                       boxShadow: { xs: 3, md: boxShadow },
                       cursor: "pointer",
-                      transition: "box-shadow 0.3s cubic-bezier(.4,0,.2,1)",
+                      transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
                       bgcolor: "grey.200",
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "flex-end",
                       mx: { xs: "auto", md: 0 },
+                      "&:hover": {
+                        transform: "scale(1.08)",
+                        boxShadow: { xs: 8, md: boxShadow + 6 },
+                      },
                     }}
                     onClick={() => setSelected(art)}
                   >
@@ -274,20 +294,27 @@ export default function Home() {
                       alt={art.title}
                       sx={{
                         width: "100%",
-                        height: { xs: 180, md: height - 100 },
+                        height: "100%",
                         objectFit: "cover",
-                        borderRadius: 2,
+                        objectPosition: "center",
                       }}
                     />
                     <CardContent
-                      sx={{ textAlign: "center", width: "100%", pt: 2 }}
+                      sx={{
+                        height: "65px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
                     >
-                      <Typography variant="subtitle2" color="text.secondary">
-                        {art.user.first_name}
-                      </Typography>
-                      <Typography variant="body1" fontWeight={600}>
-                        {art.title}
-                      </Typography>
+                      <Box>
+                        <Typography variant="body1" fontWeight={600}>
+                          {art.title}
+                        </Typography>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          {art.user.first_name}
+                        </Typography>
+                      </Box>
                       <Typography
                         component="div"
                         sx={{
@@ -308,7 +335,7 @@ export default function Home() {
               );
             })}
           </Box>
-          {/* <Modal open={!!selected} onClose={() => setSelected(null)}>
+          <Modal open={!!selected} onClose={() => setSelected(null)}>
             <Box
               sx={{
                 display: "flex",
@@ -330,7 +357,7 @@ export default function Home() {
               >
                 {selected && (
                   <UserCard
-                    username={selected.username}
+                    user={selected.user}
                     title={selected.title}
                     description={selected.description}
                     image={selected.image_url}
@@ -340,7 +367,7 @@ export default function Home() {
                 )}
               </Box>
             </Box>
-          </Modal> */}
+          </Modal>
         </Box>
       </Container>
     </>
