@@ -10,6 +10,7 @@ import {
   CardMedia,
   CardContent,
   Modal,
+  Divider,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import hero4 from "../assets/hero4.jpeg";
@@ -17,6 +18,9 @@ import { CssBaseline } from "@mui/material";
 import sampleImage from "../assets/images.jpeg";
 import UserCard from "../components/usercard/usercard.jsx";
 import { getData } from "../util/index.js";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import WhatshotIcon from "@mui/icons-material/Whatshot";
+import Diversity3Icon from "@mui/icons-material/Diversity3";
 
 export default function Home() {
   const [selected, setSelected] = useState(null);
@@ -111,42 +115,18 @@ export default function Home() {
               variant="h2"
               align="left"
               fontWeight="bold"
-              sx={{ my: 3 }}
-              margin-bottom="10px"
+              sx={{ my: 3, mx: "auto" }}
               textAlign="center"
+              width="450px"
             >
               Turn Art Block Into Art Magic
             </Typography>
-            <Typography variant="h6" align="center" sx={{ mb: 3 }}>
+            <Typography variant="h6" align="center" sx={{ mb: 7 }}>
               Discover fresh prompts every week. Share your creations. Get
               meaningful feedback. Build your artistic confidence.
             </Typography>
             {/* challenge prompt display */}
-            {prompt && (
-              <Box
-                sx={{
-                  border: "1px dashed",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  borderRadius: 2,
-                  p: 1,
-                  mb: 5,
-                }}
-              >
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  textTransform="uppercase"
-                >
-                  {prompt.title}
-                </Typography>
-                <Typography variant="h6" fontWeight={600}>
-                  {formatDateForDisplay(prompt.startDate)} -{" "}
-                  {formatDateForDisplay(prompt.endDate)}
-                </Typography>
-              </Box>
-            )}
+
             <Stack
               direction="row"
               spacing={2}
@@ -154,10 +134,10 @@ export default function Home() {
               sx={{ mt: 2 }}
             >
               <Button variant="contained" component={Link} to="/sign-in">
-                join the community
+                join the community <Diversity3Icon />
               </Button>
               <Button variant="outlined" component={Link} to="/gallery">
-                Explore Weekly Artworks →
+                Explore Weekly Artworks <ArrowRightAltIcon />
               </Button>
             </Stack>
           </Box>
@@ -185,23 +165,50 @@ export default function Home() {
             />
           </Box>
         </Box>
-
+        <Divider />
         {/* Top Most Liked/Voted Artworks Section */}
         <Box
           sx={{
             p: 4,
-            bgcolor: "grey.100",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          <Typography variant="h3" align="center" gutterBottom>
-            Top Rated Artworks
+          {prompt && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                p: 1,
+              }}
+            >
+              <Typography
+                variant="h5"
+                fontWeight={600}
+                textTransform="uppercase"
+              >
+                {prompt.title}
+              </Typography>
+              <Typography variant="h6" fontWeight={600}>
+                {formatDateForDisplay(prompt.startDate)} -{" "}
+                {formatDateForDisplay(prompt.endDate)}
+              </Typography>
+            </Box>
+          )}
+          <Typography
+            component="div"
+            sx={{ display: "flex", alignItems: "center" }}
+            variant="h6"
+            align="left"
+            color="text.secondary"
+          >
+            Top Rated Artworks <WhatshotIcon sx={{ color: "orange" }} />
           </Typography>
 
           <Box
             sx={{
-              display: "flex",
+              display: "grid",
               width: "fit-content",
               gridTemplateColumns: {
                 xs: "1fr", // Single column on mobile
