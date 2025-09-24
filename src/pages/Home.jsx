@@ -136,7 +136,7 @@ export default function Home() {
             >
               Turn Art Block Into Art Magic
             </Typography>
-            <Typography variant="h6" align="center" sx={{ mb: 3 }}>
+            <Typography variant="h6" align="center" sx={{ mb: 7 }}>
               Discover fresh prompts every week. Share your creations. Get
               meaningful feedback. Build your artistic confidence.
             </Typography>
