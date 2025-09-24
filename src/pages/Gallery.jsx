@@ -35,6 +35,7 @@ export default function Gallery() {
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
+   const LIKE_URL = `${BASE_URL}/api/artwork/`;
   
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
@@ -46,6 +47,24 @@ export default function Gallery() {
     }
     
   }, []);
+
+  const updatedArtworkLikes = async(artworkId) => {
+    try {
+      const response = await getData(`${LIKE_URL}${artworkId}/likes`);
+      const newLikeCount = response.like_counter;
+      setArtworks((prev) =>
+        prev.map((artwork) => 
+           artwork.id === artworkId ?{...artwork, like_counter: newLikeCount} : artwork
+        )
+      );
+          
+          
+    } catch (error) {
+      console.error(
+        "Error updating like count for artwork:",
+        error);
+    }
+  }
 
   const fetchAllArtWorks = async (promptId) => {
   
@@ -336,7 +355,15 @@ export default function Gallery() {
                 description={selected.media_tag || selected.description}
                 image={selected.image_url}
                 isOpen={true}
-                onClose={() => setSelected(null)}
+                socialLink={selected.social_link}
+                artworkId={selected.id}
+                artwork={selected}
+                likes={selected.like_counter}
+                onLike={() => updatedArtworkLikes(selected.id)}
+                onClose={() => {
+                  updatedArtworkLikes(selected.id);
+                  setSelected(null);
+                }}
               />
             )}
           </Box>
