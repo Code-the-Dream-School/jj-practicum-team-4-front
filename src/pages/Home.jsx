@@ -185,7 +185,7 @@ export default function Home() {
         <Box
           sx={{
             p: 4,
-            // bgcolor: "grey.100",
+            maxWidth: "xl",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
