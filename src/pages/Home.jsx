@@ -122,7 +122,7 @@ export default function Home() {
               flex: { xs: "1 1 auto", md: "0 0 50%" },
               textAlign: { xs: "center", md: "left" },
               px: { xs: 2, md: 4 },
-              textAlign: "center",
+              // textAlign: "center",
               width: "100%",
             }}
           >
@@ -130,13 +130,21 @@ export default function Home() {
               variant="h2"
               align="left"
               fontWeight="bold"
-              sx={{ my: 3, mx: "auto" }}
-              textAlign="center"
-              width="450px"
+              sx={{
+                my: 3,
+                mx: { sm: "auto", md: "0px" },
+                textAlign: { xs: "center", md: "left" },
+              }}
+              // textAlign="center"
+              maxWidth="550px"
             >
               Turn Art Block Into Art Magic
             </Typography>
-            <Typography variant="h6" align="center" sx={{ mb: 7 }}>
+            <Typography
+              // variant="h6"
+              sx={{ mb: 7, typography: { xs: "body1", md: "h6" } }}
+              color="text.secondary"
+            >
               Discover fresh prompts every week. Share your creations. Get
               meaningful feedback. Build your artistic confidence.
             </Typography>
@@ -144,9 +152,11 @@ export default function Home() {
 
             <Stack
               direction="row"
-              spacing={2}
-              justifyContent="center"
-              sx={{ mt: 2 }}
+              gap={2}
+              sx={{
+                justifyContent: { xs: "center", md: "flex-start" },
+              }}
+              flexWrap="wrap"
             >
               <Button variant="contained" component={Link} to="/sign-in">
                 join the community <Diversity3Icon />
@@ -156,7 +166,7 @@ export default function Home() {
               </Button>
             </Stack>
           </Box>
-          <Box
+          {/* <Box
             sx={{
               flex: { xs: "0 0 auto", md: "0 0 45%" },
               display: "flex",
@@ -165,22 +175,22 @@ export default function Home() {
               mb: { xs: 3, md: 0 },
               order: { xs: 1, md: 2 },
             }}
-          >
-            <Box
-              component="img"
-              src={hero4}
-              alt="Artist painting illustration"
-              sx={{
-                width: "100%",
-                maxWidth: "400px",
-                height: "auto",
-                objectFit: "contain",
-                borderRadius: 2,
-              }}
-            />
-          </Box>
+          > */}
+          <Box
+            component="img"
+            src={hero4}
+            alt="Artist painting illustration"
+            sx={{
+              width: "100%",
+              maxWidth: "400px",
+              height: "auto",
+              objectFit: "contain",
+              // borderRadius: 2,
+            }}
+          />
         </Box>
-        <Divider />
+        {/* </Box> */}
+        <Divider sx={{ mt: { xs: 0, md: 5, lg: 0 } }} />
         {/* Top Most Liked/Voted Artworks Section */}
         <Box
           sx={{
