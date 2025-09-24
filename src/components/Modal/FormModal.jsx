@@ -47,6 +47,7 @@ function FormModal({ shownModal, setShownModal }) {
       })
       .replace(",", "");
   };
+
   const getWeeklyPrompt = async () => {
     setIsLoading(true);
     try {
