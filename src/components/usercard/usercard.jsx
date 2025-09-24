@@ -21,6 +21,8 @@ export default function UserCard({
   image,
   isOpen = true,
   onClose,
+  isLiked,
+  like_counter,
 }) {
   const [liked, setLiked] = useState(false);
 
@@ -138,14 +140,14 @@ export default function UserCard({
         <CenteredActions>
           <IconButton
             onClick={handleLike}
-            disabled={liked}
+            disabled={liked || isLiked}
             color={liked ? "primary" : "default"}
             sx={{ fontSize: "1.5rem" }}
           >
             <ThumbUpIcon sx={{ fontSize: "1.5rem" }} />
           </IconButton>
           <Typography variant="body2" sx={{ ml: 1 }}>
-            {liked ? "Liked!" : "Like"}
+            {liked || isLiked ? `${like_counter} Liked` : "Like"}
           </Typography>
         </CenteredActions>
       </StyledCard>
