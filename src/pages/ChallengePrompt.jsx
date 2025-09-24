@@ -27,10 +27,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { getData, postData, patchData, deleteData } from "../util";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const statusOptions = ["ACTIVE", "CLOSED"];
 
 export default function ChallengePrompts() {
+
+  const { token } = useAuth();
+
   const [prompts, setPrompts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -52,7 +56,7 @@ export default function ChallengePrompts() {
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
   const ALL_URL = `${BASE_URL}/api/prompt/all`;
-  const PROMPTS_URL = `${BASE_URL}/api/prompts`;
+  const PROMPTS_URL = `${BASE_URL}/api/prompts/`;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -96,7 +100,7 @@ export default function ChallengePrompts() {
           ? new Date(formData.endDate).toISOString()
           : null,
       },
-      is_active: formData.status === "ACTIVE",
+      // is_active: formData.status === "ACTIVE",
     };
   };
 
@@ -215,7 +219,12 @@ export default function ChallengePrompts() {
         }
         // setEditingId(null);
       } else {
-        const response = await postData(PROMPTS_URL, apiData);
+        const response = await postData(PROMPTS_URL, apiData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
         console.log("Create response:", response);
 
         if (response?.success && response?.prompt) {
