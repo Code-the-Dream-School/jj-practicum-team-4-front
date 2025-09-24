@@ -301,6 +301,7 @@ export default function Gallery() {
                 image={selected.image_url}
                 isOpen={true}
                 onClose={() => setSelected(null)}
+                like_counter={selected.like_counter}
               />
             )}
           </Box>

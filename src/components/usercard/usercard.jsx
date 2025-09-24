@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Typography, IconButton } from "@mui/material";
+import { Typography, IconButton, selectClasses } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CloseIcon from "@mui/icons-material/Close";
 import sampleImage from "../../assets/images.jpeg";
@@ -12,6 +12,7 @@ import {
   PlaceholderBox,
   CenteredActions,
 } from "./UserCard.styles";
+import { postData } from "../../util";
 
 export default function UserCard({
   user,
@@ -26,7 +27,12 @@ export default function UserCard({
 }) {
   const [liked, setLiked] = useState(false);
 
-  const handleLike = () => setLiked(true); // disable after one click
+  const BASE_URL = import.meta.env.VITE_API_URL;
+  const handleLike = async () => {
+    setLiked(true);
+    // START FROM HERE SET :id
+    // const response = await postData(`${BASE_URL}/api/artwork/${}`)
+  };
   const handleClose = () => onClose(); // Notify parent
 
   const getSocialUrl = (link) => {
@@ -147,7 +153,7 @@ export default function UserCard({
             <ThumbUpIcon sx={{ fontSize: "1.5rem" }} />
           </IconButton>
           <Typography variant="body2" sx={{ ml: 1 }}>
-            {liked || isLiked ? `${like_counter} Liked` : "Like"}
+            {like_counter}
           </Typography>
         </CenteredActions>
       </StyledCard>
