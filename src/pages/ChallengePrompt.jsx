@@ -51,7 +51,7 @@ export default function ChallengePrompts() {
   // const URL = `${import.meta.env.VITE_API_URL}prompts/active`;
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
-  const ALL_URL = `${BASE_URL}/api/prompt/all`;
+  const ALL_URL = `${BASE_URL}/api/prompts/all`;
   const PROMPTS_URL = `${BASE_URL}/api/prompts`;
 
   const handleChange = (e) => {
@@ -145,7 +145,7 @@ export default function ChallengePrompts() {
       const response = await getData(ALL_URL);
       console.log("All prompts response:", response);
 
-      if (response?.success && response?.items) {
+      if (response && response?.items) {
         const formatted = response.items.map(formatPromptFromAPI);
         setPrompts(formatted);
       } else {
