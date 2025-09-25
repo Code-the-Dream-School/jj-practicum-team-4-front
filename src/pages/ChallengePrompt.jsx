@@ -284,12 +284,12 @@ export default function ChallengePrompts() {
     setError(null);
     try {
       // setError(null);
-      const response = await deleteData(`${PROMPTS_URL}/${promptToDelete.id}`);
+      const response = await deleteData(`${PROMPTS_URL}/${promptToDelete}`);
       console.log("Delete response:", response);
 
       if (response?.success) {
         showSuccess("Challenge prompt deleted successfully!");
-        setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete.id));
+        setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete));
       } else {
         showError(response?.message || "Failed to delete challenge prompt");
       }
