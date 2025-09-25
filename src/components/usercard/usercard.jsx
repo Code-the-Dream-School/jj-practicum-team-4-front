@@ -29,6 +29,8 @@ export default function UserCard({
   const handleLike = () => setLiked(true); // disable after one click
   const handleClose = () => onClose(); // Notify parent
 
+ 
+
   const getSocialUrl = (link) => {
     if (!link) return null;
     if (link.startsWith("http")) {
@@ -88,12 +90,11 @@ export default function UserCard({
             sx={{
               fontWeight: 500,
               lineHeight: 1.3,
-              textAlign: "center !important",
-              fontWeight: 500,
-              width: "100%",
-              margin: "0 auto",
-            }}
-          >
+              textAlign: 'center !important',
+              width: '100%',
+              margin: '0 auto',
+            }}>
+
             {title}
           </Typography>
           <Typography

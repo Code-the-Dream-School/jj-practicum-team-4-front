@@ -21,17 +21,33 @@ import {
   Alert,
   Stack,
   Button,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
 import { jwtDecode } from "jwt-decode";
 import { getData, postData, patchData, deleteData } from "../util";
 
+import DeleteIcon from "@mui/icons-material/Delete";
+
 export default function Gallery() {
+  
+  const { token ,isAuthenticated } = useAuth();
+  
   const [shownModal, setShownModal] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [selected, setSelected] = useState(null);
   const [prompt, setPrompt] = useState(null);
   const [artworks, setArtworks] = useState([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedArtworkId, setSelectedArtworkId] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const [authProcessed, setAuthProcessed] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -40,6 +56,10 @@ export default function Gallery() {
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
+
+
+ 
+  const DELETEARTWORK_URL = `${BASE_URL}/api/artwork`;
 
   useEffect(() => {
     handleGoogleAuthSuccess();
@@ -99,6 +119,69 @@ export default function Gallery() {
       console.error("Error fetching artworks:", error);
     }
   };
+
+  const deleteArtwork = async (artworkId) => {
+    try {
+      await deleteData(`${DELETEARTWORK_URL}/${artworkId}`);
+      console.log("Artwork deleted successfully", artworkId);
+      // Refetch all artworks again to show the latest
+      fetchAllArtWorks(prompt.id);
+    } catch (error) {
+      console.error("Error deleting artwork:", error);
+    }
+  };
+  const handleDeleteClick = (artworkId) => {
+    setSelectedArtworkId(artworkId);
+    setConfirmOpen(true);   // show dialog
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedArtworkId) {
+      await deleteArtwork(selectedArtworkId);
+    }
+    setConfirmOpen(false);
+    setSelectedArtworkId(null);
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setSelectedArtworkId(null);
+  };
+
+  // Placeholder artwork data
+  const [artworks1] = useState([
+    { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
+    { id: 2, title: "Dreamscape", image: sampleImage, likes: 8 },
+    {
+      id: 3,
+      title: "Abstract Flow",
+      image: sampleImage,
+      likes: 3,
+      user: "Alex Lee",
+    },
+    {
+      id: 4,
+      title: "Ocean Waves",
+      image: sampleImage,
+      likes: 6,
+      user: "Sam Green",
+    },
+    {
+      id: 5,
+      title: "Nature Walk",
+      image: sampleImage,
+      likes: 2,
+      user: "Chris Blue",
+    },
+    {
+      id: 6,
+      title: "City Lights",
+      image: sampleImage,
+      likes: 9,
+      user: "Pat Red",
+    },
+  ]);
+
 
   return (
     <>
@@ -263,8 +346,9 @@ export default function Gallery() {
           sx={{ width: "100%" }}
         >
           {artworks.map((art) => (
+            
             <Grid
-              item
+              // item
               xs={12}
               sm={6}
               md={4}
@@ -338,19 +422,48 @@ export default function Gallery() {
                         minWidth: 0, // Important for text truncation
                         fontSize: "1.1rem",
                         fontWeight: 700,
-                      }}
-                    >
-                      {art.title}
-                    </Typography>
-                    <Typography variant="body2" sx={{ ml: 2, flexShrink: 0 }}>
+
+                        }}>
+                       {art.title}</Typography>
+                    {/* <Stack direction="row" spacing={1}> */}
+                    <Typography variant="body2" 
+                      sx={{ ml: 2, flexShrink: 0 }}>
+
                       Likes: {art.like_counter}
                     </Typography>
+                    {(user?.is_admin || user?.id === art.user.id) && (
+                    <IconButton
+                        onClick={(e) => {
+                           e.stopPropagation();
+                          handleDeleteClick(art.id);
+                        }}
+                        // sx={{ bgcolor: "#E6B6B6" }}
+                        disabled={saving}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  {/* </Stack> */}
                   </Box>
                 </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
+        <Dialog open={confirmOpen} onClose={handleCancelDelete}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this artwork? 
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete}>Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
         <Modal
           open={!!selected}
           aria-labelledby="modal-artwork-detail"
