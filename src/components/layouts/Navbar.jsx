@@ -75,29 +75,27 @@ function Navbar() {
   return (
     <>
       <AppBar>
-        <Toolbar disableGutters sx={{ mx: 3 }}>
-          <AdbIcon sx={{ display: "flex", mr: 1, order: { xs: 1, md: 0 } }} />
-          <Typography
-            variant="h6"
-            noWrap
+        <Toolbar
+          disableGutters
+          sx={{ mx: 3, justifyContent: { xs: "space-between" } }}
+        >
+          <Box
             component="a"
             href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "flex" },
-              flexGrow: { xs: 1, md: 0 },
-              order: { xs: 2, md: 0 },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
+            sx={{ pt: 1, mr: 1, order: { xs: 1, md: 0 } }}
           >
-            ARTHIVE
-          </Typography>
+            <Box
+              component="img"
+              src="images\aRTHIVE\2.png"
+              alt="Arthive Logo"
+              sx={{
+                height: "55px",
+                width: "auto",
+              }}
+            />
+          </Box>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"

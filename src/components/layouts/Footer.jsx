@@ -14,7 +14,6 @@ function Footer() {
         pt: 4,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-end",
       }}
     >
       <Box
@@ -26,66 +25,59 @@ function Footer() {
           gap: 1,
         }}
       >
+        <Box component="a" href="/">
+          <Box
+            component="img"
+            src="images\aRTHIVE\2.png"
+            alt="Arthive Logo"
+            sx={{
+              mr: 1,
+              width: "100px",
+            }}
+          />
+        </Box>
+        <Divider sx={{ borderColor: "white" }} />
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
+            gap: 2,
+            justifyContent: "space-between",
+            pt: 3,
+            flexWrap: "wrap",
           }}
         >
-          <AdbIcon />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: "flex",
-              flexGrow: 0,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            ARTHIVE
+          <Typography variant="body1" color="white" sx={{ pr: 5 }}>
+            &copy; 2025 CTD - jjj Team 4. All rights reserved.
           </Typography>
-        </Box>
-        <Typography variant="body2" color="white">
-          &copy; 2025 CTD - jjj Team 4. All rights reserved.
-        </Typography>
-        <Divider sx={{ borderColor: "white" }} />
-        <Box
-          sx={{ display: "flex", gap: 2, justifyContent: "flex-end", pt: 3 }}
-        >
-          <Typography
-            variant="body2"
-            color="grey.50"
-            sx={{ textDecoration: "none" }}
-            component={Link}
-            to="#"
-          >
-            Privacy Policy
-          </Typography>
-          <Typography
-            variant="body2"
-            color="grey.50"
-            sx={{ textDecoration: "none" }}
-            component={Link}
-            to="#"
-          >
-            Terms of Service
-          </Typography>
-          <Typography
-            variant="body2"
-            color="grey.50"
-            sx={{ textDecoration: "none" }}
-            component={Link}
-            to="#"
-          >
-            Cookie Policy
-          </Typography>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Typography
+              variant="body2"
+              color="#dadada"
+              sx={{ textDecoration: "none" }}
+              component={Link}
+              to="#"
+            >
+              Privacy Policy
+            </Typography>
+            <Typography
+              variant="body2"
+              color="#dadada"
+              sx={{ textDecoration: "none" }}
+              component={Link}
+              to="#"
+            >
+              Terms of Service
+            </Typography>
+            <Typography
+              variant="body2"
+              color="#dadada"
+              sx={{ textDecoration: "none" }}
+              component={Link}
+              to="#"
+            >
+              Cookie Policy
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Box>
