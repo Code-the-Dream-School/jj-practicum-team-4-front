@@ -15,6 +15,7 @@ import {
   Avatar,
   Snackbar,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
@@ -25,14 +26,13 @@ function AuthForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, loginWithGoogle } = useAuth();
 
   const handleAuthChange = (e) => {
     const { value, name } = e.target;
@@ -45,7 +45,6 @@ function AuthForm() {
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
-    console.log(`submitted - email: ${email}, password: ${password}`);
     setAlertMessage("");
     setAlertOpen(false);
 
@@ -54,17 +53,28 @@ function AuthForm() {
       setAlertOpen(true);
       setAlertSeverity("success");
       setAlertMessage("Login successful!");
-      console.log("login success:");
 
       // redirect to home page
       setTimeout(() => navigate("/gallery"), 1500);
-    } catch (err) {
+    } catch (error) {
+      console.log(error);
       setAlertMessage("Invalid email or password");
       setAlertOpen(true);
     }
   };
 
-  const handleGoogleLogin = () => {};
+  const handleGoogleLogin = () => {
+    console.log("logging with Google auth");
+    setAlertMessage("");
+    setAlertOpen(false);
+    try {
+      loginWithGoogle();
+    } catch (error) {
+      setAlertMessage("Failed to connect to Google authentication");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+    }
+  };
 
   return (
     <>
@@ -161,12 +171,13 @@ function AuthForm() {
               size="large"
               sx={{ textTransform: "capitalize", mt: 3 }}
             >
-              {isLoading ? "Logging in..." : "sign in"}
+              {isLoading ? <CircularProgress /> : "sign in"}
             </Button>
           </Box>
           <Divider sx={{ color: "grey" }}>or</Divider>
           <Box sx={{ mt: 5, justifySelf: "center", width: "100%" }}>
             <Button
+              disabled={isLoading}
               variant="outlined"
               sx={{
                 py: 1.5,
@@ -176,27 +187,29 @@ function AuthForm() {
               }}
               onClick={handleGoogleLogin}
             >
-              <Avatar
-                alt="Google Icon"
-                src="src/assets/images/googleIcon.png"
-                sx={{ width: 24, height: 24, mr: 1 }}
-              />
-              Continue with Google
+              {isLoading ? (
+                <CircularProgress />
+              ) : (
+                <>
+                  <Avatar
+                    alt="Google Icon"
+                    src="src/assets/images/googleIcon.png"
+                    sx={{ width: 24, height: 24, mr: 1 }}
+                  />
+                  Continue with Google
+                </>
+              )}
             </Button>
           </Box>
         </Container>
       </Box>
       <Snackbar
         open={alertOpen}
-        autoHideDuration={6000}
-        // onClose={handleCloseAlert}
+        autoHideDuration={5000}
+        onClose={() => setAlertOpen(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert
-          // onClose={handleCloseAlert}
-          severity={alertSeverity}
-          sx={{ width: "100%" }}
-        >
+        <Alert severity={alertSeverity} sx={{ width: "100%" }}>
           {alertMessage}
         </Alert>
       </Snackbar>
