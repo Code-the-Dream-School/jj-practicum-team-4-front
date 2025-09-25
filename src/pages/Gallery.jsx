@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import formatDateForDisplay from "../util/date.jsx";
-import { Icon, Modal } from "@mui/material";
-import sampleImage from "../assets/images.jpeg";
+import { Modal } from "@mui/material";
 import { CssBaseline } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import UserCard from "../components/usercard/usercard.jsx";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -16,28 +16,38 @@ import {
   CardContent,
   Typography,
   Box,
+  Link,
+  Snackbar,
+  Alert,
   Stack,
   Button,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
+import { jwtDecode } from "jwt-decode";
 import { getData, postData, patchData, deleteData } from "../util";
 
-const currentUser = JSON.parse(localStorage.getItem("user"));
+const token = localStorage.getItem("token");
 
 export default function Gallery() {
-  const { isAuthenticated } = useAuth();
   const [shownModal, setShownModal] = useState(false);
   const [selected, setSelected] = useState(null);
-  // TODO: Replace with actual authentication logic
-  const isLoggedIn = true; // Set to true to simulate logged-in user
-  const [prompt, setPrompt]= useState(null);
+  const [prompt, setPrompt] = useState(null);
   const [artworks, setArtworks] = useState([]);
+
+  const [authProcessed, setAuthProcessed] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
    const LIKE_URL = `${BASE_URL}/api/artwork/`;
-  
+
+  useEffect(() => {
+    handleGoogleAuthSuccess();
+  }, [authProcessed, navigate]);
+
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
     if (storedPrompt) {
@@ -46,14 +56,44 @@ export default function Gallery() {
       // Fetch artworks when component mounts
       fetchAllArtWorks(p.id);
     }
-    
   }, []);
+
+  const handleGoogleAuthSuccess = async () => {
+    const searchParams = new URLSearchParams(location.search);
+    const authStatus = searchParams.get("auth");
+    const token = searchParams.get("token");
+    const userDataParam = searchParams.get("userData");
+    if (authStatus === "success" && token && userDataParam && !authProcessed) {
+      setIsProcessing(true);
+      try {
+        // Decode tha user data from URL param
+        const userData = JSON.parse(decodeURIComponent(userDataParam));
+        console.log("google auth success detected");
+        console.log("token from google auth", token);
+        console.log("user data from google auth,", userData);
+
+        localStorage.setItem("token", token);
+        const userInfo = jwtDecode(token);
+
+        localStorage.setItem("user", JSON.stringify(userInfo));
+        console.log("user info", JSON.stringify(userInfo));
+        // Clean URL and reload to trigger auth context update
+        window.history.replaceState({}, document.title, "/gallery");
+        window.location.reload();
+      } catch (error) {
+        console.log(error);
+        window.history.replaceState({}, document.title, "/");
+      }
+      setAuthProcessed(true);
+      setIsProcessing(false);
+    }
+  };
 
   const updatedArtworkLikes = async(artworkId) => {
     try {
       const response = await getData(`${LIKE_URL}${artworkId}/likes`, {
          headers: {
-            Authorization: `Bearer ${currentUser.token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
       });
@@ -71,7 +111,6 @@ export default function Gallery() {
   }
 
   const fetchAllArtWorks = async (promptId) => {
-  
     if (!promptId) return;
     try {
       const response = await getData(ARTWORK_URL.replace(":id", promptId));
@@ -83,9 +122,7 @@ export default function Gallery() {
     } catch (error) {
       console.error("Error fetching artworks:", error);
     }
-  }
-
-
+  };
 
   return (
     <>
@@ -113,7 +150,10 @@ export default function Gallery() {
               fontWeight={600}
               sx={{ mb: 3, color: "#34495e" }}
             >
-              DURATION {prompt ? `: ${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}` : ""}
+              DURATION{" "}
+              {prompt
+                ? `: ${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}`
+                : ""}
             </Typography>
             <Typography
               variant="h5"
@@ -121,7 +161,7 @@ export default function Gallery() {
               fontWeight={600}
               sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
             >
-             DESCRIPTION {prompt ? `: ${prompt.description}` : ""}
+              DESCRIPTION {prompt ? `: ${prompt.description}` : ""}
             </Typography>
             <Typography
               variant="h5"
@@ -129,7 +169,7 @@ export default function Gallery() {
               fontWeight={600}
               sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
             >
-             RULES {prompt ? `: ${prompt.rules}` : ""}
+              RULES {prompt ? `: ${prompt.rules}` : ""}
             </Typography>
             <Stack
               direction="row"
@@ -218,7 +258,7 @@ export default function Gallery() {
         </Box>
         <Grid
           container
-           spacing={4}
+          spacing={4}
           // spacing={2}
           // alignItems="stretch"
           justifyContent="center"
@@ -233,42 +273,44 @@ export default function Gallery() {
               key={art.id}
               sx={{ display: "flex", justifyContent: "center" }}
             >
-              <Card onClick={() => setSelected(art)}
+              <Card
+                onClick={() => setSelected(art)}
                 sx={{
-                    width: "320px !important",        
-                    height: "300px !important",       
-                    maxWidth: "320px !important",
-                    minWidth: "320px !important", 
-                    maxHeight: "300px !important",
-                    minHeight: "300px !important",
-                    display: "flex",
-                    flexDirection: "column",
-                    cursor: "pointer",
-                    borderRadius: 2,
-                    boxShadow: 3,
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                    overflow: "hidden",
-                    "&:hover": {
+                  width: "320px !important",
+                  height: "300px !important",
+                  maxWidth: "320px !important",
+                  minWidth: "320px !important",
+                  maxHeight: "300px !important",
+                  minHeight: "300px !important",
+                  display: "flex",
+                  flexDirection: "column",
+                  cursor: "pointer",
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  overflow: "hidden",
+                  "&:hover": {
                     transform: "translateY(-4px) scale(1.02)",
                     boxShadow: 6,
-                    },
-                  }}>
+                  },
+                }}
+              >
                 <CardMedia
                   component="img"
                   // height="200"
                   image={art.image_url}
                   alt={art.title}
                   sx={{
-                      height: "200px !important",      
-                      minHeight: "200px !important",
-                      maxHeight: "200px !important",
-                      objectFit: "cover",
-                      flexShrink: 0,
-                     }}
+                    height: "200px !important",
+                    minHeight: "200px !important",
+                    maxHeight: "200px !important",
+                    objectFit: "cover",
+                    flexShrink: 0,
+                  }}
                 />
-                <CardContent 
-                sx={{
-                    height: "100px !important",      
+                <CardContent
+                  sx={{
+                    height: "100px !important",
                     minHeight: "100px !important",
                     maxHeight: "100px !important",
                     display: "flex",
@@ -277,19 +319,20 @@ export default function Gallery() {
                     flexShrink: 0,
                     overflow: "hidden",
                     padding: "16px !important",
-                   }}>
+                  }}
+                >
                   <Box
                     display="flex"
                     alignItems="center"
                     justifyContent="space-between"
-                    sx={{ 
-                       height: "100%",
-                       width: "100%"
-                       }}
-
-                  >
-                    <Typography variant="h6" 
                     sx={{
+                      height: "100%",
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -297,10 +340,11 @@ export default function Gallery() {
                         minWidth: 0, // Important for text truncation
                         fontSize: "1.1rem",
                         fontWeight: 700,
-                        }}>
-                       {art.title}</Typography>
-                    <Typography variant="body2" 
-                      sx={{ ml: 2, flexShrink: 0 }}>
+                      }}
+                    >
+                      {art.title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ ml: 2, flexShrink: 0 }}>
                       Likes: {art.like_counter}
                     </Typography>
                   </Box>
@@ -340,6 +384,20 @@ export default function Gallery() {
             )}
           </Box>
         </Modal>
+        <Snackbar
+          open={authProcessed}
+          autoHideDuration={6000}
+          onClose={() => setAuthProcessed(false)}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => setAuthProcessed(false)}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Successfully logged in with Google!
+          </Alert>
+        </Snackbar>
       </Container>
     </>
   );
