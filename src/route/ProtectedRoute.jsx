@@ -18,7 +18,7 @@ function ProtectedRoute() {
       const validateToken = async () => {
         setValidatingToken(true);
         try {
-          await authService.checkAuth();
+          await authService.verifyToken();
           setValidatingToken(false);
         } catch (error) {
           console.error("Token validation failed:", error);
