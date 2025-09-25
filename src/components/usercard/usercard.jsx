@@ -83,6 +83,8 @@ export default function UserCard({
 
   const handleClose = () => onClose(); // Notify parent
 
+ 
+
   const getSocialUrl = (link) => {
     if (!link) return null;
     if (link.startsWith("http")) {
@@ -147,7 +149,6 @@ export default function UserCard({
               margin: "0 auto",
             }}
           >
-              
             {title}
           </Typography>
           <Typography
