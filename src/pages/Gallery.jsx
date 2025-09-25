@@ -43,6 +43,8 @@ export default function Gallery() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedArtworkId, setSelectedArtworkId] = useState(null);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
 
@@ -276,6 +278,7 @@ export default function Gallery() {
           sx={{ width: "100%" }}
         >
           {artworks.map((art) => (
+            
             <Grid
               // item
               xs={12}
@@ -355,7 +358,7 @@ export default function Gallery() {
                       sx={{ ml: 2, flexShrink: 0 }}>
                       Likes: {art.like_counter}
                     </Typography>
-                    {isAuthenticated && (
+                    {(user?.is_admin || user?.id === art.user.id) && (
                     <IconButton
                         onClick={(e) => {
                            e.stopPropagation();

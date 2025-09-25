@@ -28,6 +28,8 @@ export default function UserCard({
   const handleLike = () => setLiked(true); // disable after one click
   const handleClose = () => onClose(); // Notify parent
 
+ 
+
   const getSocialUrl = (link) => {
      if (!link) 
       return null;
