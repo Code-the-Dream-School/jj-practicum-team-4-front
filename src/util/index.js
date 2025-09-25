@@ -99,7 +99,6 @@ const isEmpty = (value) => {
     (typeof value === "string" && value.trim() === "")
   );
 };
-
 const isFileValid = (file) => {
   if (!file.type.startsWith("image/")) {
     return { error: "please select an image file" };

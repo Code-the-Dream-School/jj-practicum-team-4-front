@@ -51,7 +51,7 @@ export default function ChallengePrompts() {
   // const URL = `${import.meta.env.VITE_API_URL}prompts/active`;
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
-  const ALL_URL = `${BASE_URL}/api/prompt/all`;
+  const ALL_URL = `${BASE_URL}/api/prompts/all`;
   const PROMPTS_URL = `${BASE_URL}/api/prompts`;
 
   const handleChange = (e) => {
@@ -68,9 +68,8 @@ export default function ChallengePrompts() {
     if (!dateString) return "";
 
     const date = new Date(dateString + "T00:00:00");
-    return date.toLocaleDateString('en-US');
+    return date.toLocaleDateString("en-US");
     // return dateString;
-
   };
   const showSuccess = (message) => {
     setSuccess(message);
@@ -102,8 +101,11 @@ export default function ChallengePrompts() {
 
   const formatPromptFromAPI = (p, c) => {
     return {
+      id: p._id,
+      title: p.title || p.challenge?.title,
+      // title: p.title.replace(" (overwrite)", ""),
       id: p.id,
-      title: p.title, 
+      title: p.title,
       description: p.description,
       rules: p.rule || p.rules || "",
       startDate: formatDate(c.start_date || p.challenge?.start_date),
@@ -122,7 +124,10 @@ export default function ChallengePrompts() {
       console.log("API response:", response);
 
       if (response && response?.prompt && response?.challenge) {
-        const formatted = formatPromptFromAPI(response.prompt, response.challenge);
+        const formatted = formatPromptFromAPI(
+          response.prompt,
+          response.challenge
+        );
         setPrompts([formatted]);
         localStorage.setItem("activePrompt", JSON.stringify(formatted));
       } else {
@@ -145,7 +150,7 @@ export default function ChallengePrompts() {
       const response = await getData(ALL_URL);
       console.log("All prompts response:", response);
 
-      if (response?.success && response?.items) {
+      if (response && response?.items) {
         const formatted = response.items.map(formatPromptFromAPI);
         setPrompts(formatted);
       } else {

@@ -1,23 +1,12 @@
 // Authentication reducer to handle state transitions for auth-related actions
 const authReducer = (state, action) => {
   switch (action.type) {
-    case "AUTH_LOADING":
-      return {
-        ...state,
-        isLoading: true,
-      };
-    case "AUTH_CHECK_COMPLETE":
-      return {
-        ...state,
-        isLoading: false,
-      };
     case "LOGIN_REQUEST":
       return {
         ...state,
         isLoading: true,
         error: null,
       };
-
     case "LOGIN_SUCCESS":
       return {
         ...state,
@@ -54,12 +43,15 @@ const authReducer = (state, action) => {
         error: null,
       };
 
-    case "UPDATE_TOKEN":
+    case "SESSION_EXPIRED":
       return {
         ...state,
-        token: action.payload,
+        isAuthenticated: false,
+        isLoading: false,
+        user: null,
+        token: null,
+        error: "Your session has expired. Please login again.",
       };
-
     default:
       return state;
   }
