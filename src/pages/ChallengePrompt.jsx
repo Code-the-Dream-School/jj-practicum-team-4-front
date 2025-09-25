@@ -68,9 +68,8 @@ export default function ChallengePrompts() {
     if (!dateString) return "";
 
     const date = new Date(dateString + "T00:00:00");
-    return date.toLocaleDateString('en-US');
+    return date.toLocaleDateString("en-US");
     // return dateString;
-
   };
   const showSuccess = (message) => {
     setSuccess(message);
@@ -102,8 +101,11 @@ export default function ChallengePrompts() {
 
   const formatPromptFromAPI = (p, c) => {
     return {
+      id: p._id,
+      title: p.title || p.challenge?.title,
+      // title: p.title.replace(" (overwrite)", ""),
       id: p.id,
-      title: p.title, 
+      title: p.title,
       description: p.description,
       rules: p.rule || p.rules || "",
       startDate: formatDate(c.start_date || p.challenge?.start_date),
@@ -122,7 +124,10 @@ export default function ChallengePrompts() {
       console.log("API response:", response);
 
       if (response && response?.prompt && response?.challenge) {
-        const formatted = formatPromptFromAPI(response.prompt, response.challenge);
+        const formatted = formatPromptFromAPI(
+          response.prompt,
+          response.challenge
+        );
         setPrompts([formatted]);
         localStorage.setItem("activePrompt", JSON.stringify(formatted));
       } else {
