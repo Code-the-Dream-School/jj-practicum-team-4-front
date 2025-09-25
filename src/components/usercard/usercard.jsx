@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { Typography, IconButton } from "@mui/material";
+
+import React, { useState, useEffect } from "react";
+import {Typography, IconButton } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CloseIcon from "@mui/icons-material/Close";
 import sampleImage from "../../assets/images.jpeg";
+import { getData, postData, deleteData } from "../../util";
 
 import {
   StyledBox,
@@ -20,13 +22,65 @@ export default function UserCard({
   socialLink,
   image,
   isOpen = true,
-  onClose,
-  isLiked,
-  like_counter,
+  artworkId,
+  likes = 0,
+  onLike,
+  onClose ,
 }) {
   const [liked, setLiked] = useState(false);
+  const BASE_URL = import.meta.env.VITE_API_URL;
+  const LIKE_URL = `${BASE_URL}/api/artwork/`;
 
-  const handleLike = () => setLiked(true); // disable after one click
+  const token = localStorage.getItem("token");
+  // const isOwnArtwork = user?.id === currentUser?.id;
+
+  useEffect(() => {
+    checkUserLiked();
+  }, [artworkId]);
+
+  const checkUserLiked = async () => {
+    if (!artworkId) return;
+    try {
+      const response = await getData(`${LIKE_URL}${artworkId}/likes`,  {
+         headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+      });
+      // Assume response.likes contains array of users who liked
+      const hasLiked = response?.liked_by_me;
+      setLiked(hasLiked);
+    } catch (err) {
+      console.error("Error checking if user liked:", err);
+    }
+  };
+
+   const handleLike = async () => {
+    if (!artworkId ) return;
+    try {
+      if (!liked) {
+        // Like artwork
+        await postData(`${LIKE_URL}${artworkId}/likes`, {}, {
+          headers: { Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json", },
+        });
+        setLiked(true);
+      } else {
+        // Dislike artwork (remove like)
+        await deleteData(`${LIKE_URL}${artworkId}/likes`, {
+           headers: { Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json", },
+        });
+        setLiked(false);
+      }
+        if (onLike) 
+          onLike();
+        
+    }catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+
   const handleClose = () => onClose(); // Notify parent
 
  
@@ -73,8 +127,8 @@ export default function UserCard({
             variant="h4"
             component="div"
             sx={{
-              fontWeight: 700,
-              lineHeight: 1.2,
+              fontWeight: 500,
+              lineHeight: 1.3,
               textAlign: "center !important",
               color: "text.primary",
               width: "100%",
@@ -90,11 +144,11 @@ export default function UserCard({
             sx={{
               fontWeight: 500,
               lineHeight: 1.3,
-              textAlign: 'center !important',
-              width: '100%',
-              margin: '0 auto',
-            }}>
-
+              textAlign: "center !important",
+              width: "100%",
+              margin: "0 auto",
+            }}
+          >
             {title}
           </Typography>
           <Typography
@@ -140,15 +194,14 @@ export default function UserCard({
         {/* Like button */}
         <CenteredActions>
           <IconButton
-            onClick={handleLike}
-            disabled={liked || isLiked}
+             onClick={handleLike}
             color={liked ? "primary" : "default"}
             sx={{ fontSize: "1.5rem" }}
           >
             <ThumbUpIcon sx={{ fontSize: "1.5rem" }} />
           </IconButton>
           <Typography variant="body2" sx={{ ml: 1 }}>
-            {liked || isLiked ? `${like_counter} Liked` : "Like"}
+            {liked ? "Liked!" : "Like"}
           </Typography>
         </CenteredActions>
       </StyledCard>

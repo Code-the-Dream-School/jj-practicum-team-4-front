@@ -104,8 +104,6 @@ export default function ChallengePrompts() {
       id: p._id,
       title: p.title || p.challenge?.title,
       // title: p.title.replace(" (overwrite)", ""),
-      id: p.id,
-      title: p.title,
       description: p.description,
       rules: p.rule || p.rules || "",
       startDate: formatDate(c.start_date || p.challenge?.start_date),

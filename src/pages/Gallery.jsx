@@ -33,7 +33,11 @@ import FormModal from "../components/Modal/FormModal.jsx";
 import { jwtDecode } from "jwt-decode";
 import { getData, postData, patchData, deleteData } from "../util";
 
+
+const token = localStorage.getItem("token");
+
 import DeleteIcon from "@mui/icons-material/Delete";
+
 
 export default function Gallery() {
   
@@ -56,6 +60,7 @@ export default function Gallery() {
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
+   const LIKE_URL = `${BASE_URL}/api/artwork/`;
 
 
  
@@ -105,6 +110,27 @@ export default function Gallery() {
       setIsProcessing(false);
     }
   };
+
+  const updatedArtworkLikes = async(artworkId) => {
+    try {
+      const response = await getData(`${LIKE_URL}${artworkId}/likes`, {
+         headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+      });
+      const newLikeCount = response.like_counter;
+      setArtworks((prev) =>
+        prev.map((artwork) => 
+           artwork.id === artworkId ?{...artwork, like_counter: newLikeCount} : artwork
+        )
+      );          
+    } catch (error) {
+      console.error(
+        "Error updating like count for artwork:",
+        error);
+    }
+  }
 
   const fetchAllArtWorks = async (promptId) => {
     if (!promptId) return;
@@ -482,7 +508,15 @@ export default function Gallery() {
                 description={selected.media_tag || selected.description}
                 image={selected.image_url}
                 isOpen={true}
-                onClose={() => setSelected(null)}
+                socialLink={selected.social_link}
+                artworkId={selected.id}
+                artwork={selected}
+                likes={selected.like_counter}
+                onLike={() => updatedArtworkLikes(selected.id)}
+                onClose={() => { 
+                  setSelected(null);
+                  updatedArtworkLikes(selected.id);
+                }}
               />
             )}
           </Box>
