@@ -91,10 +91,12 @@ export default function BestOfArtwork() {
             justifyContent: "center",
             alignItems: "center",
           }}
+          textTransform="uppercase"
+          fontWeight="bold"
           variant="h3"
           align="center"
         >
-          Best of Artwork{" "}
+          Best of Artwork
           <EmojiEventsIcon color="warning" sx={{ height: 50, width: 50 }} />
         </Typography>
         <Typography

@@ -252,15 +252,13 @@ export default function Gallery() {
         }}
       >
         <Box sx={{ width: "100%", mb: 4 }}>
-          <Typography variant="h3" align="center" gutterBottom>
+          <Typography variant="h3" align="center">
             Gallery
           </Typography>
         </Box>
         <Grid
           container
           spacing={4}
-          // spacing={2}
-          // alignItems="stretch"
           justifyContent="center"
           sx={{ width: "100%" }}
         >
