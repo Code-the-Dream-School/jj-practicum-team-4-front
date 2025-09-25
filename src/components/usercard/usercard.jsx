@@ -28,9 +28,6 @@ export default function UserCard({
   onClose ,
 }) {
   const [liked, setLiked] = useState(false);
-
-  // const handleLike = () => setLiked(true); // disable after one click
-
   const BASE_URL = import.meta.env.VITE_API_URL;
   const LIKE_URL = `${BASE_URL}/api/artwork/`;
 
@@ -44,10 +41,11 @@ export default function UserCard({
   const checkUserLiked = async () => {
     if (!artworkId) return;
     try {
-      const userDetail = JSON.parse(localStorage.getItem("user"));
-      //const response = await getData(`${Like_URL}${artworkId}/likes`);
-      const response = await getData(`${LIKE_URL}${artworkId}/likes`, {}, {
-        headers: { Authorization: `Bearer ${userDetail.token}` },
+      const response = await getData(`${LIKE_URL}${artworkId}/likes`,  {
+         headers: {
+            Authorization: `Bearer ${currentUser.token}`,
+            "Content-Type": "application/json",
+          },
       });
       // Assume response.likes contains array of users who liked
       const hasLiked = response?.liked_by_me;
@@ -59,20 +57,19 @@ export default function UserCard({
 
    const handleLike = async () => {
     if (!artworkId ) return;
-      // likeArtwork(artworkId);
-      // setLiked(true);
-      const currentUser = JSON.parse(localStorage.getItem("user"));
     try {
       if (!liked) {
         // Like artwork
         await postData(`${LIKE_URL}${artworkId}/likes`, {}, {
-          headers: { Authorization: `Bearer ${currentUser.token}` },
+          headers: { Authorization: `Bearer ${currentUser.token}`,
+          "Content-Type": "application/json", },
         });
         setLiked(true);
       } else {
         // Dislike artwork (remove like)
         await deleteData(`${LIKE_URL}${artworkId}/likes`, {
-          headers: { Authorization: `Bearer ${currentUser.token}` },
+           headers: { Authorization: `Bearer ${currentUser.token}`,
+          "Content-Type": "application/json", },
         });
         setLiked(false);
       }
@@ -183,9 +180,9 @@ export default function UserCard({
         {/* Like button */}
         <CenteredActions>
           <IconButton
-            // onClick={handleLike}
-            onClick={() => handleLike(artworkId)}
-            disabled={liked}
+             onClick={handleLike}
+            // onClick={() => handleLike(artworkId)}
+            // disabled={liked}
             color={liked ? "primary" : "default"}
             sx={{ fontSize: "1.5rem" }}
           >

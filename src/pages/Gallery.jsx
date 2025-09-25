@@ -23,6 +23,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
 import { getData, postData, patchData, deleteData } from "../util";
 
+const currentUser = JSON.parse(localStorage.getItem("user"));
 
 export default function Gallery() {
   const { isAuthenticated } = useAuth();
@@ -50,15 +51,18 @@ export default function Gallery() {
 
   const updatedArtworkLikes = async(artworkId) => {
     try {
-      const response = await getData(`${LIKE_URL}${artworkId}/likes`);
+      const response = await getData(`${LIKE_URL}${artworkId}/likes`, {
+         headers: {
+            Authorization: `Bearer ${currentUser.token}`,
+            "Content-Type": "application/json",
+          },
+      });
       const newLikeCount = response.like_counter;
       setArtworks((prev) =>
         prev.map((artwork) => 
            artwork.id === artworkId ?{...artwork, like_counter: newLikeCount} : artwork
         )
-      );
-          
-          
+      );          
     } catch (error) {
       console.error(
         "Error updating like count for artwork:",
@@ -81,39 +85,7 @@ export default function Gallery() {
     }
   }
 
-  // Placeholder artwork data
-  const [artworks1] = useState([
-    { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
-    { id: 2, title: "Dreamscape", image: sampleImage, likes: 8 },
-    {
-      id: 3,
-      title: "Abstract Flow",
-      image: sampleImage,
-      likes: 3,
-      user: "Alex Lee",
-    },
-    {
-      id: 4,
-      title: "Ocean Waves",
-      image: sampleImage,
-      likes: 6,
-      user: "Sam Green",
-    },
-    {
-      id: 5,
-      title: "Nature Walk",
-      image: sampleImage,
-      likes: 2,
-      user: "Chris Blue",
-    },
-    {
-      id: 6,
-      title: "City Lights",
-      image: sampleImage,
-      likes: 9,
-      user: "Pat Red",
-    },
-  ]);
+
 
   return (
     <>
@@ -360,9 +332,9 @@ export default function Gallery() {
                 artwork={selected}
                 likes={selected.like_counter}
                 onLike={() => updatedArtworkLikes(selected.id)}
-                onClose={() => {
-                  updatedArtworkLikes(selected.id);
+                onClose={() => { 
                   setSelected(null);
+                  updatedArtworkLikes(selected.id);
                 }}
               />
             )}
