@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import formatDateForDisplay from "../util/date.jsx";
-import { Modal } from "@mui/material";
+import { Divider, Modal } from "@mui/material";
 import { CssBaseline } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import UserCard from "../components/usercard/usercard.jsx";
@@ -106,16 +106,35 @@ export default function Gallery() {
       <Container maxWidth="xl" disableGutters>
         <Box
           sx={{
-            backgroundColor: "#f5f5f7",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             borderBottom: "1px solid #e0e0e0",
             padding: "3em 2em",
             textAlign: "center",
+            flexWrap: { xs: "wrap", md: "nowrap" },
           }}
         >
-          <Container maxWidth="lg">
+          <Box width="800px">
+            <Box
+              component="img"
+              width="100%"
+              src="images/art_illustration.png"
+            />
+          </Box>
+          <Box
+            maxWidth="lg"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignContent: "center",
+            }}
+          >
             <Typography
               variant="h3"
               align="center"
+              textTransform="uppercase"
+              fontWeight="bold"
               sx={{ mb: 3, color: "#2c3e50" }}
             >
               {prompt ? `${prompt.title}` : ""}
@@ -126,82 +145,87 @@ export default function Gallery() {
               fontWeight={600}
               sx={{ mb: 3, color: "#34495e" }}
             >
-              DURATION{" "}
               {prompt
-                ? `: ${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}`
+                ? `${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}`
                 : ""}
             </Typography>
+
             <Typography
-              variant="h5"
+              variant="body1"
+              align="center"
+              fontWeight={600}
+              sx={{ mt: 3, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
+            >
+              {prompt ? `${prompt.description}` : ""}
+            </Typography>
+            <Typography
+              variant="body1"
               align="center"
               fontWeight={600}
               sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
             >
-              DESCRIPTION {prompt ? `: ${prompt.description}` : ""}
+              {prompt ? ` ${prompt.rules}` : ""}
             </Typography>
-            <Typography
-              variant="h5"
-              align="center"
-              fontWeight={600}
-              sx={{ mb: 4, maxWidth: "800px", mx: "auto", color: "#3a4a5b" }}
-            >
-              RULES {prompt ? `: ${prompt.rules}` : ""}
-            </Typography>
-            <Stack
-              direction="row"
-              spacing={4}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
+            {!isAuthenticated && (
+              <Stack
+                direction="row"
+                spacing={4}
+                justifyContent="center"
+                alignItems="center"
               >
-                <AccountCircleOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
-                <Typography align="center">
-                  Create
-                  <br />
-                  an account.
-                </Typography>
-              </Box>
-              <ArrowRightAltOutlinedIcon fontSize="large" />
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <FileUploadOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
-                <Typography align="center">
-                  Upload your
-                  <br /> artwork image
-                </Typography>
-              </Box>
-              <ArrowRightAltOutlinedIcon fontSize="large" />
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <InsertDriveFileOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
-                <Typography align="center">
-                  Submit your
-                  <br />
-                  form!
-                </Typography>
-              </Box>
-            </Stack>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <AccountCircleOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
+                  <Typography align="center">
+                    Create
+                    <br />
+                    an account.
+                  </Typography>
+                </Box>
+                <ArrowRightAltOutlinedIcon fontSize="large" />
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <FileUploadOutlinedIcon fontSize="large" sx={{ mb: 1 }} />
+                  <Typography align="center">
+                    Upload your
+                    <br /> artwork image
+                  </Typography>
+                </Box>
+                <ArrowRightAltOutlinedIcon fontSize="large" />
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <InsertDriveFileOutlinedIcon
+                    fontSize="large"
+                    sx={{ mb: 1 }}
+                  />
+                  <Typography align="center">
+                    Submit your
+                    <br />
+                    form!
+                  </Typography>
+                </Box>
+              </Stack>
+            )}
             {isAuthenticated && (
-              <>
+              <Box>
                 <Button
                   variant="contained"
-                  sx={{ mt: 4, backgroundColor: "#C86D6D" }}
+                  sx={{ px: 10, mt: 4, backgroundColor: "#C86D6D" }}
                   onClick={() => setShownModal(true)}
                 >
                   UPLOAD YOUR ARTWORK
@@ -210,9 +234,9 @@ export default function Gallery() {
                   shownModal={shownModal}
                   setShownModal={setShownModal}
                 />
-              </>
+              </Box>
             )}
-          </Container>
+          </Box>
         </Box>
       </Container>
 
