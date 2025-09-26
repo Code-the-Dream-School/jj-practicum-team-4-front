@@ -47,6 +47,7 @@ function FormModal({ shownModal, setShownModal }) {
       })
       .replace(",", "");
   };
+
   const getWeeklyPrompt = async () => {
     setIsLoading(true);
     try {
@@ -54,7 +55,7 @@ function FormModal({ shownModal, setShownModal }) {
       if (!response) {
         throw new Error(response.message || "failed to get data");
       }
-      console.log(response.prompt);
+      console.log(response);
       setPrompt(response.prompt);
       setChallenge(response.challenge);
     } catch (error) {

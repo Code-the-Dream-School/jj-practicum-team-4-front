@@ -46,10 +46,9 @@ function SubmissionForm({
   setIsDialogOpen,
   prompt,
 }) {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const promptData = prompt;
-  const decodeToken = jwtDecode(token);
-  const userId = decodeToken.userId;
+  const userId = user.id;
 
   const [errors, setErrors] = useState({});
   const [imageFile, setImageFile] = useState(postArtworkData?.imageFile || "");
@@ -59,8 +58,6 @@ function SubmissionForm({
     media_tag: postArtworkData?.media_tag || "",
     description: postArtworkData?.description || "",
     like_counter: 0,
-    // social_link: postArtworkData?.social_link || "",
-    // createdAt: postArtworkData?.createdAt || "",
   });
 
   const handleChange = (e) => {

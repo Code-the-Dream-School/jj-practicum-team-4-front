@@ -55,7 +55,7 @@ export default function ChallengePrompts() {
   // const URL = `${import.meta.env.VITE_API_URL}prompts/active`;
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
-  const ALL_URL = `${BASE_URL}/api/prompt/all`;
+  const ALL_URL = `${BASE_URL}/api/prompts/all`;
   const PROMPTS_URL = `${BASE_URL}/api/prompts/`;
 
   const handleChange = (e) => {
@@ -72,9 +72,8 @@ export default function ChallengePrompts() {
     if (!dateString) return "";
 
     const date = new Date(dateString + "T00:00:00");
-    return date.toLocaleDateString('en-US');
+    return date.toLocaleDateString("en-US");
     // return dateString;
-
   };
   const showSuccess = (message) => {
     setSuccess(message);
@@ -88,7 +87,7 @@ export default function ChallengePrompts() {
   };
 
   const formatFormForAPI = (formData) => {
-    return {
+    return { 
       title: formData.title,
       description: formData.description,
       rules: formData.rules,
@@ -107,7 +106,8 @@ export default function ChallengePrompts() {
   const formatPromptFromAPI = (p, c) => {
     return {
       id: p.id,
-      title: p.title, 
+      title: p.title || p.challenge?.title,
+      // title: p.title.replace(" (overwrite)", ""),
       description: p.description,
       rules: p.rule || p.rules || "",
       startDate: formatDate(c.start_date || p.challenge?.start_date),
@@ -126,7 +126,10 @@ export default function ChallengePrompts() {
       console.log("API response:", response);
 
       if (response && response?.prompt && response?.challenge) {
-        const formatted = formatPromptFromAPI(response.prompt, response.challenge);
+        const formatted = formatPromptFromAPI(
+          response.prompt,
+          response.challenge
+        );
         setPrompts([formatted]);
         localStorage.setItem("activePrompt", JSON.stringify(formatted));
       } else {
@@ -149,7 +152,7 @@ export default function ChallengePrompts() {
       const response = await getData(ALL_URL);
       console.log("All prompts response:", response);
 
-      if (response?.success && response?.items) {
+      if (response && response?.items) {
         const formatted = response.items.map(formatPromptFromAPI);
         setPrompts(formatted);
       } else {
@@ -222,33 +225,31 @@ export default function ChallengePrompts() {
         const response = await postData(PROMPTS_URL, apiData, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         });
         console.log("Create response:", response);
 
-        if (response?.success && response?.prompt) {
+        if (response?.prompt) {
           showSuccess("Challenge prompt created successfully!");
-          const formatted = formatPromptFromAPI(response.prompt);
+          const formatted = formatPromptFromAPI(response.prompt, response.challenge);
           setPrompts((prev) => [...prev, formatted]);
           setIsCreating(false);
-
           // setPrompts((prev) => [...prev, { ...form, id: Date.now() }]);
         } else {
           showError(response?.message || "Failed to create challenge prompt");
         }
-      }
-
-      // Reset form on success
-      if (response?.success) {
-        setForm({
-          title: "",
-          description: "",
-          rules: "",
-          startDate: "",
-          endDate: "",
-          status: "ACTIVE",
-        });
+        // Reset form on success
+        if (response?.prompt) {
+          setForm({
+            title: "",
+            description: "",
+            rules: "",
+            startDate: "",
+            endDate: "",
+            status: "ACTIVE",
+          });
+        }
       }
     } catch (error) {
       console.error("Error saving prompt:", error);

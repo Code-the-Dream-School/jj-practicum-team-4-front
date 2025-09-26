@@ -3,80 +3,144 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Chip,
+  CircularProgress,
   Container,
   CssBaseline,
+  Divider,
   Grid,
   Modal,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import sampleImage from "../assets/images.jpeg";
+import { useEffect, useState } from "react";
 import UserCard from "../components/usercard/usercard";
-
+import { getAllData } from "../util";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 export default function BestOfArtwork() {
   const [selected, setSelected] = useState(null);
-  const [artworks] = useState([
-    { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
-    { id: 2, title: "Dreamscape", image: sampleImage, likes: 8 },
-    {
-      id: 3,
-      title: "Abstract Flow",
-      image: sampleImage,
-      likes: 3,
-      user: "Alex Lee",
-    },
-    {
-      id: 4,
-      title: "Ocean Waves",
-      image: sampleImage,
-      likes: 6,
-      user: "Sam Green",
-    },
-    {
-      id: 5,
-      title: "Nature Walk",
-      image: sampleImage,
-      likes: 2,
-      user: "Chris Blue",
-    },
-  ]);
+  const [winners, setWinners] = useState(null);
+  const [prevPrompt, setPrevPrompt] = useState(null);
+  const baseUrl = import.meta.env.VITE_API_URL;
+  useEffect(() => {
+    getWinnersData();
+    getAllPrompt();
+  }, []);
+
+  const getWinnersData = async () => {
+    try {
+      const response = await getAllData(`${baseUrl}/api/challenge/winners`);
+      if (!response) {
+        throw new Error("Failed to fetch winners data");
+      }
+      setWinners(response);
+    } catch (error) {
+      console.log("Failed to fetch data", error);
+    }
+  };
+
+  const getAllPrompt = async () => {
+    try {
+      const response = await getAllData(`${baseUrl}/api/prompts/all`);
+      if (!response) {
+        throw new Error("Failed to fetch all prompt data");
+      }
+      setPrevPrompt(response?.items[0]);
+    } catch (error) {
+      console.log("Failed to fetch");
+    }
+  };
+
+  if (!winners)
+    return (
+      <Box
+        sx={{
+          mt: 20,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+
+  if (!prevPrompt) {
+    return (
+      <Box
+        sx={{
+          mt: 20,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <>
       <CssBaseline />
-      <Container maxWidth="xl" disableGutters sx={{ py: 5 }}>
-        <Typography variant="h3" align="center" gutterBottom>
-          Best of Artwork
-        </Typography>
+      <Container maxWidth="xl" sx={{ py: 5 }}>
         <Typography
-          sx={{ pt: 3 }}
-          variant="h5"
+          component="div"
+          sx={{
+            mt: 5,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
           textTransform="uppercase"
+          fontWeight="bold"
+          variant="h3"
           align="center"
         >
-          last week's challenge topic
+          Best of Artwork
+          <EmojiEventsIcon color="warning" sx={{ height: 50, width: 50 }} />
         </Typography>
         <Typography
-          variant="subtitle1"
+          variant="h6"
           align="center"
-          sx={{ mx: "auto", maxWidth: 600 }}
+          sx={{ mx: "auto", maxWidth: 700 }}
+          color="text.secondary"
         >
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam,
-          ipsum.
+          Top submissions from last week’s challenge, recognized by the
+          community!
         </Typography>
+        <Divider sx={{ my: 12 }}>
+          <Box>
+            <Typography variant="h4" textTransform="uppercase">
+              {prevPrompt.title}
+            </Typography>
+            <Typography variant="body1">{prevPrompt.description}</Typography>
+          </Box>
+        </Divider>
         <Grid
           container
           spacing={4}
           justifyContent="center"
-          alignItems="center"
-          sx={{ mt: 8, mx: 5 }}
+          sx={{ width: "100%", my: 5 }}
         >
-          {artworks.map((art) => (
-            <Grid item xs={12} sm={6} md={4} key={art.id}>
-              <Card onClick={() => setSelected(art)}>
+          {winners.map((art) => (
+            <Grid item xl={3} key={art.id}>
+              <Card
+                onClick={() => setSelected(art)}
+                sx={{
+                  borderRadius: 0,
+                  cursor: "pointer",
+                  transition:
+                    "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: 3,
+                  },
+                }}
+              >
                 <CardMedia
                   component="img"
-                  height="250"
-                  image={art.image}
+                  height="350"
+                  image={art.image_url}
                   alt={art.title}
                 />
                 <CardContent>
@@ -85,9 +149,28 @@ export default function BestOfArtwork() {
                     alignItems="center"
                     justifyContent="space-between"
                   >
-                    <Typography variant="h6">{art.title}</Typography>
-                    <Typography variant="body2" sx={{ ml: 2 }}>
-                      Likes: {art.likes}
+                    <Box>
+                      <Typography variant="h6">{art.title}</Typography>
+                      <Chip
+                        color="primary"
+                        variant="outlined"
+                        label={art.media_tag}
+                        size="small"
+                        sx={{ mt: 0.5 }}
+                      />
+                    </Box>
+                    <Typography
+                      component="div"
+                      variant="body2"
+                      sx={{
+                        ml: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <ThumbUpAltIcon color="action" />
+                      {art.like_counter}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -95,30 +178,32 @@ export default function BestOfArtwork() {
             </Grid>
           ))}
         </Grid>
-        <Modal
-          open={!!selected}
-          aria-labelledby="modal-artwork-detail"
-          disableRestoreFocus
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Box>
-            {selected && (
-              <UserCard
-                username={selected.user}
-                title={selected.title}
-                description={selected.description || ""}
-                image={selected.image}
-                isOpen={true}
-                onClose={() => setSelected(null)}
-              />
-            )}
-          </Box>
-        </Modal>
       </Container>
+      <Modal
+        open={selected}
+        aria-labelledby="modal-artwork-detail"
+        disableRestoreFocus
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Box>
+          {selected && (
+            <UserCard
+              user={selected?.user}
+              title={selected.title}
+              description={selected.description || ""}
+              image={selected.image_url}
+              isOpen={true}
+              onClose={() => setSelected(null)}
+              isLiked={true}
+              like_counter={selected.like_counter}
+            />
+          )}
+        </Box>
+      </Modal>
     </>
   );
 }

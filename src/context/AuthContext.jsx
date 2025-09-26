@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { authService } from "../services/api";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
 import authReducer from "./authReducer";
 const AuthContext = createContext();
 
@@ -13,65 +13,77 @@ const initialState = {
   error: null,
 };
 
-// AuthProvider component that wraps the entire route
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-  // Check if user is already logged in (from localStorage) when app loads
+  useEffect(() => {
+    checkLoggedIn();
+  }, []);
+
   const checkLoggedIn = async () => {
-    dispatch({ type: "AUTH_LOADING" });
+    dispatch({ type: "LOGIN_REQUEST" });
     try {
-      const storedUser = authService.getCurrentUser();
-
-      if (storedUser && storedUser.token) {
-        // check if token expired
+      const storedUserInfo = authService.getStoredUser();
+      const storedToken = authService.getStoredToken();
+      if (storedUserInfo && storedToken) {
         try {
-          const decodedToken = jwtDecode(storedUser.token);
-          // console.log(decodedToken);
-          const currentTime = Date.now() / 1000;
+          await authService.verifyToken();
 
-          // if expired, logout user
-          if (decodedToken.exp && decodedToken.exp < currentTime) {
-            console.log("token expired, logging out user");
-            localStorage.removeItem("user");
-            dispatch({ type: "LOGOUT" });
-            return;
-          }
-          //if token is valid, set user as authenticated
-          // console.log("token is valid, user authenticated", storedUser);
+          const userData = await authService.getCurrentUser();
           dispatch({
             type: "LOGIN_SUCCESS",
-            payload: { user: storedUser.user, token: storedUser.token },
+            payload: { user: userData, token: storedToken },
           });
-        } catch (tokenError) {
-          console.error("invalid token:", tokenError);
-          localStorage.removeItem("user");
-          dispatch({ type: "LOGIN_FAILURE" });
+          return;
+        } catch (error) {
+          authService.clearAuthData();
         }
-      } else {
-        dispatch({ type: "AUTH_CHECK_COMPLETE" });
       }
+
+      dispatch({ type: "LOGOUT" });
     } catch (error) {
       console.error("Error reading from localStorage", error);
-      localStorage.removeItem("user");
+      dispatch({ type: "LOGOUT" });
     }
   };
 
-  // Register a new user
+  const login = async (email, password) => {
+    dispatch({ type: "LOGIN_REQUEST" });
+    try {
+      const response = await authService.login(email, password);
+      if (response && response.user) {
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: { user: response.user, token: response.token },
+        });
+        return response;
+      } else {
+        throw new Error("Login failed - no user data received");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      dispatch({
+        type: "LOGIN_FAILURE",
+        payload:
+          error.response?.data?.message ||
+          "Login failed. Please check your email and password",
+      });
+      throw error;
+    }
+  };
+
   const register = async (userData) => {
     dispatch({ type: "LOGIN_REQUEST" });
     try {
-      console.log("Sending registration data:", userData);
-      // Use the authService which is properly configured with credentials
-      const res = await authService.register(userData);
-      if (res && res.token) {
-        console.log("AuthContext File: Registration successful", res);
+      const response = await authService.register(userData);
+      if (response && response.user) {
+        console.log("AuthContext File: Registration successful", response);
         dispatch({
           type: "LOGIN_SUCCESS",
-          payload: { user: res.user, token: res.token },
+          payload: { user: response.user, token: response.token },
         });
-        return res;
+        return response;
       } else {
-        throw new Error("Registration failed. no token received");
+        throw new Error("Registration failed. no data received");
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -86,59 +98,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // console.log(state.error);
-
-  useEffect(() => {
-    checkLoggedIn();
-  }, []);
-
-  const login = async (email, password) => {
-    dispatch({ type: "LOGIN_REQUEST" });
-    try {
-      console.log("logging...");
-      // Use the authService which is properly configured with credentials
-      const response = await authService.login(email, password);
-      if (response && response.token) {
-        const decodeUserToken = jwtDecode(response.token);
-        dispatch({
-          type: "LOGIN_SUCCESS",
-          payload: { user: response.user, token: response.token },
-        });
-        localStorage.setItem("user", JSON.stringify(response));
-        console.log("logon successful in authcontext:", response);
-        return response;
-      } else {
-        throw new Error("Login failed");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      dispatch({
-        type: "LOGIN_FAILURE",
-        payload: "Login failed. Please check your email and password",
-      });
-      localStorage.removeItem("user");
-      throw error;
-    }
-  };
-
   const logout = async () => {
     try {
-      // Use the authService which handles localStorage and is properly configured
       await authService.logout();
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("token");
       dispatch({ type: "LOGOUT" });
-      // clear local storage
-      localStorage.removeItem("user");
+
       console.log("logout successful");
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if there's an error with the API call, the authService will still handle localStorage
       dispatch({ type: "LOGOUT" });
       localStorage.removeItem("user");
+      localStorage.removeItem("userInfo");
     }
   };
 
+  const loginWithGoogle = () => {
+    dispatch({ type: "LOGIN_REQUEST" });
+    authService.loginWithGoogle();
+  };
+
   const clearError = () => {
-    setError(null);
+    dispatch({ type: "CLEAR_ERROR" });
   };
 
   return (
@@ -149,6 +131,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         clearError,
+        loginWithGoogle,
       }}
     >
       {children}
