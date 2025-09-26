@@ -16,7 +16,6 @@ import {
 import { Link } from "react-router-dom";
 import hero4 from "../assets/hero4.jpeg";
 import { CssBaseline } from "@mui/material";
-import sampleImage from "../assets/images.jpeg";
 import UserCard from "../components/usercard/usercard.jsx";
 import { getData } from "../util/index.js";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
@@ -33,6 +32,7 @@ export default function Home() {
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
+  // const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
 
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
@@ -44,6 +44,7 @@ export default function Home() {
     }
   }, []);
 
+  console.log(prompt);
   const fetchAllArtWorks = async (promptId) => {
     if (!promptId) return;
     try {
@@ -57,7 +58,6 @@ export default function Home() {
       console.error("Error fetching artworks:", error);
     }
   };
-
   if (!artworks) {
     return (
       <Box

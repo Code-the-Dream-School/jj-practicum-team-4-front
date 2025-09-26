@@ -101,7 +101,7 @@ export default function ChallengePrompts() {
 
   const formatPromptFromAPI = (p, c) => {
     return {
-      id: p._id,
+      id: p.id,
       title: p.title || p.challenge?.title,
       // title: p.title.replace(" (overwrite)", ""),
       description: p.description,
@@ -139,7 +139,6 @@ export default function ChallengePrompts() {
       setLoading(false);
     }
   };
-
   const fetchAllPrompts = async () => {
     try {
       setLoading(true);
