@@ -206,13 +206,18 @@ export default function ChallengePrompts() {
 
       if (editingId) {
         const response = await patchData(
-          `${PROMPTS_URL}/${editingId}`,
-          apiData
+          `${PROMPTS_URL}${editingId}`,
+          apiData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
         console.log("Update response:", response);
 
-        if (response?.success && response?.prompt) {
-          const formatted = formatPromptFromAPI(response.prompt);
+        if (response?.prompt) {
+          const formatted = formatPromptFromAPI(response.prompt, response.challenge);
           setPrompts((prev) =>
             prev.map((p) => (p.id === editingId ? formatted : p))
           );
@@ -239,6 +244,7 @@ export default function ChallengePrompts() {
         } else {
           showError(response?.message || "Failed to create challenge prompt");
         }
+
         // Reset form on success
         if (response?.prompt) {
           setForm({
@@ -251,6 +257,7 @@ export default function ChallengePrompts() {
           });
         }
       }
+      
     } catch (error) {
       console.error("Error saving prompt:", error);
       const errorMessage =
@@ -285,15 +292,12 @@ export default function ChallengePrompts() {
     setError(null);
     try {
       // setError(null);
-      const response = await deleteData(`${PROMPTS_URL}/${promptToDelete}`);
-      console.log("Delete response:", response);
 
-      if (response?.success) {
-        showSuccess("Challenge prompt deleted successfully!");
-        setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete));
-      } else {
-        showError(response?.message || "Failed to delete challenge prompt");
-      }
+      const response = await deleteData(`${PROMPTS_URL}${promptToDelete}`);
+      console.log("Delete response:", response);
+      showSuccess("Challenge prompt deleted successfully!");
+      setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete));
+
     } catch (error) {
       console.error("Error deleting prompt:", error);
       // setError("Failed to delete prompt. Please try again.");
