@@ -67,10 +67,11 @@ export default function UserCard({
         setLiked(true);
       } else {
         // Dislike artwork (remove like)
-        await deleteData(`${LIKE_URL}${artworkId}/likes`, {
-           headers: { Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", },
-        });
+        // await deleteData(`${LIKE_URL}${artworkId}/likes`, {
+        //    headers: { Authorization: `Bearer ${token}`,
+        //   "Content-Type": "application/json", },
+        // });
+        await deleteData(`${LIKE_URL}${artworkId}/likes`);
         setLiked(false);
       }
         if (onLike) 
