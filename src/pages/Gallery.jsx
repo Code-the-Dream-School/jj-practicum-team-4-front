@@ -174,6 +174,7 @@ export default function Gallery() {
     setSelectedArtworkId(null);
   };
 
+
   return (
     <>
       <CssBaseline />

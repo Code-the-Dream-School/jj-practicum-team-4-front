@@ -87,7 +87,7 @@ export default function ChallengePrompts() {
   };
 
   const formatFormForAPI = (formData) => {
-    return {
+    return { 
       title: formData.title,
       description: formData.description,
       rules: formData.rules,
@@ -240,7 +240,6 @@ export default function ChallengePrompts() {
           const formatted = formatPromptFromAPI(response.prompt, response.challenge);
           setPrompts((prev) => [...prev, formatted]);
           setIsCreating(false);
-
           // setPrompts((prev) => [...prev, { ...form, id: Date.now() }]);
         } else {
           showError(response?.message || "Failed to create challenge prompt");
@@ -293,10 +292,12 @@ export default function ChallengePrompts() {
     setError(null);
     try {
       // setError(null);
+
       const response = await deleteData(`${PROMPTS_URL}${promptToDelete}`);
       console.log("Delete response:", response);
       showSuccess("Challenge prompt deleted successfully!");
       setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete));
+
     } catch (error) {
       console.error("Error deleting prompt:", error);
       // setError("Failed to delete prompt. Please try again.");
