@@ -135,7 +135,7 @@ export default function UserCard({
               margin: "0 auto",
             }}
           >
-            {user?.first_name || "Unknown User"}
+            {user.first_name || "Unknown User"}
           </Typography>
           <Typography
             variant="h5"
