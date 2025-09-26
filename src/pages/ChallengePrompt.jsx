@@ -27,10 +27,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { getData, postData, patchData, deleteData } from "../util";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const statusOptions = ["ACTIVE", "CLOSED"];
 
 export default function ChallengePrompts() {
+
+  const { token } = useAuth();
+
   const [prompts, setPrompts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -52,7 +56,7 @@ export default function ChallengePrompts() {
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
   const ALL_URL = `${BASE_URL}/api/prompts/all`;
-  const PROMPTS_URL = `${BASE_URL}/api/prompts`;
+  const PROMPTS_URL = `${BASE_URL}/api/prompts/`;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -95,13 +99,13 @@ export default function ChallengePrompts() {
           ? new Date(formData.endDate).toISOString()
           : null,
       },
-      is_active: formData.status === "ACTIVE",
+      // is_active: formData.status === "ACTIVE",
     };
   };
 
   const formatPromptFromAPI = (p, c) => {
     return {
-      id: p._id,
+      id: p.id,
       title: p.title || p.challenge?.title,
       // title: p.title.replace(" (overwrite)", ""),
       description: p.description,
@@ -202,13 +206,18 @@ export default function ChallengePrompts() {
 
       if (editingId) {
         const response = await patchData(
-          `${PROMPTS_URL}/${editingId}`,
-          apiData
+          `${PROMPTS_URL}${editingId}`,
+          apiData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
         console.log("Update response:", response);
 
-        if (response?.success && response?.prompt) {
-          const formatted = formatPromptFromAPI(response.prompt);
+        if (response?.prompt) {
+          const formatted = formatPromptFromAPI(response.prompt, response.challenge);
           setPrompts((prev) =>
             prev.map((p) => (p.id === editingId ? formatted : p))
           );
@@ -218,12 +227,17 @@ export default function ChallengePrompts() {
         }
         // setEditingId(null);
       } else {
-        const response = await postData(PROMPTS_URL, apiData);
+        const response = await postData(PROMPTS_URL, apiData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         console.log("Create response:", response);
 
-        if (response?.success && response?.prompt) {
+        if (response?.prompt) {
           showSuccess("Challenge prompt created successfully!");
-          const formatted = formatPromptFromAPI(response.prompt);
+          const formatted = formatPromptFromAPI(response.prompt, response.challenge);
           setPrompts((prev) => [...prev, formatted]);
           setIsCreating(false);
 
@@ -231,19 +245,20 @@ export default function ChallengePrompts() {
         } else {
           showError(response?.message || "Failed to create challenge prompt");
         }
-      }
 
-      // Reset form on success
-      if (response?.success) {
-        setForm({
-          title: "",
-          description: "",
-          rules: "",
-          startDate: "",
-          endDate: "",
-          status: "ACTIVE",
-        });
+        // Reset form on success
+        if (response?.prompt) {
+          setForm({
+            title: "",
+            description: "",
+            rules: "",
+            startDate: "",
+            endDate: "",
+            status: "ACTIVE",
+          });
+        }
       }
+      
     } catch (error) {
       console.error("Error saving prompt:", error);
       const errorMessage =
@@ -278,15 +293,10 @@ export default function ChallengePrompts() {
     setError(null);
     try {
       // setError(null);
-      const response = await deleteData(`${PROMPTS_URL}/${promptToDelete.id}`);
+      const response = await deleteData(`${PROMPTS_URL}${promptToDelete}`);
       console.log("Delete response:", response);
-
-      if (response?.success) {
-        showSuccess("Challenge prompt deleted successfully!");
-        setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete.id));
-      } else {
-        showError(response?.message || "Failed to delete challenge prompt");
-      }
+      showSuccess("Challenge prompt deleted successfully!");
+      setPrompts((prev) => prev.filter((p) => p.id !== promptToDelete));
     } catch (error) {
       console.error("Error deleting prompt:", error);
       // setError("Failed to delete prompt. Please try again.");

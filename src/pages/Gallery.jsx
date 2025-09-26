@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import formatDateForDisplay from "../util/date.jsx";
 import { Divider, Modal } from "@mui/material";
 import { CssBaseline } from "@mui/material";
@@ -41,7 +41,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function Gallery() {
   
-  const { token ,isAuthenticated } = useAuth();
+  // const { token ,isAuthenticated } = useAuth();
   
   const [shownModal, setShownModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -51,11 +51,11 @@ export default function Gallery() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedArtworkId, setSelectedArtworkId] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = (localStorage.getItem("user"));
 
   const [authProcessed, setAuthProcessed] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const BASE_URL = import.meta.env.VITE_API_URL;
@@ -173,41 +173,6 @@ export default function Gallery() {
     setConfirmOpen(false);
     setSelectedArtworkId(null);
   };
-
-  // Placeholder artwork data
-  const [artworks1] = useState([
-    { id: 1, title: "Sunset", image: sampleImage, likes: 5 },
-    { id: 2, title: "Dreamscape", image: sampleImage, likes: 8 },
-    {
-      id: 3,
-      title: "Abstract Flow",
-      image: sampleImage,
-      likes: 3,
-      user: "Alex Lee",
-    },
-    {
-      id: 4,
-      title: "Ocean Waves",
-      image: sampleImage,
-      likes: 6,
-      user: "Sam Green",
-    },
-    {
-      id: 5,
-      title: "Nature Walk",
-      image: sampleImage,
-      likes: 2,
-      user: "Chris Blue",
-    },
-    {
-      id: 6,
-      title: "City Lights",
-      image: sampleImage,
-      likes: 9,
-      user: "Pat Red",
-    },
-  ]);
-
 
   return (
     <>
