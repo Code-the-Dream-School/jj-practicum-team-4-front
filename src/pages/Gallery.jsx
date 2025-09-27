@@ -32,12 +32,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
 import { jwtDecode } from "jwt-decode";
 import { getData, postData, patchData, deleteData } from "../util";
-
-
-const token = localStorage.getItem("token");
-
 import DeleteIcon from "@mui/icons-material/Delete";
-
 
 export default function Gallery() {
   
@@ -51,7 +46,9 @@ export default function Gallery() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedArtworkId, setSelectedArtworkId] = useState(null);
 
-  const user = (localStorage.getItem("user"));
+  //const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+  const user = token ? jwtDecode(token) : null;
 
   const [authProcessed, setAuthProcessed] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -423,7 +420,7 @@ export default function Gallery() {
 
                       Likes: {art.like_counter}
                     </Typography>
-                    {(user?.is_admin || user?.id === art.user.id) && (
+                    {(user?.admin || user?.userId === art.user.id) && (
                     <IconButton
                         onClick={(e) => {
                            e.stopPropagation();
