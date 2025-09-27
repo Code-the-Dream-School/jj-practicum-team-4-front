@@ -11,10 +11,9 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SubmissionForm from "../Form/SubmissionForm";
 import SubmissionPreview from "../Form/SubmissionPreview";
-import { getData } from "../../util";
 import ConfirmModal from "./ConfirmModal";
 import formatDateForDisplay from "../../util/date";
 
