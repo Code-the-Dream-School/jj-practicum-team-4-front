@@ -35,9 +35,8 @@ import { getData, postData, patchData, deleteData } from "../util";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function Gallery() {
-  
   // const { token ,isAuthenticated } = useAuth();
-  
+
   const [shownModal, setShownModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -167,7 +166,6 @@ export default function Gallery() {
     setConfirmOpen(false);
     setSelectedArtworkId(null);
   };
-
 
   return (
     <>
@@ -413,10 +411,8 @@ export default function Gallery() {
                     <Typography variant="body2" sx={{ ml: 2, flexShrink: 0 }}>
                       Likes: {art.like_counter}
                     </Typography>
-                    {(user?.is_admin || user?.id === art.user.id) && (
-                      <IconButton
                     {(user?.admin || user?.userId === art.user.id) && (
-                    <IconButton
+                      <IconButton
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteClick(art.id);
