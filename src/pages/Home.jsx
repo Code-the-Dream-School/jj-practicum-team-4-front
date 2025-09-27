@@ -166,7 +166,7 @@ export default function Home() {
               </Button>
             </Stack>
           </Box>
-          {/* <Box
+          <Box
             sx={{
               flex: { xs: "0 0 auto", md: "0 0 45%" },
               display: "flex",
@@ -175,7 +175,7 @@ export default function Home() {
               mb: { xs: 3, md: 0 },
               order: { xs: 1, md: 2 },
             }}
-          > */}
+          >
           <Box
             component="img"
             src={hero4}
@@ -189,7 +189,7 @@ export default function Home() {
             }}
           />
         </Box>
-        {/* </Box> */}
+        </Box>
         <Divider sx={{ mt: { xs: 0, md: 5, lg: 0 } }} />
         {/* Top Most Liked/Voted Artworks Section */}
         <Box
@@ -210,7 +210,7 @@ export default function Home() {
               }}
             >
               <Typography
-                variant="h5"
+                variant="h4"
                 fontWeight={600}
                 textTransform="uppercase"
               >
@@ -249,36 +249,39 @@ export default function Home() {
                 gridTemplateColumns: {
                   xs: "1fr", // Single column on mobile
                   sm: "repeat(2, 1fr)", // Two columns on small screens
-                  lg: "repeat(3, 1fr)",
-                  xl: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
-                  // md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
+                  // lg: "repeat(3, 1fr)",
+                  // xl: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
+                 md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
                 },
-                // gridTemplateColumns: `repeat(${sortedForDisplay.length}, 1fr)`,
+                //  gridTemplateColumns: `repeat(${sortedForDisplay.length}, 1fr)`,
                 justifyContent: "center",
                 alignItems: "end",
-                gap: { xs: 2, md: 6 },
+                gap: { xs: 4, md: 4 },
                 mt: 4,
                 minHeight: { xs: "auto", md: 320 }, // Auto height on mobile
                 px: { xs: 2, md: 0 },
-                flexWrap: { xs: "wrap", lg: "nowrap" },
+                // flexWrap: { xs: "wrap", lg: "nowrap" },
               }}
             >
               {sortedForDisplay.map((art, idx) => {
                 // Card sizes: center is largest, sides are smaller, but spacing is always equal
-                let width = 220,
-                  height = 250,
+                let width = 230,
+                  // height = 250,
+                  height = 230,
                   boxShadow = 2;
                 if (window.innerWidth >= 960) {
                   if (idx === centerIndex) {
                     width = 320;
-                    height = 370;
+                    // height = 370;
+                    height = 350;
                     boxShadow = 6;
                   } else if (
                     idx === centerIndex - 1 ||
                     idx === centerIndex + 1
                   ) {
                     width = 260;
-                    height = 290;
+                    // height = 290;
+                    height = 280;
                     boxShadow = 4;
                   }
                 }
@@ -296,6 +299,7 @@ export default function Home() {
                       sx={{
                         width: { xs: "100%", md: width },
                         maxWidth: { xs: 300, md: width },
+                         height: { xs: 280, md: height },
                         boxShadow: { xs: 3, md: boxShadow },
                         cursor: "pointer",
                         display: "flex",
@@ -319,17 +323,13 @@ export default function Home() {
                           width: "100%",
                           height: { xs: 180, md: height - 100 },
                           objectFit: "cover",
+                          //                    fr
                         }}
                       />
                       <CardContent
-                        sx={{
-                          height: "65px",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          width: "100%",
-                        }}
+                        sx={{ textAlign: "center", width: "100%", pt: 2,}}
                       >
-                        <Box>
+                        {/* <Box> */}
                           <Typography variant="body1" fontWeight={600}>
                             {art.title}
                           </Typography>
@@ -339,7 +339,7 @@ export default function Home() {
                           >
                             {art.user.first_name}
                           </Typography>
-                        </Box>
+                        {/* </Box> */}
                         <Typography
                           component="div"
                           sx={{
@@ -393,152 +393,7 @@ export default function Home() {
               </Box>
             </Modal>
           </Box>
-          {/* <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr", // Single column on mobile
-                sm: "repeat(2, 1fr)", // Two columns on small screens
-                lg: "repeat(3, 1fr)",
-                xl: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
-              },
-              // gridTemplateColumns: `repeat(${sortedForDisplay.length}, 1fr)`,
-              justifyContent: "center",
-              alignItems: "end",
-              rowGap: { xs: 5, xl: 0 },
-              columnGap: { xl: 3, lg: 0 },
-              mt: 4,
-              minHeight: { xs: "auto", md: 320 }, // Auto height on mobile
-              // px: { xs: 2, md: 0 },
-            }}
-          >
-            {sortedForDisplay.map((art, idx) => {
-              // Card sizes: center is largest, sides are smaller, but spacing is always equal
-              let width = 220,
-                height = 220,
-                boxShadow = 2;
-              if (window.innerWidth >= 960) {
-                if (idx === centerIndex) {
-                  width = 320;
-                  height = 320;
-                  boxShadow = 6;
-                } else if (idx === centerIndex - 1 || idx === centerIndex + 1) {
-                  width = 260;
-                  height = 260;
-                  boxShadow = 4;
-                }
-              }
-              return (
-                <Box
-                  key={art.id}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <Card
-                    sx={{
-                      width: { xs: "100%", md: width },
-                      maxWidth: { xs: 300, md: width },
-                      height: { xs: 280, md: height },
-                      boxShadow: { xs: 3, md: boxShadow },
-                      cursor: "pointer",
-                      transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
-                      bgcolor: "grey.200",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                      mx: { xs: "auto", md: 0 },
-                      "&:hover": {
-                        transform: "scale(1.08)",
-                        boxShadow: { xs: 8, md: boxShadow + 6 },
-                      },
-                    }}
-                    onClick={() => setSelected(art)}
-                  >
-                    <CardMedia
-                      component="img"
-                      image={art.image_url}
-                      alt={art.title}
-                      sx={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        objectPosition: "center",
-                      }}
-                    />
-                    <CardContent
-                      sx={{
-                        height: "65px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "100%",
-                      }}
-                    >
-                      <Box>
-                        <Typography variant="body1" fontWeight={600}>
-                          {art.title}
-                        </Typography>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          {art.user.first_name}
-                        </Typography>
-                      </Box>
-                      <Typography
-                        component="div"
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          gap: 1,
-                        }}
-                        variant="body2"
-                        color="text.secondary"
-                      >
-                        <RecommendIcon />
-                        {art.like_counter}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Box>
-              );
-            })}
-          </Box>
-          <Modal open={!!selected} onClose={() => setSelected(null)}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: "100vh",
-              }}
-            >
-              <Box
-                sx={{
-                  // maxWidth: 400,
-                  maxWidth: { xs: "95%", md: 400 },
-                  width: "90%",
-                  borderRadius: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {selected && (
-                  <UserCard
-                    user={selected.user}
-                    title={selected.title}
-                    description={selected.description}
-                    image={selected.image_url}
-                    isOpen={true}
-                    onClose={() => setSelected(null)}
-                  />
-                )}
-              </Box>
-            </Box>
-          </Modal> */}
+          
         </Box>
       </Container>
     </>
