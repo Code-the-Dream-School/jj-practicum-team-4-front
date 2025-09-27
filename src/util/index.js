@@ -75,12 +75,12 @@ const putData = async (url, data, config = {}) => {
 };
 
 const deleteData = async (url, params = {}, headers = {}) => {
-  const user = JSON.parse(localStorage.getItem("user"))
-  if (user) {
+  const token = localStorage.getItem("token");
+  if (token) {
     const config = {
       params,
       headers: {
-        'Authorization': `Bearer ${user.token}`,
+        'Authorization': `Bearer ${token}`,
         ...headers,
       },
     }; const res = await axios.delete(url, config);

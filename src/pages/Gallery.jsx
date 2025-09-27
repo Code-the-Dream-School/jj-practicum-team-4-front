@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import formatDateForDisplay from "../util/date.jsx";
 import { Divider, Modal } from "@mui/material";
 import { CssBaseline } from "@mui/material";
@@ -31,13 +31,13 @@ import {
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
 import { jwtDecode } from "jwt-decode";
-import { getData, deleteData } from "../util";
-
-// const token = localStorage.getItem("token");
-
+import { getData, postData, patchData, deleteData } from "../util";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function Gallery() {
+  
+  // const { token ,isAuthenticated } = useAuth();
+  
   const [shownModal, setShownModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -46,11 +46,13 @@ export default function Gallery() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedArtworkId, setSelectedArtworkId] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  //const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+  const user = token ? jwtDecode(token) : null;
 
   const [authProcessed, setAuthProcessed] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const BASE_URL = import.meta.env.VITE_API_URL;
@@ -165,6 +167,7 @@ export default function Gallery() {
     setConfirmOpen(false);
     setSelectedArtworkId(null);
   };
+
 
   return (
     <>
@@ -412,6 +415,8 @@ export default function Gallery() {
                     </Typography>
                     {(user?.is_admin || user?.id === art.user.id) && (
                       <IconButton
+                    {(user?.admin || user?.userId === art.user.id) && (
+                    <IconButton
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteClick(art.id);
