@@ -27,6 +27,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Pagination
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
@@ -46,6 +47,10 @@ export default function Gallery() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedArtworkId, setSelectedArtworkId] = useState(null);
 
+  const [page, setPage] = useState(1);
+  const [totalArtworks, setTotalArtworks] = useState(0);
+  const pageSize = 20;
+
   //const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const user = token ? jwtDecode(token) : null;
@@ -57,7 +62,7 @@ export default function Gallery() {
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
-   const LIKE_URL = `${BASE_URL}/api/artwork/`;
+  const LIKE_URL = `${BASE_URL}/api/artwork/`;
 
 
  
@@ -73,9 +78,9 @@ export default function Gallery() {
       const p = JSON.parse(storedPrompt);
       setPrompt(p);
       // Fetch artworks when component mounts
-      fetchAllArtWorks(p.id);
+      fetchAllArtWorks(p.id, page);
     }
-  }, []);
+  }, [page]);
 
   const handleGoogleAuthSuccess = async () => {
     const searchParams = new URLSearchParams(location.search);
@@ -129,12 +134,13 @@ export default function Gallery() {
     }
   }
 
-  const fetchAllArtWorks = async (promptId) => {
+  const fetchAllArtWorks = async (promptId , page = 1) => {
     if (!promptId) return;
     try {
-      const response = await getData(ARTWORK_URL.replace(":id", promptId));
+      const response = await getData(ARTWORK_URL.replace(":id", promptId) + "?page=" + page );
       if (response && response.items && response.items.length > 0) {
         setArtworks(response.items);
+        setTotalArtworks(response.total);
       } else {
         setArtworks([]);
       }
@@ -439,6 +445,17 @@ export default function Gallery() {
             </Grid>
           ))}
         </Grid>
+      <Box mt={4} display="flex" justifyContent="center">
+     <Pagination
+      count={Math.ceil(totalArtworks / pageSize)} // total pages
+      page={page}
+      onChange={(event, value) => {
+        setPage(value);
+        fetchAllArtWorks(prompt.id, value);
+      }}
+      color="primary"
+     />
+     </Box>
         <Dialog open={confirmOpen} onClose={handleCancelDelete}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
