@@ -45,7 +45,7 @@ export default function BestOfArtwork() {
       if (!response) {
         throw new Error("Failed to fetch all prompt data");
       }
-      setPrevPrompt(response?.items[0]);
+      setPrevPrompt(response?.items[1]);
     } catch (error) {
       console.log("Failed to fetch");
     }
