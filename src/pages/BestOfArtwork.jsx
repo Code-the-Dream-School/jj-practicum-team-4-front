@@ -118,15 +118,28 @@ export default function BestOfArtwork() {
         </Divider>
         <Grid
           container
-          spacing={4}
+          spacing={6}
           justifyContent="center"
           sx={{ width: "100%", my: 5 }}
         >
           {winners.map((art) => (
-            <Grid item xl={3} key={art.id}>
+            <Grid item 
+              xs={12} 
+              sm={6} 
+              md={6} 
+              lg={6} 
+              xl={6} 
+              key={art.id}
+              sx={{ display: "flex", justifyContent: "center" }}
+              >
               <Card
                 onClick={() => setSelected(art)}
                 sx={{
+                  height: 480,
+                  width: 480, 
+                  maxWidth: "100%", 
+                  display: "flex",
+                  flexDirection: "column",
                   borderRadius: 0,
                   cursor: "pointer",
                   transition:
@@ -142,21 +155,45 @@ export default function BestOfArtwork() {
                   height="350"
                   image={art.image_url}
                   alt={art.title}
+                  sx={{
+                    objectFit: "cover", 
+                    flexShrink: 0, 
+                  }}
                 />
-                <CardContent>
+                <CardContent 
+                sx={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: 130, 
+                    p: 2,
+                  }}>
                   <Box
                     display="flex"
-                    alignItems="center"
+                    alignItems="flex-start"
                     justifyContent="space-between"
+                    sx={{ height: "100%" }}
                   >
-                    <Box>
-                      <Typography variant="h6">{art.title}</Typography>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="h6"
+                      sx={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2, 
+                          WebkitBoxOrient: "vertical",
+                          lineHeight: 1.2,
+                          mb: 1,
+                        }}
+                        >
+                          {art.title}
+                        </Typography>
                       <Chip
                         color="primary"
                         variant="outlined"
                         label={art.media_tag}
-                        size="small"
-                        sx={{ mt: 0.5 }}
+                        size="small" 
                       />
                     </Box>
                     <Typography
@@ -167,6 +204,7 @@ export default function BestOfArtwork() {
                         display: "flex",
                         alignItems: "center",
                         gap: 1,
+                        flexShrink: 0,
                       }}
                     >
                       <ThumbUpAltIcon color="action" />

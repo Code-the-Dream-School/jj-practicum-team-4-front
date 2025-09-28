@@ -36,7 +36,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function Gallery() {
   
-  // const { token ,isAuthenticated } = useAuth();
   
   const [shownModal, setShownModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -46,7 +45,6 @@ export default function Gallery() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedArtworkId, setSelectedArtworkId] = useState(null);
 
-  //const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const user = token ? jwtDecode(token) : null;
 
@@ -72,7 +70,6 @@ export default function Gallery() {
     if (storedPrompt) {
       const p = JSON.parse(storedPrompt);
       setPrompt(p);
-      // Fetch artworks when component mounts
       fetchAllArtWorks(p.id);
     }
   }, []);
@@ -147,7 +144,6 @@ export default function Gallery() {
     try {
       await deleteData(`${DELETEARTWORK_URL}/${artworkId}`);
       console.log("Artwork deleted successfully", artworkId);
-      // Refetch all artworks again to show the latest
       fetchAllArtWorks(prompt.id);
     } catch (error) {
       console.error("Error deleting artwork:", error);
@@ -155,7 +151,7 @@ export default function Gallery() {
   };
   const handleDeleteClick = (artworkId) => {
     setSelectedArtworkId(artworkId);
-    setConfirmOpen(true);   // show dialog
+    setConfirmOpen(true);  
   };
 
   const handleConfirmDelete = async () => {
@@ -408,13 +404,13 @@ export default function Gallery() {
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         flex: 1,
-                        minWidth: 0, // Important for text truncation
+                        minWidth: 0, 
                         fontSize: "1.1rem",
                         fontWeight: 700,
 
                         }}>
                        {art.title}</Typography>
-                    {/* <Stack direction="row" spacing={1}> */}
+                  
                     <Typography variant="body2" 
                       sx={{ ml: 2, flexShrink: 0 }}>
 
@@ -426,13 +422,11 @@ export default function Gallery() {
                            e.stopPropagation();
                           handleDeleteClick(art.id);
                         }}
-                        // sx={{ bgcolor: "#E6B6B6" }}
                         disabled={saving}
                       >
                         <DeleteIcon />
                       </IconButton>
                     )}
-                  {/* </Stack> */}
                   </Box>
                 </CardContent>
               </Card>
