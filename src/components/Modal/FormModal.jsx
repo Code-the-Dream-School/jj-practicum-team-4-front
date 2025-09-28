@@ -14,8 +14,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
 import SubmissionForm from "../Form/SubmissionForm";
 import SubmissionPreview from "../Form/SubmissionPreview";
-import { getData } from "../../util";
 import ConfirmModal from "./ConfirmModal";
+import formatDateForDisplay from "../../util/date";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -26,7 +26,6 @@ function FormModal({ shownModal, setShownModal }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [prompt, setPrompt] = useState(null);
-  const [challenge, setChallenge] = useState(null);
   // UI alert
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
@@ -34,36 +33,12 @@ function FormModal({ shownModal, setShownModal }) {
   const [alertSeverity, setAlertSeverity] = useState("error");
 
   useEffect(() => {
-    getWeeklyPrompt();
+    const getPrompt = localStorage.getItem("activePrompt");
+    if (!getPrompt) return;
+    const activePrompt = JSON.parse(getPrompt);
+    setPrompt(activePrompt);
   }, []);
 
-  const formatted = (date) => {
-    const formatDate = new Date(date);
-    return formatDate
-      .toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-      .replace(",", "");
-  };
-
-  const getWeeklyPrompt = async () => {
-    setIsLoading(true);
-    try {
-      const response = await getData(`${baseUrl}/api/prompts/active`);
-      if (!response) {
-        throw new Error(response.message || "failed to get data");
-      }
-      console.log(response);
-      setPrompt(response.prompt);
-      setChallenge(response.challenge);
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   const handleSubmission = (data) => {
     setPostArtworkData(data);
     setStep(2);
@@ -149,7 +124,7 @@ function FormModal({ shownModal, setShownModal }) {
                     variant="h6"
                     sx={{ mb: 2, color: "text.secondary" }}
                   >
-                    {`${formatted(challenge.start_date)} - ${formatted(challenge.end_date)}`}
+                    {`${formatDateForDisplay(prompt.startDate)} - ${formatDateForDisplay(prompt.endDate)}`}
                   </Typography>
                   <Divider />
                   <Typography
@@ -181,7 +156,6 @@ function FormModal({ shownModal, setShownModal }) {
                 setIsDialogOpen={setIsDialogOpen}
                 isDialogOpen={isDialogOpen}
                 prompt={prompt}
-                formatted={formatted}
               />
             )}
             {step === 2 && (
@@ -199,7 +173,6 @@ function FormModal({ shownModal, setShownModal }) {
                 setAlertOpen={setAlertOpen}
                 setAlertTitle={setAlertTitle}
                 prompt={prompt}
-                formatted={formatted}
               />
             )}
           </Box>

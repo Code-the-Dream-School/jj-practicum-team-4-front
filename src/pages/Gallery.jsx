@@ -35,9 +35,8 @@ import { getData, postData, patchData, deleteData } from "../util";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function Gallery() {
-  
   // const { token ,isAuthenticated } = useAuth();
-  
+
   const [shownModal, setShownModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -57,16 +56,13 @@ export default function Gallery() {
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
-   const LIKE_URL = `${BASE_URL}/api/artwork/`;
+  const LIKE_URL = `${BASE_URL}/api/artwork/`;
 
-
- 
   const DELETEARTWORK_URL = `${BASE_URL}/api/artwork`;
 
   useEffect(() => {
     handleGoogleAuthSuccess();
   }, [authProcessed, navigate]);
-
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
     if (storedPrompt) {
@@ -108,26 +104,26 @@ export default function Gallery() {
     }
   };
 
-  const updatedArtworkLikes = async(artworkId) => {
+  const updatedArtworkLikes = async (artworkId) => {
     try {
       const response = await getData(`${LIKE_URL}${artworkId}/likes`, {
-         headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
       const newLikeCount = response.like_counter;
       setArtworks((prev) =>
-        prev.map((artwork) => 
-           artwork.id === artworkId ?{...artwork, like_counter: newLikeCount} : artwork
+        prev.map((artwork) =>
+          artwork.id === artworkId
+            ? { ...artwork, like_counter: newLikeCount }
+            : artwork
         )
-      );          
+      );
     } catch (error) {
-      console.error(
-        "Error updating like count for artwork:",
-        error);
+      console.error("Error updating like count for artwork:", error);
     }
-  }
+  };
 
   const fetchAllArtWorks = async (promptId) => {
     if (!promptId) return;
@@ -155,7 +151,7 @@ export default function Gallery() {
   };
   const handleDeleteClick = (artworkId) => {
     setSelectedArtworkId(artworkId);
-    setConfirmOpen(true);   // show dialog
+    setConfirmOpen(true); // show dialog
   };
 
   const handleConfirmDelete = async () => {
@@ -170,7 +166,6 @@ export default function Gallery() {
     setConfirmOpen(false);
     setSelectedArtworkId(null);
   };
-
 
   return (
     <>
@@ -335,9 +330,7 @@ export default function Gallery() {
           sx={{ width: "100%" }}
         >
           {artworks.map((art) => (
-            
             <Grid
-              // item
               xs={12}
               sm={6}
               md={4}
@@ -368,7 +361,6 @@ export default function Gallery() {
               >
                 <CardMedia
                   component="img"
-                  // height="200"
                   image={art.image_url}
                   alt={art.title}
                   sx={{
@@ -411,19 +403,18 @@ export default function Gallery() {
                         minWidth: 0, // Important for text truncation
                         fontSize: "1.1rem",
                         fontWeight: 700,
-
-                        }}>
-                       {art.title}</Typography>
+                      }}
+                    >
+                      {art.title}
+                    </Typography>
                     {/* <Stack direction="row" spacing={1}> */}
-                    <Typography variant="body2" 
-                      sx={{ ml: 2, flexShrink: 0 }}>
-
+                    <Typography variant="body2" sx={{ ml: 2, flexShrink: 0 }}>
                       Likes: {art.like_counter}
                     </Typography>
                     {(user?.admin || user?.userId === art.user.id) && (
-                    <IconButton
+                      <IconButton
                         onClick={(e) => {
-                           e.stopPropagation();
+                          e.stopPropagation();
                           handleDeleteClick(art.id);
                         }}
                         // sx={{ bgcolor: "#E6B6B6" }}
@@ -432,7 +423,7 @@ export default function Gallery() {
                         <DeleteIcon />
                       </IconButton>
                     )}
-                  {/* </Stack> */}
+                    {/* </Stack> */}
                   </Box>
                 </CardContent>
               </Card>
@@ -440,19 +431,23 @@ export default function Gallery() {
           ))}
         </Grid>
         <Dialog open={confirmOpen} onClose={handleCancelDelete}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this artwork? 
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelDelete}>Cancel</Button>
-          <Button onClick={handleConfirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this artwork?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCancelDelete}>Cancel</Button>
+            <Button
+              onClick={handleConfirmDelete}
+              color="error"
+              variant="contained"
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Modal
           open={!!selected}
           aria-labelledby="modal-artwork-detail"
@@ -476,7 +471,7 @@ export default function Gallery() {
                 artwork={selected}
                 likes={selected.like_counter}
                 onLike={() => updatedArtworkLikes(selected.id)}
-                onClose={() => { 
+                onClose={() => {
                   setSelected(null);
                   updatedArtworkLikes(selected.id);
                 }}
