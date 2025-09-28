@@ -143,7 +143,6 @@ export default function ChallengePrompts() {
       setLoading(false);
     }
   };
-
   const fetchAllPrompts = async () => {
     try {
       setLoading(true);

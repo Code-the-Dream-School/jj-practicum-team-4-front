@@ -16,7 +16,6 @@ import {
 import { Link } from "react-router-dom";
 import hero4 from "../assets/hero4.jpeg";
 import { CssBaseline } from "@mui/material";
-import sampleImage from "../assets/images.jpeg";
 import UserCard from "../components/usercard/usercard.jsx";
 import { getData } from "../util/index.js";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
@@ -33,17 +32,18 @@ export default function Home() {
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
+  // const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
 
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
     if (storedPrompt) {
       const p = JSON.parse(storedPrompt);
       setPrompt(p);
-      // Fetch artworks when component mounts
       fetchAllArtWorks(p.id);
     }
   }, []);
 
+  console.log(prompt);
   const fetchAllArtWorks = async (promptId) => {
     if (!promptId) return;
     try {
@@ -57,7 +57,6 @@ export default function Home() {
       console.error("Error fetching artworks:", error);
     }
   };
-
   if (!artworks) {
     return (
       <Box
@@ -74,16 +73,15 @@ export default function Home() {
   }
 
   console.log(artworks);
-  // Sort by likes and get top 5
+  
   const topArtworks = [...artworks]
     .sort((a, b) => b.like_counter - a.like_counter)
     .slice(0, 5);
-  // Ensure most liked artwork is always in the center visually
+ 
   const centerIndex = Math.floor(topArtworks.length / 2);
-  // Arrange: [least, 3rd, most, 2nd, least]
+ 
   let sortedForDisplay = [];
   if (topArtworks.length === 5) {
-    // [2nd least, 3rd most, most, 2nd most, least]
     sortedForDisplay = [
       topArtworks[4],
       topArtworks[2],
@@ -92,7 +90,6 @@ export default function Home() {
       topArtworks[3],
     ];
   } else {
-    // fallback: center most liked
     sortedForDisplay = [...topArtworks];
     if (topArtworks.length > 1) {
       const [mostLiked] = sortedForDisplay.splice(0, 1);
@@ -122,7 +119,6 @@ export default function Home() {
               flex: { xs: "1 1 auto", md: "0 0 50%" },
               textAlign: { xs: "center", md: "left" },
               px: { xs: 2, md: 4 },
-              // textAlign: "center",
               width: "100%",
             }}
           >
@@ -135,20 +131,17 @@ export default function Home() {
                 mx: { sm: "auto", md: "0px" },
                 textAlign: { xs: "center", md: "left" },
               }}
-              // textAlign="center"
               maxWidth="550px"
             >
               Turn Art Block Into Art Magic
             </Typography>
             <Typography
-              // variant="h6"
               sx={{ mb: 7, typography: { xs: "body1", md: "h6" } }}
               color="text.secondary"
             >
               Discover fresh prompts every week. Share your creations. Get
               meaningful feedback. Build your artistic confidence.
             </Typography>
-            {/* challenge prompt display */}
 
             <Stack
               direction="row"
@@ -185,13 +178,11 @@ export default function Home() {
               maxWidth: "400px",
               height: "auto",
               objectFit: "contain",
-              // borderRadius: 2,
             }}
           />
         </Box>
         </Box>
         <Divider sx={{ mt: { xs: 0, md: 5, lg: 0 } }} />
-        {/* Top Most Liked/Voted Artworks Section */}
         <Box
           sx={{
             p: 4,
@@ -234,45 +225,33 @@ export default function Home() {
           <Box
             sx={{
               p: 4,
-              // bgcolor: "grey.100",
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           >
-            {/* <Typography variant="h3" align="center" gutterBottom>
-              Top Most Liked/Voted Artworks
-            </Typography> */}
-
             <Box
               sx={{
                 display: "grid",
                 gridTemplateColumns: {
-                  xs: "1fr", // Single column on mobile
-                  sm: "repeat(2, 1fr)", // Two columns on small screens
-                  // lg: "repeat(3, 1fr)",
-                  // xl: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
-                 md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, // Dynamic on desktop, max 5
+                  xs: "1fr",
+                  sm: "repeat(2, 1fr)",
+                 md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, 
                 },
-                //  gridTemplateColumns: `repeat(${sortedForDisplay.length}, 1fr)`,
                 justifyContent: "center",
                 alignItems: "end",
                 gap: { xs: 4, md: 4 },
                 mt: 4,
-                minHeight: { xs: "auto", md: 320 }, // Auto height on mobile
+                minHeight: { xs: "auto", md: 320 }, 
                 px: { xs: 2, md: 0 },
-                // flexWrap: { xs: "wrap", lg: "nowrap" },
               }}
             >
               {sortedForDisplay.map((art, idx) => {
-                // Card sizes: center is largest, sides are smaller, but spacing is always equal
-                let width = 230,
-                  // height = 250,
-                  height = 230,
-                  boxShadow = 2;
+                  let width = 230,
+                    height = 230,
+                    boxShadow = 2;
                 if (window.innerWidth >= 960) {
                   if (idx === centerIndex) {
                     width = 320;
-                    // height = 370;
                     height = 350;
                     boxShadow = 6;
                   } else if (
@@ -280,7 +259,6 @@ export default function Home() {
                     idx === centerIndex + 1
                   ) {
                     width = 260;
-                    // height = 290;
                     height = 280;
                     boxShadow = 4;
                   }
