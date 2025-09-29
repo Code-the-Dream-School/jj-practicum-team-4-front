@@ -14,7 +14,7 @@ Browse and interact with submitted artworks in a responsive grid layout. Feature
 
 #### 📤 Artwork Submission
 
-Upload artwork (JPG/PNG up to 5MB) with title, description, and optional social media links. Real-time preview and validation included.
+Upload artwork (JPG/PNG up to 5MB) with title, media tag, and description. Real-time preview and validation included.
 
 #### 👤 User Authentication
 
@@ -81,18 +81,28 @@ npm run dev
 - Axios - HTTP client for API calls
 - jwt-decode - JWT token decoding
 
-#### Authentication
-
-<!-- Google OAuth integration -->
-
 #### Development Tools
 
 - ESLint & Prettier - Code linting and formatting
 
 ## Demo Link & Screenshots
 
+Demo Link: https://arthive.onrender.com/
+
+- HOME page
+  - ![alt text](image.png)
+- Sign-in / Sign-up page
+  - ![alt text](image-1.png)
+- Gallery page (Authorized)
+  - ![alt text](image-2.png)
+
 - [Demo Video for Form Submission User flow](https://www.loom.com/share/a917afdab27d4adb841dd4aa1b87751d?sid=b230ea50-9d41-4784-8175-eb89c380e27a)
-<!-- Demo link and screenshots will be displayed once all app design and functions are done. -->
+- Best of Artwork page
+  - ![alt text](image-4.png)
+- About page
+  - ![alt text](image-5.png)
+- Challenge prompt (only Admin)
+  - ![alt text](image-6.png)
 
 ## Team Members & Roles
 
