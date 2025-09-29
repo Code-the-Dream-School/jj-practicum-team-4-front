@@ -415,11 +415,7 @@ export default function Gallery() {
                        {art.title}</Typography>
                   
                     <Typography variant="body2" 
-                      sx={{ ml: 2, flexShrink: 0 }}>
-
-                      }}
-                    >
-                      
+                      sx={{ ml: 2, flexShrink: 0 }}>                      
                       Likes: {art.like_counter}
                     </Typography>
                     {(user?.admin || user?.userId === art.user.id) && (
