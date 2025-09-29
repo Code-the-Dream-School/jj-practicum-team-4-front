@@ -10,19 +10,13 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import {
-  Alert,
-  CircularProgress,
-  Skeleton,
-  Snackbar,
-  Stack,
-} from "@mui/material";
+import { Alert, Skeleton, Snackbar, Stack } from "@mui/material";
 import { useState } from "react";
 import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import arthiveLogo from "../../../public/images/arthive_logo.png";
 
 const pages = [
   "home",
@@ -128,7 +122,7 @@ function Navbar() {
           >
             <Box
               component="img"
-              src="images\aRTHIVE\2.png"
+              src={arthiveLogo}
               alt="Arthive Logo"
               sx={{
                 height: "55px",

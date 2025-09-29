@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import formatDateForDisplay from "../util/date.jsx";
-import { Divider, Modal } from "@mui/material";
+import { Modal } from "@mui/material";
 import { CssBaseline } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import UserCard from "../components/usercard/usercard.jsx";
@@ -16,7 +16,6 @@ import {
   CardContent,
   Typography,
   Box,
-  Link,
   Snackbar,
   Alert,
   Stack,
@@ -27,16 +26,16 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Pagination
+  Pagination,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
 import { jwtDecode } from "jwt-decode";
-import { getData, postData, patchData, deleteData } from "../util";
+import { getData, deleteData } from "../util";
 import DeleteIcon from "@mui/icons-material/Delete";
+import artIllustration from "../../public/images/art_illustration.png";
 
 export default function Gallery() {
-
   const [shownModal, setShownModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -44,7 +43,6 @@ export default function Gallery() {
   const [artworks, setArtworks] = useState([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedArtworkId, setSelectedArtworkId] = useState(null);
-
 
   const [page, setPage] = useState(1);
   const [totalArtworks, setTotalArtworks] = useState(0);
@@ -63,7 +61,6 @@ export default function Gallery() {
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
   const LIKE_URL = `${BASE_URL}/api/artwork/`;
-
 
   const DELETEARTWORK_URL = `${BASE_URL}/api/artwork`;
 
@@ -131,10 +128,12 @@ export default function Gallery() {
     }
   };
 
-  const fetchAllArtWorks = async (promptId , page = 1) => {
+  const fetchAllArtWorks = async (promptId, page = 1) => {
     if (!promptId) return;
     try {
-      const response = await getData(ARTWORK_URL.replace(":id", promptId) + "?page=" + page );
+      const response = await getData(
+        ARTWORK_URL.replace(":id", promptId) + "?page=" + page
+      );
       if (response && response.items && response.items.length > 0) {
         setArtworks(response.items);
         setTotalArtworks(response.total);
@@ -157,8 +156,7 @@ export default function Gallery() {
   };
   const handleDeleteClick = (artworkId) => {
     setSelectedArtworkId(artworkId);
-    setConfirmOpen(true);  
-
+    setConfirmOpen(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -190,11 +188,7 @@ export default function Gallery() {
           }}
         >
           <Box width="800px">
-            <Box
-              component="img"
-              width="100%"
-              src="images/art_illustration.png"
-            />
+            <Box component="img" width="100%" src={artIllustration} />
           </Box>
           <Box
             maxWidth="lg"
@@ -407,15 +401,15 @@ export default function Gallery() {
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         flex: 1,
-                        minWidth: 0, 
+                        minWidth: 0,
                         fontSize: "1.1rem",
                         fontWeight: 700,
+                      }}
+                    >
+                      {art.title}
+                    </Typography>
 
-                        }}>
-                       {art.title}</Typography>
-                  
-                    <Typography variant="body2" 
-                      sx={{ ml: 2, flexShrink: 0 }}>                      
+                    <Typography variant="body2" sx={{ ml: 2, flexShrink: 0 }}>
                       Likes: {art.like_counter}
                     </Typography>
                     {(user?.admin || user?.userId === art.user.id) && (
@@ -429,23 +423,23 @@ export default function Gallery() {
                         <DeleteIcon />
                       </IconButton>
                     )}
-           </Box>
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
-      <Box mt={4} display="flex" justifyContent="center">
-     <Pagination
-      count={Math.ceil(totalArtworks / pageSize)} // total pages
-      page={page}
-      onChange={(event, value) => {
-        setPage(value);
-        fetchAllArtWorks(prompt.id, value);
-      }}
-      color="primary"
-     />
-     </Box>
+        <Box mt={4} display="flex" justifyContent="center">
+          <Pagination
+            count={Math.ceil(totalArtworks / pageSize)} // total pages
+            page={page}
+            onChange={(event, value) => {
+              setPage(value);
+              fetchAllArtWorks(prompt.id, value);
+            }}
+            color="primary"
+          />
+        </Box>
         <Dialog open={confirmOpen} onClose={handleCancelDelete}>
           <DialogTitle>Confirm Delete</DialogTitle>
           <DialogContent>
