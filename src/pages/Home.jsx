@@ -33,16 +33,50 @@ export default function Home() {
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
 
+  const ACTIVE_PROMPT_URL = `${BASE_URL}/api/prompts/active`;
+
+  // Fetch active prompt from backend
+  const fetchActivePrompt = async () => {
+    try {
+      setLoading(true);
+      const response = await getData(ACTIVE_PROMPT_URL);
+      
+      if (response && response?.prompt && response?.challenge) {
+        const formatted = {
+          id: response.prompt.id,
+          title: response.prompt.title,
+          description: response.prompt.description,
+          rules: response.prompt.rules,
+          startDate: response.challenge.start_date,
+          endDate: response.challenge.end_date,
+          status: response.prompt.is_active ? "ACTIVE" : "CLOSED",
+        };
+        
+        setPrompt(formatted);
+        localStorage.setItem("activePrompt", JSON.stringify(formatted));
+        fetchAllArtWorks(formatted.id);
+      } else {
+        setError("No active prompt found");
+      }
+    } catch (error) {
+      console.error("Error fetching prompt:", error);
+      setError("Failed to load active prompt");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
     if (storedPrompt) {
       const p = JSON.parse(storedPrompt);
       setPrompt(p);
       fetchAllArtWorks(p.id);
+    } else {
+      // If no stored prompt, fetch from API
+      fetchActivePrompt();
     }
   }, []);
-
-  console.log(prompt);
   const fetchAllArtWorks = async (promptId) => {
     if (!promptId) return;
     try {
