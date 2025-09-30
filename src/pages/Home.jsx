@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import formatDateForDisplay from "../util/date.jsx";
 import {
   Box,
@@ -14,7 +14,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import hero4 from "../assets/hero4.jpeg";
 import { CssBaseline } from "@mui/material";
 import UserCard from "../components/usercard/usercard.jsx";
 import { getData } from "../util/index.js";
@@ -22,6 +21,7 @@ import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import RecommendIcon from "@mui/icons-material/Recommend";
+import heroImg from "../../public/images/hero_img.jpeg";
 
 export default function Home() {
   const [selected, setSelected] = useState(null);
@@ -32,7 +32,6 @@ export default function Home() {
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
-  // const ACTIVE_URL = `${BASE_URL}/api/prompts/active`;
 
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
@@ -73,13 +72,13 @@ export default function Home() {
   }
 
   console.log(artworks);
-  
+
   const topArtworks = [...artworks]
     .sort((a, b) => b.like_counter - a.like_counter)
     .slice(0, 5);
- 
+
   const centerIndex = Math.floor(topArtworks.length / 2);
- 
+
   let sortedForDisplay = [];
   if (topArtworks.length === 5) {
     sortedForDisplay = [
@@ -152,10 +151,11 @@ export default function Home() {
               flexWrap="wrap"
             >
               <Button variant="contained" component={Link} to="/sign-in">
-                join the community <Diversity3Icon />
+                join the community &nbsp; <Diversity3Icon />
               </Button>
               <Button variant="outlined" component={Link} to="/gallery">
-                Explore Weekly Artworks <ArrowRightAltIcon />
+                Explore Weekly Artworks &nbsp;
+                <ArrowRightAltIcon />
               </Button>
             </Stack>
           </Box>
@@ -169,18 +169,18 @@ export default function Home() {
               order: { xs: 1, md: 2 },
             }}
           >
-          <Box
-            component="img"
-            src={hero4}
-            alt="Artist painting illustration"
-            sx={{
-              width: "100%",
-              maxWidth: "400px",
-              height: "auto",
-              objectFit: "contain",
-            }}
-          />
-        </Box>
+            <Box
+              component="img"
+              src={heroImg}
+              alt="Artist painting illustration"
+              sx={{
+                width: "100%",
+                maxWidth: "400px",
+                height: "auto",
+                objectFit: "contain",
+              }}
+            />
+          </Box>
         </Box>
         <Divider sx={{ mt: { xs: 0, md: 5, lg: 0 } }} />
         <Box
@@ -235,20 +235,20 @@ export default function Home() {
                 gridTemplateColumns: {
                   xs: "1fr",
                   sm: "repeat(2, 1fr)",
-                 md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`, 
+                  md: `repeat(${Math.min(sortedForDisplay.length, 5)}, 1fr)`,
                 },
                 justifyContent: "center",
                 alignItems: "end",
                 gap: { xs: 4, md: 4 },
                 mt: 4,
-                minHeight: { xs: "auto", md: 320 }, 
+                minHeight: { xs: "auto", md: 320 },
                 px: { xs: 2, md: 0 },
               }}
             >
               {sortedForDisplay.map((art, idx) => {
-                  let width = 230,
-                    height = 230,
-                    boxShadow = 2;
+                let width = 230,
+                  height = 230,
+                  boxShadow = 2;
                 if (window.innerWidth >= 960) {
                   if (idx === centerIndex) {
                     width = 320;
@@ -277,7 +277,7 @@ export default function Home() {
                       sx={{
                         width: { xs: "100%", md: width },
                         maxWidth: { xs: 300, md: width },
-                         height: { xs: 280, md: height },
+                        height: { xs: 280, md: height },
                         boxShadow: { xs: 3, md: boxShadow },
                         cursor: "pointer",
                         display: "flex",
@@ -305,18 +305,15 @@ export default function Home() {
                         }}
                       />
                       <CardContent
-                        sx={{ textAlign: "center", width: "100%", pt: 2,}}
+                        sx={{ textAlign: "center", width: "100%", pt: 2 }}
                       >
                         {/* <Box> */}
-                          <Typography variant="body1" fontWeight={600}>
-                            {art.title}
-                          </Typography>
-                          <Typography
-                            variant="subtitle2"
-                            color="text.secondary"
-                          >
-                            {art.user.first_name}
-                          </Typography>
+                        <Typography variant="body1" fontWeight={600}>
+                          {art.title}
+                        </Typography>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          {art.user.first_name}
+                        </Typography>
                         {/* </Box> */}
                         <Typography
                           component="div"
@@ -371,7 +368,6 @@ export default function Home() {
               </Box>
             </Modal>
           </Box>
-          
         </Box>
       </Container>
     </>

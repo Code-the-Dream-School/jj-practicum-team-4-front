@@ -1,9 +1,7 @@
-
 import React, { useState, useEffect } from "react";
-import {Typography, IconButton } from "@mui/material";
+import { Typography, IconButton } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CloseIcon from "@mui/icons-material/Close";
-import sampleImage from "../../assets/images.jpeg";
 import { getData, postData, deleteData } from "../../util";
 
 import {
@@ -25,7 +23,7 @@ export default function UserCard({
   artworkId,
   likes = 0,
   onLike,
-  onClose ,
+  onClose,
 }) {
   const [liked, setLiked] = useState(false);
   const BASE_URL = import.meta.env.VITE_API_URL;
@@ -41,11 +39,11 @@ export default function UserCard({
   const checkUserLiked = async () => {
     if (!artworkId) return;
     try {
-      const response = await getData(`${LIKE_URL}${artworkId}/likes`,  {
-         headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      const response = await getData(`${LIKE_URL}${artworkId}/likes`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
       // Assume response.likes contains array of users who liked
       const hasLiked = response?.liked_by_me;
@@ -55,15 +53,21 @@ export default function UserCard({
     }
   };
 
-   const handleLike = async () => {
-    if (!artworkId ) return;
+  const handleLike = async () => {
+    if (!artworkId) return;
     try {
       if (!liked) {
         // Like artwork
-        await postData(`${LIKE_URL}${artworkId}/likes`, {}, {
-          headers: { Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", },
-        });
+        await postData(
+          `${LIKE_URL}${artworkId}/likes`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         setLiked(true);
       } else {
         // Dislike artwork (remove like)
@@ -74,17 +78,13 @@ export default function UserCard({
         await deleteData(`${LIKE_URL}${artworkId}/likes`);
         setLiked(false);
       }
-        if (onLike) 
-          onLike();
-        
-    }catch (error) {
+      if (onLike) onLike();
+    } catch (error) {
       console.error("Error toggling like:", error);
     }
   };
 
   const handleClose = () => onClose(); // Notify parent
-
- 
 
   const getSocialUrl = (link) => {
     if (!link) return null;
@@ -195,7 +195,7 @@ export default function UserCard({
         {/* Like button */}
         <CenteredActions>
           <IconButton
-             onClick={handleLike}
+            onClick={handleLike}
             color={liked ? "primary" : "default"}
             sx={{ fontSize: "1.5rem" }}
           >

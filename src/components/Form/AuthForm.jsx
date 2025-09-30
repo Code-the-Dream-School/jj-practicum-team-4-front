@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -20,6 +20,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import googleIcon from "/public/googleIcon.png";
 
 function AuthForm() {
   // user auth state management
@@ -193,7 +194,7 @@ function AuthForm() {
                 <>
                   <Avatar
                     alt="Google Icon"
-                    src="src/assets/images/googleIcon.png"
+                    src={googleIcon}
                     sx={{ width: 24, height: 24, mr: 1 }}
                   />
                   Continue with Google
