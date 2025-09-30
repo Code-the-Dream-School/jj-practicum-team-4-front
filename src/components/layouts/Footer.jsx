@@ -1,5 +1,5 @@
 import { Box, Divider, Typography } from "@mui/material";
-import AdbIcon from "@mui/icons-material/Adb";
+import arthiveLogo from "../../../public/images/arthive_logo.png";
 
 import { Link } from "react-router-dom";
 
@@ -28,7 +28,7 @@ function Footer() {
         <Box component="a" href="/">
           <Box
             component="img"
-            src="images\aRTHIVE\2.png"
+            src={arthiveLogo}
             alt="Arthive Logo"
             sx={{
               mr: 1,
