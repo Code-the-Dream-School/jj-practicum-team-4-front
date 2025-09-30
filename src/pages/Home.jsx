@@ -26,9 +26,9 @@ import heroImg from "../../public/images/hero_img.jpeg";
 export default function Home() {
   const [selected, setSelected] = useState(null);
   const [prompt, setPrompt] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [artworks, setArtworks] = useState(null);
+  const [artworks, setArtworks] = useState([]);
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
@@ -51,21 +51,21 @@ export default function Home() {
           endDate: response.challenge.end_date,
           status: response.prompt.is_active ? "ACTIVE" : "CLOSED",
         };
-        
         setPrompt(formatted);
         localStorage.setItem("activePrompt", JSON.stringify(formatted));
         fetchAllArtWorks(formatted.id);
       } else {
         setError("No active prompt found");
+        setArtworks([]);
       }
     } catch (error) {
       console.error("Error fetching prompt:", error);
       setError("Failed to load active prompt");
+      setArtworks([]);
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
     if (storedPrompt) {
@@ -77,20 +77,24 @@ export default function Home() {
       fetchActivePrompt();
     }
   }, []);
+  // For the Home page, we're using the /api/home endpoint which returns recent_artworks
   const fetchAllArtWorks = async (promptId) => {
     if (!promptId) return;
     try {
-      const response = await getData(ARTWORK_URL.replace(":id", promptId));
-      if (response && response.items && response.items.length > 0) {
-        setArtworks(response.items);
+      // Use the home endpoint which provides recent artworks
+      const response = await getData(`${BASE_URL}/api/home`);
+      if (response && response.recent_artworks && response.recent_artworks.length > 0) {
+        setArtworks(response.recent_artworks);
       } else {
         setArtworks([]);
       }
     } catch (error) {
       console.error("Error fetching artworks:", error);
+    } finally {
+      setLoading(false);
     }
   };
-  if (!artworks) {
+  if (loading) {
     return (
       <Box
         sx={{
@@ -104,8 +108,6 @@ export default function Home() {
       </Box>
     );
   }
-
-  console.log(artworks);
 
   const topArtworks = [...artworks]
     .sort((a, b) => b.like_counter - a.like_counter)
