@@ -24,7 +24,6 @@ export default function BestOfArtwork() {
   const baseUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     getWinnersData();
-    getAllPrompt();
   }, []);
 
   const getWinnersData = async () => {
@@ -34,22 +33,13 @@ export default function BestOfArtwork() {
         throw new Error("Failed to fetch winners data");
       }
       setWinners(response);
+      setPrevPrompt(response[0]?.prompt_id);
     } catch (error) {
       console.log("Failed to fetch data", error);
     }
   };
 
-  const getAllPrompt = async () => {
-    try {
-      const response = await getAllData(`${baseUrl}/api/prompts/all`);
-      if (!response) {
-        throw new Error("Failed to fetch all prompt data");
-      }
-      setPrevPrompt(response?.items[1]);
-    } catch (error) {
-      console.log("Failed to fetch");
-    }
-  };
+  
 
   if (!winners)
     return (
