@@ -27,13 +27,14 @@ import {
   DialogContentText,
   DialogActions,
   Pagination,
+  CircularProgress,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext.jsx";
 import FormModal from "../components/Modal/FormModal.jsx";
 import { jwtDecode } from "jwt-decode";
 import { getData, deleteData } from "../util";
 import DeleteIcon from "@mui/icons-material/Delete";
-import artIllustration from "../../public/images/art_illustration.png";
+import artIllustration from "/images/art_illustration.png?url";
 
 export default function Gallery() {
   const [shownModal, setShownModal] = useState(false);
@@ -60,19 +61,51 @@ export default function Gallery() {
 
   const BASE_URL = import.meta.env.VITE_API_URL;
   const ARTWORK_URL = `${BASE_URL}/api/prompts/:id/artworks`;
+  const HOME_URL = `${BASE_URL}/api/home`;
   const LIKE_URL = `${BASE_URL}/api/artwork/`;
+  const ACTIVE_PROMPT_URL = `${BASE_URL}/api/prompts/active`;
 
   const DELETEARTWORK_URL = `${BASE_URL}/api/artwork`;
 
   useEffect(() => {
     handleGoogleAuthSuccess();
   }, [authProcessed, navigate]);
+  // Fetch active prompt from backend if not in localStorage
+  const fetchActivePrompt = async () => {
+    try {
+      // Show loading state during fetch
+      setSaving(true);
+      const response = await getData(ACTIVE_PROMPT_URL);
+
+      if (response && response?.prompt && response?.challenge) {
+        const formatted = {
+          id: response.prompt.id,
+          title: response.prompt.title,
+          description: response.prompt.description,
+          rules: response.prompt.rules,
+          startDate: response.challenge.start_date,
+          endDate: response.challenge.end_date,
+          status: response.prompt.is_active ? "ACTIVE" : "CLOSED",
+        };
+
+        setPrompt(formatted);
+        localStorage.setItem("activePrompt", JSON.stringify(formatted));
+        fetchAllArtWorks(formatted.id, page);
+      }
+    } catch (error) {
+      console.error("Error fetching active prompt:", error);
+    }
+  };
+
   useEffect(() => {
     const storedPrompt = localStorage.getItem("activePrompt");
     if (storedPrompt) {
       const p = JSON.parse(storedPrompt);
       setPrompt(p);
       fetchAllArtWorks(p.id, page);
+    } else {
+      // If no stored prompt, fetch from API
+      fetchActivePrompt();
     }
   }, [page]);
 
@@ -129,26 +162,26 @@ export default function Gallery() {
   };
 
   const fetchAllArtWorks = async (promptId, page = 1) => {
-    if (!promptId) return;
     try {
-      const response = await getData(
-        ARTWORK_URL.replace(":id", promptId) + "?page=" + page
-      );
-      if (response && response.items && response.items.length > 0) {
-        setArtworks(response.items);
-        setTotalArtworks(response.total);
+      // Show loading state during fetch
+      setSaving(true);
+      const response = await getData(HOME_URL);
+      if (response && response.recent_artworks && response.recent_artworks.length > 0) {
+        setArtworks(response.recent_artworks);
+        setTotalArtworks(response.recent_artworks.length);
       } else {
         setArtworks([]);
       }
     } catch (error) {
       console.error("Error fetching artworks:", error);
+    } finally {
+      setSaving(false);
     }
   };
 
   const deleteArtwork = async (artworkId) => {
     try {
       await deleteData(`${DELETEARTWORK_URL}/${artworkId}`);
-      console.log("Artwork deleted successfully", artworkId);
       fetchAllArtWorks(prompt.id);
     } catch (error) {
       console.error("Error deleting artwork:", error);
@@ -171,6 +204,23 @@ export default function Gallery() {
     setConfirmOpen(false);
     setSelectedArtworkId(null);
   };
+
+  // Show loading spinner when fetching data
+  if ((saving || !prompt) && artworks.length === 0) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "50vh",
+          mt: 10,
+        }}
+      >
+        <CircularProgress size={40} />
+      </Box>
+    );
+  }
 
   return (
     <>

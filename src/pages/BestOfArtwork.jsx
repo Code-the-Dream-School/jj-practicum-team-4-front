@@ -21,41 +21,45 @@ export default function BestOfArtwork() {
   const [selected, setSelected] = useState(null);
   const [winners, setWinners] = useState(null);
   const [prevPrompt, setPrevPrompt] = useState(null);
+  const [loading, setLoading] = useState(true);
   const baseUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     getWinnersData();
   }, []);
 
   const getWinnersData = async () => {
+    setLoading(true);
     try {
       const response = await getAllData(`${baseUrl}/api/challenge/winners`);
-      if (!response) {
-        throw new Error("Failed to fetch winners data");
+      
+      // Set winners from API response (even if empty)
+      setWinners(Array.isArray(response) ? response : []);
+      
+      // If we have data and prompt info, use it
+      if (response && response.length > 0 && response[0]?.prompt_id) {
+        setPrevPrompt(response[0].prompt_id);
+      } else {
+        // Default prompt info when none is available
+        setPrevPrompt({
+          title: "Previous Challenge",
+          description: "Challenge details currently unavailable"
+        });
       }
-      setWinners(response);
-      setPrevPrompt(response[0]?.prompt_id);
     } catch (error) {
-      console.log("Failed to fetch data", error);
+      console.error("Failed to fetch data:", error);
+      setWinners([]);
+      setPrevPrompt({
+        title: "Previous Challenge",
+        description: "Failed to load challenge information"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   
 
-  if (!winners)
-    return (
-      <Box
-        sx={{
-          mt: 20,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-
-  if (!prevPrompt) {
+  if (loading) {
     return (
       <Box
         sx={{
@@ -69,6 +73,13 @@ export default function BestOfArtwork() {
       </Box>
     );
   }
+  
+  // Use default values for rendering instead of setState calls
+  const displayWinners = winners || [];
+  const displayPrompt = prevPrompt || {
+    title: "Challenge Information",
+    description: "Challenge information is currently unavailable."
+  };
   return (
     <>
       <CssBaseline />
@@ -101,9 +112,9 @@ export default function BestOfArtwork() {
         <Divider sx={{ my: 12 }}>
           <Box>
             <Typography variant="h4" textTransform="uppercase">
-              {prevPrompt.title}
+              {displayPrompt.title}
             </Typography>
-            <Typography variant="body1">{prevPrompt.description}</Typography>
+            <Typography variant="body1">{displayPrompt.description}</Typography>
           </Box>
         </Divider>
         <Grid
@@ -112,7 +123,7 @@ export default function BestOfArtwork() {
           justifyContent="center"
           sx={{ width: "100%", my: 5 }}
         >
-          {winners.map((art) => (
+          {displayWinners && displayWinners.length > 0 ? displayWinners.map((art) => (
             <Grid item 
               xs={12} 
               sm={6} 
@@ -204,7 +215,16 @@ export default function BestOfArtwork() {
                 </CardContent>
               </Card>
             </Grid>
-          ))}
+          )) : (
+            <Box sx={{ py: 8, textAlign: 'center', width: '100%' }}>
+              <Typography variant="h5" color="text.secondary" gutterBottom>
+                No winning artworks available
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Check back soon for new submissions from completed challenges.
+              </Typography>
+            </Box>
+          )}
         </Grid>
       </Container>
       <Modal
