@@ -1,0 +1,482 @@
+{
+  "artwork": [
+    {
+      "id": "1",
+      "user_id": 1,
+      "prompt_id": 1,
+      "image_url": "https://example.com/images/artwork1.png",
+      "title": "Sunset Over the Ocean",
+      "description": "A digital painting of a vibrant sunset with waves reflecting warm colors.",
+      "media_tag": "digital-painting",
+      "like_counter": 0,
+      "createdAt": "2025-09-10T17:00:00Z"
+    },
+    {
+      "id": "53cc",
+      "image_url": "",
+      "title": "arthive",
+      "media_tag": "",
+      "description": "fdafdasfdasfdasfdasf",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:31:54.867Z",
+      "imageUrl": "arthive_logo.png",
+      "mediaType": "waterColor",
+      "mediaLink": "fdasfdas"
+    },
+    {
+      "id": "440c",
+      "image_url": "",
+      "title": "arthive",
+      "media_tag": "",
+      "description": "fdafdafda",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:35:04.705Z",
+      "imageUrl": "arthive_logo.png",
+      "mediaType": "waterColor",
+      "mediaLink": "fdasfdas"
+    },
+    {
+      "id": "2ee2",
+      "image_url": "arthive_logo.png",
+      "title": "arthive",
+      "media_tag": "mixed media",
+      "description": "fdafdasfdsafdasfdasfdsa",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:40:46.893Z",
+      "mediaLink": "fdasfdsa"
+    },
+    {
+      "id": "0d56",
+      "image_url": "arthive_logo-removebg-preview.png",
+      "title": "arthive",
+      "media_tag": "waterColor",
+      "description": "fdasfdasfdasfdsafdasfda",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:41:36.974Z"
+    },
+    {
+      "id": "559b",
+      "image_url": "arthive_logo.png",
+      "title": "arthive",
+      "media_tag": "mixed media",
+      "description": "fdafdafdafdafdasfd",
+      "social_link": "",
+      "createdAt": "2025-09-11T01:44:28.184Z",
+      "mediaLink": "fdsa"
+    },
+    {
+      "id": "9c82",
+      "image_url": "arthive_logo-removebg-preview.png",
+      "title": "arthive",
+      "media_tag": "mixed media",
+      "description": "afdafdasfdasfdas",
+      "social_link": "",
+      "createdAt": "2025-09-12T16:49:34.229Z"
+    },
+    {
+      "id": "2649",
+      "image_url": "arthive_logo.png",
+      "title": "arthive ",
+      "media_tag": "mixed media",
+      "description": "fdasfdafdafda",
+      "social_link": "",
+      "createdAt": "2025-09-12T16:56:10.010Z"
+    },
+    {
+      "id": "c65a",
+      "image_url": "image.png",
+      "title": "trqtreq",
+      "media_tag": "mixed media",
+      "description": "fdafda",
+      "social_link": "",
+      "createdAt": "2025-09-12T17:17:47.773Z"
+    },
+    {
+      "id": "f276",
+      "image_url": "image.png",
+      "title": "fafda",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "",
+      "createdAt": "2025-09-12T17:23:01.932Z"
+    },
+    {
+      "id": "37ae",
+      "image_url": "arthive_logo.png",
+      "title": "Arthive",
+      "media_tag": "waterColor",
+      "description": "fdafdafdafdasfdsafsa",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "9891",
+      "image_url": "arthive_logo.png",
+      "title": "fdafda",
+      "media_tag": "oil paint",
+      "description": "fdafdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "2681",
+      "image_url": "arthive_logo.png",
+      "title": "arthive",
+      "media_tag": "waterColor",
+      "description": "this is test posting.",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "9995",
+      "image_url": "arthive_logo.png",
+      "title": "gfsgfsd",
+      "media_tag": "waterColor",
+      "description": "test",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "1edb",
+      "image_url": "arthive_logo-removebg-preview.png",
+      "title": "test",
+      "media_tag": "waterColor",
+      "description": "test",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "80f3",
+      "image_url": "arthive_logo.png",
+      "title": "gfsdgfds",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "1851",
+      "image_url": "arthive_logo.png",
+      "title": "gfsdgfds",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "1c65",
+      "image_url": "arthive_logo.png",
+      "title": "gfsdgfds",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "c58e",
+      "image_url": "arthive_logo.png",
+      "title": "gfsdgfds",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "3bc4",
+      "image_url": "arthive_logo.png",
+      "title": "gfsdgfds",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "e081",
+      "image_url": "arthive_logo.png",
+      "title": "gfsdgfds",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "5469",
+      "image_url": "arthive_logo.png",
+      "title": "gfsdgfds",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "2ad4",
+      "image_url": "arthive_logo.png",
+      "title": "gfsdgfds",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "7787",
+      "image_url": "arthive_logo.png",
+      "title": "gfsdgfds",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "413f",
+      "image_url": "blob:http://localhost:5173/f48a4bd8-347f-4bb9-889c-6b8a83e502d0",
+      "title": "color base",
+      "media_tag": "oil paint",
+      "description": "fdasfdsafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "ad92",
+      "image_url": "blob:http://localhost:5173/563cdc57-8995-4be5-8f3d-78ebae5a5c8e",
+      "title": "floatDoodle",
+      "media_tag": "mixed media",
+      "description": "this is test.",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "1191",
+      "image_url": "blob:http://localhost:5173/563cdc57-8995-4be5-8f3d-78ebae5a5c8e",
+      "title": "floatDoodle",
+      "media_tag": "mixed media",
+      "description": "this is test.",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "3047",
+      "image_url": "blob:http://localhost:5173/563cdc57-8995-4be5-8f3d-78ebae5a5c8e",
+      "title": "floatDoodle",
+      "media_tag": "mixed media",
+      "description": "this is test.",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "0c3d",
+      "image_url": "blob:http://localhost:5173/492594c4-a6a7-43eb-9d44-6bace7f881de",
+      "title": "fdafda",
+      "media_tag": "mixed media",
+      "description": "fdasfdsa",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "6238",
+      "image_url": "blob:http://localhost:5173/28f98f72-c565-4fdd-baf6-6b13d4e161eb",
+      "title": "arthive logo",
+      "media_tag": "mixed media",
+      "description": "this is created by AI",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "ada6",
+      "image_url": "blob:http://localhost:5173/e73da766-9915-4c40-8b46-4285f19dd02c",
+      "title": "Float Doodle",
+      "media_tag": "mixed media",
+      "description": "This is illustration.",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "5b44",
+      "image_url": "blob:http://localhost:5173/e73da766-9915-4c40-8b46-4285f19dd02c",
+      "title": "Float Doodle",
+      "media_tag": "mixed media",
+      "description": "This is illustration.",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "7787",
+      "image_url": "blob:http://localhost:5173/bca5cd87-6382-482f-aff1-f593afbc8eb2",
+      "title": "UI design",
+      "media_tag": "mixed media",
+      "description": "this is UI design for landing page.",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "b8f0",
+      "image_url": "blob:http://localhost:5173/bca5cd87-6382-482f-aff1-f593afbc8eb2",
+      "title": "UI design",
+      "media_tag": "mixed media",
+      "description": "this is UI design for landing page.",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "dfb6",
+      "image_url": "blob:http://localhost:5173/2166fce0-6d11-4ac9-9b29-a7754ca5f46e",
+      "title": "fdasfdas",
+      "media_tag": "waterColor",
+      "description": "fdasfdas",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "f1a6",
+      "image_url": "blob:http://localhost:5173/2166fce0-6d11-4ac9-9b29-a7754ca5f46e",
+      "title": "fdasfdas",
+      "media_tag": "waterColor",
+      "description": "fdasfdas",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "1cd9",
+      "image_url": "blob:http://localhost:5173/386a8f40-0e45-4396-b9d2-c21b885ad464",
+      "title": "float doodle",
+      "media_tag": "mixed media",
+      "description": "fdafdafdafdafdsa",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "c269",
+      "image_url": "blob:http://localhost:5173/386a8f40-0e45-4396-b9d2-c21b885ad464",
+      "title": "float doodle",
+      "media_tag": "mixed media",
+      "description": "fdafdafdafdafdsa",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "5c66",
+      "image_url": "blob:http://localhost:5173/386a8f40-0e45-4396-b9d2-c21b885ad464",
+      "title": "float doodle",
+      "media_tag": "mixed media",
+      "description": "fdafdafdafdafdsa",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "0f1b",
+      "image_url": "blob:http://localhost:5173/386a8f40-0e45-4396-b9d2-c21b885ad464",
+      "title": "float doodle",
+      "media_tag": "mixed media",
+      "description": "fdafdafdafdafdsa",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "e680",
+      "image_url": "blob:http://localhost:5173/10e154f1-571b-4fe8-a565-feac7dfc2db5",
+      "title": "fdafda",
+      "media_tag": "mixed media",
+      "description": "fdafdafdasfd",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "02a2",
+      "image_url": "blob:http://localhost:5173/10e154f1-571b-4fe8-a565-feac7dfc2db5",
+      "title": "fdafda",
+      "media_tag": "mixed media",
+      "description": "fdafdafdasfd",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "da14",
+      "image_url": "blob:http://localhost:5173/104d9283-f987-4d05-9a18-ed46486ae266",
+      "title": "fdafdas",
+      "media_tag": "mixed media",
+      "description": "fdasfdas",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "f9b7",
+      "image_url": "blob:http://localhost:5173/104d9283-f987-4d05-9a18-ed46486ae266",
+      "title": "fdafdas",
+      "media_tag": "mixed media",
+      "description": "fdasfdas",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "9330",
+      "image_url": "blob:http://localhost:5173/e5498894-2da1-4862-9ab0-ad68bf346a55",
+      "title": "fdafdas",
+      "media_tag": "mixed media",
+      "description": "fdafdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "9849",
+      "image_url": "blob:http://localhost:5173/7ae34c52-c6aa-4d14-8bb6-bf99d30d5a31",
+      "title": "fdafda",
+      "media_tag": "mixed media",
+      "description": "fdafdasfdas",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "131a",
+      "image_url": "blob:http://localhost:5173/7ae34c52-c6aa-4d14-8bb6-bf99d30d5a31",
+      "title": "fdafda",
+      "media_tag": "mixed media",
+      "description": "fdafdasfdas",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "e01d",
+      "image_url": "blob:http://localhost:5173/5c31a9c4-4bca-459c-a7c9-94872b0cdcc5",
+      "title": "fdafda",
+      "media_tag": "mixed media",
+      "description": "fdasfdas",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "4c8d",
+      "image_url": "blob:http://localhost:5173/8163a661-6a1d-44fd-b24c-086b7fc594b3",
+      "title": "fdafda",
+      "media_tag": "waterColor",
+      "description": "fdafda",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "83fd",
+      "image_url": "blob:http://localhost:5173/78b9b925-6e34-4cfb-abdc-459ce107c3bc",
+      "title": "float doodle",
+      "media_tag": "mixed media",
+      "description": "fdafdafdasfdas",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "b8e2",
+      "image_url": "blob:http://localhost:5173/46bc31fa-6813-4363-900f-ddc3c8b80cf1",
+      "title": "icon",
+      "media_tag": "mixed media",
+      "description": "this is test",
+      "social_link": "null",
+      "createdAt": ""
+    },
+    {
+      "id": "4df1",
+      "image_url": "blob:http://localhost:5173/0f605237-e371-472c-bb0f-f91259b3447c",
+      "title": "fdafdafds",
+      "media_tag": "mixed media",
+      "description": "fdasfdas",
+      "social_link": "null",
+      "createdAt": ""
+    }
+  ]
+}
