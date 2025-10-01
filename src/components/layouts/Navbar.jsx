@@ -16,7 +16,7 @@ import { Alert, Skeleton, Snackbar, Stack } from "@mui/material";
 import { useState } from "react";
 import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import arthiveLogo from "../../../public/images/arthive_logo.png";
+import arthiveLogo from "/images/arthive_logo.png?url";
 
 const pages = [
   "home",

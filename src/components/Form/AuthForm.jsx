@@ -20,7 +20,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import googleIcon from "/public/googleIcon.png";
+import googleIcon from "/googleIcon.png?url";
 
 function AuthForm() {
   // user auth state management

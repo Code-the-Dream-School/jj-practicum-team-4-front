@@ -34,7 +34,7 @@ import FormModal from "../components/Modal/FormModal.jsx";
 import { jwtDecode } from "jwt-decode";
 import { getData, deleteData } from "../util";
 import DeleteIcon from "@mui/icons-material/Delete";
-import artIllustration from "../../public/images/art_illustration.png";
+import artIllustration from "/images/art_illustration.png?url";
 
 export default function Gallery() {
   const [shownModal, setShownModal] = useState(false);

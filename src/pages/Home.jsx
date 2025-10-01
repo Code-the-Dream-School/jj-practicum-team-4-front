@@ -21,7 +21,7 @@ import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import RecommendIcon from "@mui/icons-material/Recommend";
-import heroImg from "../../public/images/hero_img.jpeg";
+import heroImg from "/images/hero_img.jpeg?url";
 
 export default function Home() {
   const [selected, setSelected] = useState(null);

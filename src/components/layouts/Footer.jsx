@@ -1,5 +1,5 @@
 import { Box, Divider, Typography } from "@mui/material";
-import arthiveLogo from "../../../public/images/arthive_logo.png";
+import arthiveLogo from "/images/arthive_logo.png?url";
 
 import { Link } from "react-router-dom";
 
